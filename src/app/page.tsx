@@ -1,5 +1,9 @@
+import Calendar from "./calendar/Calendar";
+
 export default function Home() {
   return (
-    <div>Hello</div>
+    <div>
+      <Calendar />
+    </div>
   );
 }
