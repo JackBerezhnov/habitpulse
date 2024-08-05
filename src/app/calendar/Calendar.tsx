@@ -1,3 +1,4 @@
+ import { endOfMonth, startOfMonth } from "date-fns";
 import Cell from "./Cell";
 
 const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -7,8 +8,9 @@ interface Props {
     onChange?: (value: Date) => void;
 }
 
-const Calendar: React.FC<Props> = ({ value, onChange }) => {
-    console.log(value);
+const Calendar: React.FC<Props> = ({ value = new Date(), onChange }) => {
+    const startDate = startOfMonth(value);
+    const endDate = endOfMonth(value);
 
     return <div className="w-[400px] border-t border-l">
         <div className="grid grid-cols-7 items-center justify-center text-center">
