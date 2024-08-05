@@ -1,4 +1,4 @@
- import { endOfMonth, startOfMonth } from "date-fns";
+ import { differenceInDays, endOfMonth, startOfMonth } from "date-fns";
 import Cell from "./Cell";
 
 const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -11,6 +11,7 @@ interface Props {
 const Calendar: React.FC<Props> = ({ value = new Date(), onChange }) => {
     const startDate = startOfMonth(value);
     const endDate = endOfMonth(value);
+    const numDays = differenceInDays(endDate, startDate) + 1;
 
     return <div className="w-[400px] border-t border-l">
         <div className="grid grid-cols-7 items-center justify-center text-center">
@@ -23,6 +24,12 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange }) => {
             {daysOfWeek.map((day) => (
                 <Cell key={day} className="text-sm font-bold">{day}</Cell>
             ))}
+
+            {Array.from({length: numDays}).map((_, index) => {
+                const date = index + 1; 
+
+                return <Cell key={date}>{date}</Cell>;
+            })}
 
             <Cell>1</Cell>
             <Cell>2</Cell>
