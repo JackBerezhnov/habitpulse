@@ -13,6 +13,8 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange }) => {
     const endDate = endOfMonth(value);
     const numDays = differenceInDays(endDate, startDate) + 1;
 
+    const prefixDays = startDate.getDay();
+
     return <div className="w-[400px] border-t border-l">
         <div className="grid grid-cols-7 items-center justify-center text-center">
             <Cell>{"<<"}</Cell>
@@ -24,6 +26,10 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange }) => {
             {daysOfWeek.map((day) => (
                 <Cell key={day} className="text-sm font-bold">{day}</Cell>
             ))}
+
+            {Array.from({length: prefixDays}).map((_, index) => {
+                return <Cell key={index}></Cell>;
+            })}
 
             {Array.from({length: numDays}).map((_, index) => {
                 const date = index + 1; 
