@@ -45,7 +45,7 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange }) => {
             {Array.from({length: numDays}).map((_, index) => {
                 const date = index + 1; 
 
-                return <Cell onClick={() => handleClickDate(index)} key={date}>{date}</Cell>;
+                return <Cell onClick={() => handleClickDate(index + 1)} key={date}>{date}</Cell>;
             })}
 
             {Array.from({length: suffixDays}).map((_, index) => {
