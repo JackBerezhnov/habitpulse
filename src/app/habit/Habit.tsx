@@ -1,4 +1,4 @@
-interface HabitProps {
+export interface HabitProps {
     title: string;
 }
 

@@ -2,10 +2,11 @@
 import { format } from "date-fns";
 import { useState } from "react";
 import Calendar from "./calendar/Calendar";
-import Habit  from "./habit/Habit";
+import Habit, {HabitProps}  from "./habit/Habit";
 
 export default function Home() {
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [habits, setHabits] = useState<HabitProps[]>([]);
   const [habitName, setHabitName] = useState<string>('');
 
   const handleSetToday = () => setCurrentDate(new Date());
@@ -14,12 +15,12 @@ export default function Home() {
     e.preventDefault();
     if(habitName.trim() === '') return;
   
-    const newHabit: HabitItem = {
+    const newHabit: HabitProps = {
       id: Date.now(),
       name: habitName,
     };  
 
-    
+
   }
 
   const handleHabitName = (e: React.FormEvent) => {
