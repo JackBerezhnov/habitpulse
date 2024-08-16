@@ -1,10 +1,10 @@
 export interface HabitProps {
-    title: string;
+    name: string;
 }
 
-const Habit: React.FC<HabitProps> = ({ title }) => {
+const Habit: React.FC<HabitProps> = ({ name }) => {
     return (
-        <div><h3>{title}</h3></div>
+        <div><h3>{name}</h3></div>
     );
 };
 

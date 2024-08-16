@@ -16,7 +16,6 @@ export default function Home() {
     if(habitName.trim() === '') return;
   
     const newHabit: HabitProps = {
-      id: Date.now(),
       name: habitName,
     };  
 
