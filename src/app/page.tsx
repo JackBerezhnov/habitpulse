@@ -23,17 +23,22 @@ export default function Home() {
     setHabitName('');
   }
 
-  const handleHabitName = (e: React.FormEvent) => {
-    const habit = e.currentTarget.nodeValue;
-  }
-
   return (
     <div className="mt-16 flex flex-col items-center gap-8">
       <form onSubmit={handleAddHabit}>
-        <input className="text-black" type="text" onChange={handleHabitName} />
-        <input type="submit" />
+        <input
+          className="text-black" 
+          type="text"
+          value={habitName}
+          onChange={(e) => setHabitName(e.target.value)}
+          placeholder="Enter a habit" 
+        />
+        <button type="submit">Add Habit</button>
       </form>
       <div className="habits">
+        {habits.map((habit) => (
+          <Habit key={habit.name} name={habit.name}/>
+        ))}
       </div>
       <div className="flex flex-col items-center gap-2">
         <p>Selected Date: {format(currentDate, 'dd LLLL yyyy')}</p>
