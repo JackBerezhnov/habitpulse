@@ -19,11 +19,12 @@ export default function Home() {
       name: habitName,
     };  
 
-
+    setHabits([...habits, newHabit]);
+    setHabitName('');
   }
 
   const handleHabitName = (e: React.FormEvent) => {
-    const habit = e.target.value;
+    const habit = e.currentTarget.nodeValue;
   }
 
   return (
