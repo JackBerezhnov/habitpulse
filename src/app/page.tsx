@@ -7,9 +7,16 @@ export default function Home() {
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const handleSetToday = () => setCurrentDate(new Date());
+  const handleAddHabit = (e: any) => {
+    const habit = e.target.value;
+  }
 
   return (
     <div className="mt-16 flex flex-col items-center gap-8">
+      <form>
+        <input className="text-black" type="text" onChange={handleAddHabit} />
+        <input type="submit" />
+      </form>
       <div className="flex flex-col items-center gap-2">
         <p>Selected Date: {format(currentDate, 'dd LLLL yyyy')}</p>
 
