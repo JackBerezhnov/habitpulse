@@ -5,15 +5,21 @@ import Calendar from "./calendar/Calendar";
 
 export default function Home() {
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [habitName, setHabitName] = useState<string>('');
 
   const handleSetToday = () => setCurrentDate(new Date());
-  const handleHabitName = (e: any) => {
+
+  const handleAddHabit = (e: React.FormEvent) => {
+    e.preventDefault();
+  }
+
+  const handleHabitName = (e: React.FormEvent) => {
     const habit = e.target.value;
   }
 
   return (
     <div className="mt-16 flex flex-col items-center gap-8">
-      <form>
+      <form onSubmit={handleAddHabit}>
         <input className="text-black" type="text" onChange={handleHabitName} />
         <input type="submit" />
       </form>
