@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { account, ID } from "../appwrite";
+import { account, ID } from "../appwrite.ts";
 
 interface User {
   $id: string;
