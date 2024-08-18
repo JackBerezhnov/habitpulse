@@ -20,7 +20,7 @@ export default function Home() {
   }
 
   return (
-    <div className="mt-16 flex flex-col items-center gap-8">
+    <div className="pt-20 flex flex-col items-center gap-8 hero bg-base-200 min-h-screen">
       <form onSubmit={handleAddHabit}>
         <input 
           className="mr-10 input input-bordered w-full max-w-xs"
