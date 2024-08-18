@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { account, ID } from "../appwrite";
 
-interface User {
+export interface User {
   $id: string;
   name: string;
   email: string;
