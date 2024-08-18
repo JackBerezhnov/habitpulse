@@ -9,7 +9,6 @@ export interface HabitProps {
 const Habit: React.FC<HabitProps> = ({ name }) => {
     
     const [currentDate, setCurrentDate] = useState(new Date());
-    const handleSetToday = () => setCurrentDate(new Date());
 
     return (
         <div className="dropdown">
