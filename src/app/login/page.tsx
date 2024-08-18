@@ -63,7 +63,9 @@ const LoginPage: React.FC = () => {
   };
 
   if (loading) {
-    return <p>Loading...</p>;
+    return <div className="hero bg-base-200 min-h-screen">
+      <p>Loading...</p>
+    </div>;
   }
 
   if (loggedInUser) {
