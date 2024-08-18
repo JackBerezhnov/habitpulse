@@ -22,8 +22,7 @@ export default function Home() {
   return (
     <div className="mt-16 flex flex-col items-center gap-8">
       <form onSubmit={handleAddHabit}>
-        <input
-          className="text-black" 
+        <input 
           type="text"
           value={habitName}
           onChange={(e) => setHabitName(e.target.value)}
