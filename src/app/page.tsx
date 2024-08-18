@@ -29,7 +29,7 @@ export default function Home() {
           onChange={(e) => setHabitName(e.target.value)}
           placeholder="Enter a habit" 
         />
-        <button type="submit">Add Habit</button>
+        <button className="btn btn-primary" type="submit">Add Habit</button>
       </form>
       <div className="habits">
         {habits.map((habit) => (
