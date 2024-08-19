@@ -1,14 +1,25 @@
 "use client"
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Habit, {HabitProps}  from "./habit/Habit";
-import { account } from "./appwrite";
+import { account, databases } from "./appwrite";
 import { useRouter } from "next/navigation";
 
 export default function Home() {
 
   const [habits, setHabits] = useState<HabitProps[]>([]);
   const [habitName, setHabitName] = useState<string>('');
+  const [currentUserID, setCurrentUserID] = useState<string>('');
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const currentUser = await account.get();
+      const userId = currentUser.$id;
+      setCurrentUserID(userId);
+    };
+
+    fetchUser();
+  }, [])
 
   const handleAddHabit = (e: React.FormEvent) => {
     e.preventDefault();
