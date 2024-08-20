@@ -4,7 +4,7 @@ import { format } from "date-fns";
 
 export interface HabitProps {
     name: string;
-    userid: string;
+    UserID: string;
 }
 
 const Habit: React.FC<HabitProps> = ({ name }) => {

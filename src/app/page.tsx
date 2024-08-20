@@ -42,7 +42,7 @@ export default function Home() {
   
     const newHabit: HabitProps = {
       name: habitName,
-      userid: currentUserID,
+      UserID: currentUserID,
     };
 
     addHabitToDb(newHabit);
@@ -75,7 +75,7 @@ export default function Home() {
       </form>
       <div className="habits">
         {habits.map((habit) => (
-          <Habit key={habit.name} name={habit.name}/>
+          <Habit key={habit.name} name={habit.name} UserID={currentUserID}/>
         ))}
       </div>
     </div>
