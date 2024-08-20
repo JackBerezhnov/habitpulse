@@ -42,6 +42,7 @@ export default function Home() {
   
     const newHabit: HabitProps = {
       name: habitName,
+      userid: currentUserID,
     };
 
     addHabitToDb(newHabit);
