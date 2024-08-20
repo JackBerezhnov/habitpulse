@@ -1,8 +1,9 @@
 "use client"
 import { useState, useEffect } from "react";
 import Habit, {HabitProps}  from "./habit/Habit";
-import { account, databases } from "./appwrite";
+import { account, databases, ID } from "./appwrite";
 import { useRouter } from "next/navigation";
+import { add } from "date-fns";
 
 export default function Home() {
 
@@ -21,6 +22,20 @@ export default function Home() {
     fetchUser();
   }, [])
 
+  const addHabitToDb = async (newHabit: HabitProps) => {
+    try{
+      const response = await databases.createDocument(
+        `${process.env.NEXT_PUBLIC_DB}`,
+        `${process.env.NEXT_PUBLIC_DB_COLLECTION}`,
+        `${ID.unique()}`,
+        newHabit,
+      );
+      console.log('Habit added successfully:', response);
+    } catch (error) {
+      console.log('Failed to add habit:', error);
+    }
+  }
+
   const handleAddHabit = (e: React.FormEvent) => {
     e.preventDefault();
     if(habitName.trim() === '') return;
@@ -29,6 +44,7 @@ export default function Home() {
       name: habitName,
     };
 
+    addHabitToDb(newHabit);
     setHabits([...habits, newHabit]);
     setHabitName('');
   }
