@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import Habit, {HabitProps}  from "./habit/Habit";
 import { account, databases, ID } from "./appwrite";
 import { useRouter } from "next/navigation";
-import { add } from "date-fns";
 
 export default function Home() {
 
@@ -20,6 +19,21 @@ export default function Home() {
     };
 
     fetchUser();
+
+    const fetchHabits = async() => {
+      const response = await databases.listDocuments(
+        `${process.env.NEXT_PUBLIC_DB}`,
+        `${process.env.NEXT_PUBLIC_DB_COLLECTION}`
+      );
+
+      response.documents.forEach(testHabit => {
+        console.log(testHabit);
+      });
+
+      console.log("Habits from DB: ", response);
+    };
+
+    fetchHabits();
   }, [])
 
   const addHabitToDb = async (newHabit: HabitProps) => {
