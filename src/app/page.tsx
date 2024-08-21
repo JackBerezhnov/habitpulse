@@ -3,10 +3,12 @@ import { useState, useEffect } from "react";
 import Habit, {HabitProps}  from "./habit/Habit";
 import { account, databases, ID } from "./appwrite";
 import { useRouter } from "next/navigation";
+import { Models } from "appwrite";
 
 export default function Home() {
 
   const [habits, setHabits] = useState<HabitProps[]>([]);
+  const [habitsDB, setHabitsDB] = useState<Models.Document[]>([]);
   const [habitName, setHabitName] = useState<string>('');
   const [currentUserID, setCurrentUserID] = useState<string>('');
   const router = useRouter();
@@ -30,6 +32,9 @@ export default function Home() {
         console.log(testHabit);
       });
 
+      setHabitsDB(response.documents);
+
+      console.log("Habits DB State: ", habitsDB);
       console.log("Habits from DB: ", response);
     };
 
