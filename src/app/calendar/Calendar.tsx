@@ -1,5 +1,6 @@
 import { differenceInDays, endOfMonth, startOfMonth, sub, format, add, setDate } from "date-fns";
 import Cell from "./Cell";
+import { useState } from "react";
 
 const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -9,6 +10,7 @@ interface Props {
 }
 
 const Calendar: React.FC<Props> = ({ value = new Date(), onChange }) => {
+    const [completeDays, setCompleteDays] = useState<Date[]>([]);
     const startDate = startOfMonth(value);
     const endDate = endOfMonth(value);
     const numDays = differenceInDays(endDate, startDate) + 1;
@@ -23,7 +25,9 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange }) => {
 
     const handleClickDate = (index: number) => {
         const date = setDate(value, index);
+        setCompleteDays((completeDays) => [...completeDays, date]);
         onChange && onChange(date);
+        console.log("Completed Days: ", completeDays);
     }
 
     return <div className="w-[400px] border-t border-l">
