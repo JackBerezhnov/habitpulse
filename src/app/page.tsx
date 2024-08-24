@@ -28,13 +28,13 @@ export default function Home() {
         `${process.env.NEXT_PUBLIC_DB_COLLECTION}`
       );
 
-      response.documents.forEach(testHabit => {
-        console.log(testHabit);
+      response.documents.forEach(newHabit => {
+        console.log(newHabit);
+
       });
 
       setHabitsDB(response.documents);
-
-      console.log("Habits DB State: ", habitsDB);
+      console.log("Habist BEFORE add to DB State: ", response.documents);
       console.log("Habits from DB: ", response);
     };
 
@@ -79,6 +79,8 @@ export default function Home() {
     }
   }
 
+  console.log("Habits DB State: ", habitsDB);
+
   return (
     <div className="pt-20 flex flex-col items-center gap-8 hero bg-base-200 min-h-screen">
       <button className="btn btn-outline" onClick={logout}>Logout</button>
@@ -93,7 +95,7 @@ export default function Home() {
         <button className="btn btn-primary" type="submit">Add Habit</button>
       </form>
       <div className="habits">
-        {habits.map((habit) => (
+        {habitsDB.map((habit) => (
           <Habit key={habit.name} name={habit.name} UserID={currentUserID}/>
         ))}
       </div>
