@@ -14,6 +14,7 @@ const handleDeleteButton = () => {
 const Habit: React.FC<HabitProps> = ({ name }) => {
     
     const [currentDate, setCurrentDate] = useState(new Date());
+    const [markedDates, setMarkedDates] = useState([]);
 
     return (
         <div className="dropdown">
