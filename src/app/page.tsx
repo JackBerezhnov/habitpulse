@@ -24,29 +24,31 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const fetchHabits = async() => {
-      const habitsOfCurrentUser: any = [];
-      const response = await databases.listDocuments(
-        `${process.env.NEXT_PUBLIC_DB}`,
-        `${process.env.NEXT_PUBLIC_DB_COLLECTION}`
-      );
-
-      response.documents.forEach(newHabit => {
-        console.log(currentUserID);
-        console.log(newHabit.UserID);
-        if(currentUserID === newHabit.UserID) {
-          habitsOfCurrentUser.push(newHabit);
-        }
-        console.log(newHabit);
-      });
-
-      setHabitsDB(habitsOfCurrentUser);
-      console.log("Habist BEFORE add to DB State: ", response.documents);
-      console.log("Habits from DB: ", response);
-    };
+    if (!currentUserID) return;
 
     fetchHabits();
-  }, []);
+  }, [currentUserID]);
+  
+  const fetchHabits = async() => {
+    const habitsOfCurrentUser: any = [];
+    const response = await databases.listDocuments(
+      `${process.env.NEXT_PUBLIC_DB}`,
+      `${process.env.NEXT_PUBLIC_DB_COLLECTION}`
+    );
+
+    response.documents.forEach(newHabit => {
+      console.log(currentUserID);
+      console.log(newHabit.UserID);
+      if(currentUserID === newHabit.UserID) {
+        habitsOfCurrentUser.push(newHabit);
+      }
+      console.log(newHabit);
+    });
+
+    setHabitsDB(habitsOfCurrentUser);
+    console.log("Habist BEFORE add to DB State: ", response.documents);
+    console.log("Habits from DB: ", response);
+  };
 
   const addHabitToDb = async (newHabit: HabitProps) => {
     try{
