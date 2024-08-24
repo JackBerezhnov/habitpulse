@@ -28,7 +28,7 @@ export default function Home() {
 
     fetchHabits();
   }, [currentUserID]);
-  
+
   const fetchHabits = async() => {
     const habitsOfCurrentUser: any = [];
     const response = await databases.listDocuments(
@@ -103,7 +103,7 @@ export default function Home() {
         />
         <button className="btn btn-primary" type="submit">Add Habit</button>
       </form>
-      <div className="habits">
+      <div className="habits flex flex-col">
         {habitsDB.map((habit) => (
           <Habit key={habit.name} name={habit.name} UserID={currentUserID}/>
         ))}
