@@ -16,6 +16,8 @@ const Habit: React.FC<HabitProps> = ({ name }) => {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [markedDates, setMarkedDates] = useState([]);
 
+    console.log("Current Date: ", currentDate);
+
     return (
         <div className="dropdown">
           <div tabIndex={0} role="button" className="btn m-1">{name} <span>Last time:</span>{format(currentDate, 'dd LLLL yyyy')}</div>
