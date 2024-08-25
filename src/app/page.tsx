@@ -11,6 +11,7 @@ export default function Home() {
   const [habitsDB, setHabitsDB] = useState<Models.Document[]>([]);
   const [habitName, setHabitName] = useState<string>('');
   const [currentUserID, setCurrentUserID] = useState<string>('');
+  const [userName, setUserName] = useState<string>('');
   const router = useRouter();
 
   useEffect(() => {
@@ -18,6 +19,7 @@ export default function Home() {
       const currentUser = await account.get();
       const userId = currentUser.$id;
       setCurrentUserID(userId);
+      setUserName(currentUser.name);
     };
 
     fetchUser();
@@ -92,6 +94,7 @@ export default function Home() {
 
   return (
     <div className="pt-20 flex flex-col items-center gap-8 hero bg-base-200 min-h-screen">
+      <h2>Welcome, {userName}</h2>
       <button className="btn btn-outline" onClick={logout}>Logout</button>
       <form onSubmit={handleAddHabit} className="w-9/12 flex items-center justify-center">
         <input 
