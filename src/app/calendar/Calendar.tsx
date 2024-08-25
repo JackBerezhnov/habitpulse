@@ -25,6 +25,7 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange }) => {
     const handleClickDate = (index: number) => {
         const date = setDate(value, index);
         onChange && onChange(date);
+        console.log("Date from Calendar: ", date);
     }
 
     return <div className="w-[400px] border-t border-l">
