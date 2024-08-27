@@ -1,6 +1,5 @@
 import { differenceInDays, endOfMonth, startOfMonth, sub, format, add, setDate } from "date-fns";
 import Cell from "./Cell";
-import { useState } from "react";
 
 const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
