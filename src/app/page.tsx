@@ -108,7 +108,7 @@ export default function Home() {
       </form>
       <div className="habits flex flex-col">
         {habitsDB.map((habit) => (
-          <Habit key={habit.name} name={habit.name} UserID={currentUserID}/>
+          <Habit key={habit.$id} name={habit.name} UserID={currentUserID}/>
         ))}
       </div>
     </div>
