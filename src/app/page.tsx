@@ -57,7 +57,7 @@ export default function Home() {
       const response = await databases.createDocument(
         `${process.env.NEXT_PUBLIC_DB}`,
         `${process.env.NEXT_PUBLIC_DB_COLLECTION}`,
-        `${ID.unique()}`,
+        `${newHabit.documentID}`,
         newHabit,
       );
       console.log('Habit added successfully:', response);
@@ -73,6 +73,7 @@ export default function Home() {
     const newHabit: HabitProps = {
       name: habitName,
       UserID: currentUserID,
+      documentID: ID.unique(),
     };
 
     addHabitToDb(newHabit);
@@ -108,7 +109,7 @@ export default function Home() {
       </form>
       <div className="habits flex flex-col">
         {habitsDB.map((habit) => (
-          <Habit key={habit.$id} name={habit.name} UserID={currentUserID}/>
+          <Habit key={habit.$id} documentID={habit.$id} name={habit.name} UserID={currentUserID}/>
         ))}
       </div>
     </div>

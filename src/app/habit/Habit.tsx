@@ -5,6 +5,7 @@ import { format } from "date-fns";
 export interface HabitProps {
     name: string;
     UserID: string;
+    documentID: string;
 }
 
 const handleDeleteButton = () => {
