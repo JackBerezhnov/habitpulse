@@ -6,9 +6,10 @@ const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 interface Props {
     value?: Date;
     onChange?: (value: Date) => void;
+    id: string;
 }
 
-const Calendar: React.FC<Props> = ({ value = new Date(), onChange }) => {
+const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
     const startDate = startOfMonth(value);
     const endDate = endOfMonth(value);
     const numDays = differenceInDays(endDate, startDate) + 1;
@@ -27,7 +28,7 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange }) => {
         console.log("Date from Calendar: ", date);
     }
 
-    return <div className="w-[400px] border-t border-l">
+    return <div className="w-[400px] border-t border-l" id={id}>
         <div className="grid grid-cols-7 items-center justify-center text-center">
             <Cell onClick={prevYear}>{"<<"}</Cell>
             <Cell onClick={prevMonth}>{"<"}</Cell>
