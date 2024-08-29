@@ -1,6 +1,7 @@
 import { differenceInDays, endOfMonth, startOfMonth, sub, format, add, setDate } from "date-fns";
 import { databases } from "../appwrite";
 import Cell from "./Cell";
+import { get } from "http";
 
 const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -25,15 +26,23 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
 
     const handleClickDate = async(index: number) => {
         const date = setDate(value, index);
+        let checkedDays = [];
         onChange && onChange(date);
         console.log("Date from Calendar: ", date);
+        const getHabit = await databases.getDocument(
+            `${process.env.NEXT_PUBLIC_DB}`,
+            `${process.env.NEXT_PUBLIC_DB_COLLECTION}`,
+            `${id}`,
+        );
+        checkedDays = getHabit.Dates;
+        checkedDays.push(date);
         const addHabitDate = await databases.updateDocument(
             `${process.env.NEXT_PUBLIC_DB}`,
             `${process.env.NEXT_PUBLIC_DB_COLLECTION}`,
-            `${id}`, // documentId
+            `${id}`,
             {
-                Dates: [date]
-            }, // data (optional)
+                Dates: checkedDays
+            },
         );
     }
 
