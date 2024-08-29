@@ -1,4 +1,5 @@
 import { differenceInDays, endOfMonth, startOfMonth, sub, format, add, setDate } from "date-fns";
+import { databases } from "../appwrite";
 import Cell from "./Cell";
 
 const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -22,10 +23,18 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
     const prevYear = () => onChange && onChange(sub(value, { years: 1 }));
     const nextYear = () => onChange && onChange(add(value, { years: 1 }));
 
-    const handleClickDate = (index: number) => {
+    const handleClickDate = async(index: number) => {
         const date = setDate(value, index);
         onChange && onChange(date);
         console.log("Date from Calendar: ", date);
+        const addHabitDate = await databases.updateDocument(
+            `${process.env.NEXT_PUBLIC_DB}`,
+            `${process.env.NEXT_PUBLIC_DB_COLLECTION}`,
+            `${id}`, // documentId
+            {
+                Dates: [date]
+            }, // data (optional)
+        );
     }
 
     return <div className="w-[400px] border-t border-l" id={id}>
