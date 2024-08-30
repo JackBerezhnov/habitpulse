@@ -95,7 +95,7 @@ export default function Home() {
 
   return (
     <div className="pt-20 flex flex-col items-center gap-8 hero bg-base-200 min-h-screen">
-      <h2>Welcome, {userName}</h2>
+      <h2>Welcome to the HabitPulse, {userName}</h2>
       <button className="btn btn-outline" onClick={logout}>Logout</button>
       <form onSubmit={handleAddHabit} className="w-9/12 flex items-center justify-center">
         <input 
