@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { differenceInDays, endOfMonth, startOfMonth, sub, format, add, setDate } from "date-fns";
 import { databases } from "../appwrite";
 import Cell from "./Cell";
@@ -11,9 +12,24 @@ interface Props {
 }
 
 const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
+    const [checkedDays, setCheckedDays] = useState([])
     const startDate = startOfMonth(value);
     const endDate = endOfMonth(value);
     const numDays = differenceInDays(endDate, startDate) + 1;
+    const checkedDayNumbers = checkedDays.map(dateString => new Date(dateString)).map(date => date.getDay())
+   console.log({ checkedDayNumbers })
+ 
+    useEffect(() => {
+       async function getData() {
+        const getHabit = await databases.getDocument(
+            `${process.env.NEXT_PUBLIC_DB}`,
+            `${process.env.NEXT_PUBLIC_DB_COLLECTION}`,
+            `${id}`,
+        );
+        
+        setCheckedDays(getHabit.Dates)
+       }
+    },  [])
 
     const prefixDays = startDate.getDay();
     const suffixDays = 6 - endDate.getDay();
@@ -34,7 +50,9 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
             `${id}`,
         );
         checkedDays = getHabit.Dates;
+        console.log("CHECKED DAYS:", checkedDays); 
         checkedDays.push(date);
+        setCheckedDays(checkedDays)
         const addHabitDate = await databases.updateDocument(
             `${process.env.NEXT_PUBLIC_DB}`,
             `${process.env.NEXT_PUBLIC_DB_COLLECTION}`,
@@ -62,9 +80,17 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
             })}
 
             {Array.from({length: numDays}).map((_, index) => {
-                const date = index + 1; 
+                const day = index + 1; 
+                
+                const fuckWhatever = checkedDays.some(dateString => {
+                    const checkedDate = new Date(dateString)
+                    return checkedDate.getDay() == day
+                })
 
-                return <Cell onClick={() => handleClickDate(index + 1)} key={date}>{date}</Cell>;
+                console.log("FUCKWHATEVER", fuckWhatever);
+                console.log("FUCK DAY", day);
+
+            return <Cell onClick={() => handleClickDate(index + 1)} fuckWhatever={fuckWhatever} key={day}>{day}</Cell>;
             })}
 
             {Array.from({length: suffixDays}).map((_, index) => {
