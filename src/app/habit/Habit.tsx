@@ -15,7 +15,6 @@ const handleDeleteButton = () => {
 const Habit: React.FC<HabitProps> = ({ name, documentID }) => {
     
     const [currentDate, setCurrentDate] = useState(new Date());
-    const [markedDates, setMarkedDates] = useState([]);
 
     console.log("Current Date: ", currentDate);
 
