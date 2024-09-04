@@ -8,7 +8,7 @@ interface Props extends React.PropsWithChildren {
 }
 
 const Cell: React.FC<Props> = ({onClick, className, fuckWhatever, children}) => {
-
+    
 
     const handleClick = () => {
         if (onClick) onClick();

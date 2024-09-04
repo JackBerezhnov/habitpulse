@@ -84,7 +84,7 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
                 
                 const fuckWhatever = checkedDays.some(dateString => {
                     const checkedDate = new Date(dateString)
-                    return checkedDate.getDay() == day
+                    return checkedDate.getDate() === day
                 })
 
                 console.log("FUCKWHATEVER", fuckWhatever);
