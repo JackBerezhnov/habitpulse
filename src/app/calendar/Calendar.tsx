@@ -80,17 +80,24 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
             })}
 
             {Array.from({length: numDays}).map((_, index) => {
-                const day = index + 1; 
+                const day = index + 1;
+                const currentDate = setDate(value, index);
+                
+
+                console.log("Date: ", currentDate);
+                console.log("Day: ", day);
                 
                 const fuckWhatever = checkedDays.some(dateString => {
-                    const checkedDate = new Date(dateString)
-                    return checkedDate.getDate() === day
+                    const checkedDate = new Date(dateString);
+                    console.log("Data String: ", dateString);
+                    console.log("Current Date: ", currentDate.toISOString());
+                    return dateString == currentDate.toISOString();
                 })
 
                 console.log("FUCKWHATEVER", fuckWhatever);
                 console.log("FUCK DAY", day);
 
-            return <Cell onClick={() => handleClickDate(index + 1)} fuckWhatever={fuckWhatever} key={day}>{day}</Cell>;
+            return <Cell onClick={() => handleClickDate(index + 1)} fuckWhatever={fuckWhatever} key={currentDate.toISOString()}>{day}</Cell>;
             })}
 
             {Array.from({length: suffixDays}).map((_, index) => {
