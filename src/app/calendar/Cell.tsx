@@ -4,7 +4,7 @@ import { useState } from "react";
 interface Props extends React.PropsWithChildren {
     onClick?: () => void;
     className?: string;
-    fuckWhatever?: boolean
+    fuckWhatever?: boolean;
 }
 
 const Cell: React.FC<Props> = ({onClick, className, fuckWhatever, children}) => {

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { differenceInDays, endOfMonth, startOfMonth, sub, format, add, setDate, formatISO, parse } from "date-fns";
 import { databases } from "../appwrite";
 import Cell from "./Cell";
+import { get } from "http";
 
 const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -21,14 +22,15 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
  
     useEffect(() => {
        async function getData() {
-        const getHabit = await databases.getDocument(
-            `${process.env.NEXT_PUBLIC_DB}`,
-            `${process.env.NEXT_PUBLIC_DB_COLLECTION}`,
-            `${id}`,
-        );
-        
+            const getHabit = await databases.getDocument(
+                `${process.env.NEXT_PUBLIC_DB}`,
+                `${process.env.NEXT_PUBLIC_DB_COLLECTION}`,
+                `${id}`,
+            );
         setCheckedDays(getHabit.Dates)
        }
+       getData();
+       console.log(checkedDays);
     },  [])
 
     const prefixDays = startDate.getDay();
@@ -46,7 +48,6 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
         const isoDate = formatISO(parsedDate, { representation: 'date' });
         let checkedDays = [];
         onChange && onChange(date);
-        console.log("Date from Calendar: ", date);
         const getHabit = await databases.getDocument(
             `${process.env.NEXT_PUBLIC_DB}`,
             `${process.env.NEXT_PUBLIC_DB_COLLECTION}`,
@@ -86,13 +87,13 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
                 const currentDate = setDate(value, index);
                 
 
-                console.log("Date: ", currentDate);
-                console.log("Day: ", day);
+                console.log(checkedDays);
+                console.log("Current value", value);
                 
                 const fuckWhatever = checkedDays.some(dateString => {
                     const checkedDate = new Date(dateString);
-                    console.log("Data String: ", dateString);
-                    console.log("Current Date: ", currentDate.toISOString());
+                    console.log(checkedDate);
+                    
                     return dateString === day;
                 })
 
