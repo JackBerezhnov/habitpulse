@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { differenceInDays, endOfMonth, startOfMonth, sub, format, add, setDate } from "date-fns";
+import { differenceInDays, endOfMonth, startOfMonth, sub, format, add, setDate, formatISO, parse } from "date-fns";
 import { databases } from "../appwrite";
 import Cell from "./Cell";
 
@@ -16,7 +16,7 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
     const startDate = startOfMonth(value);
     const endDate = endOfMonth(value);
     const numDays = differenceInDays(endDate, startDate) + 1;
-    const checkedDayNumbers = checkedDays.map(dateString => new Date(dateString)).map(date => date.getDay())
+    const checkedDayNumbers = checkedDays.map(dateString => new Date(dateString)).map(date => date.getDate())
    console.log({ checkedDayNumbers })
  
     useEffect(() => {
@@ -41,6 +41,9 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
 
     const handleClickDate = async(index: number) => {
         const date = setDate(value, index);
+        const result = formatISO(value, { representation: 'date' });
+        const parsedDate = new Date(date);
+        const isoDate = formatISO(parsedDate, { representation: 'date' });
         let checkedDays = [];
         onChange && onChange(date);
         console.log("Date from Calendar: ", date);
@@ -50,8 +53,7 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
             `${id}`,
         );
         checkedDays = getHabit.Dates;
-        console.log("CHECKED DAYS:", checkedDays); 
-        checkedDays.push(date);
+        checkedDays.push(isoDate);
         setCheckedDays(checkedDays)
         const addHabitDate = await databases.updateDocument(
             `${process.env.NEXT_PUBLIC_DB}`,
@@ -91,11 +93,8 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
                     const checkedDate = new Date(dateString);
                     console.log("Data String: ", dateString);
                     console.log("Current Date: ", currentDate.toISOString());
-                    return dateString == currentDate.toISOString();
+                    return dateString === day;
                 })
-
-                console.log("FUCKWHATEVER", fuckWhatever);
-                console.log("FUCK DAY", day);
 
             return <Cell onClick={() => handleClickDate(index + 1)} fuckWhatever={fuckWhatever} key={currentDate.toISOString()}>{day}</Cell>;
             })}
