@@ -43,9 +43,6 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
 
     const handleClickDate = async(index: number) => {
         const date = setDate(value, index);
-        const result = formatISO(value, { representation: 'date' });
-        const parsedDate = new Date(date);
-        const isoDate = formatISO(parsedDate, { representation: 'date' });
         let checkedDays = [];
         onChange && onChange(date);
         const getHabit = await databases.getDocument(
@@ -54,7 +51,7 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
             `${id}`,
         );
         checkedDays = getHabit.Dates;
-        checkedDays.push(isoDate);
+        checkedDays.push(date);
         setCheckedDays(checkedDays)
         const addHabitDate = await databases.updateDocument(
             `${process.env.NEXT_PUBLIC_DB}`,
@@ -93,8 +90,10 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
                 const fuckWhatever = checkedDays.some(dateString => {
                     const checkedDate = new Date(dateString);
                     console.log(checkedDate);
+                    console.log("Current Date", currentDate);
+                    console.log("Date String", dateString);
                     
-                    return dateString === day;
+                    return dateString === currentDate;
                 })
 
             return <Cell onClick={() => handleClickDate(index + 1)} fuckWhatever={fuckWhatever} key={currentDate.toISOString()}>{day}</Cell>;
