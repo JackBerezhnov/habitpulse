@@ -83,17 +83,14 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
                 const day = index + 1;
                 const currentDate = setDate(value, index);
                 
-
-                console.log(checkedDays);
-                console.log("Current value", value);
-                
                 const fuckWhatever = checkedDays.some(dateString => {
-                    const checkedDate = new Date(dateString);
-                    console.log(checkedDate);
-                    console.log("Current Date", currentDate);
-                    console.log("Date String", dateString);
-                    
-                    return dateString === currentDate;
+                    let dateCurrentString: string = dateString;
+                    const isoDate = formatISO(currentDate);
+                    dateCurrentString = dateCurrentString.toString();
+                    const newIsoDate = isoDate.split("T");
+                    const newDateCurrentString = dateCurrentString.split("T");
+
+                    return newDateCurrentString[0] === newIsoDate[0];
                 })
 
             return <Cell onClick={() => handleClickDate(index + 1)} fuckWhatever={fuckWhatever} key={currentDate.toISOString()}>{day}</Cell>;
