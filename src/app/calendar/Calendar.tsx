@@ -51,7 +51,7 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
             `${id}`,
         );
         checkedDays = getHabit.Dates;
-        checkedDays.push(date);
+        checkedDays.push(date.toISOString());
         setCheckedDays(checkedDays)
         const addHabitDate = await databases.updateDocument(
             `${process.env.NEXT_PUBLIC_DB}`,
@@ -81,19 +81,19 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
 
             {Array.from({length: numDays}).map((_, index) => {
                 const day = index + 1;
-                const currentDate = setDate(value, index);
+                const currentDate = setDate(value, day);
                 
                 const fuckWhatever = checkedDays.some(dateString => {
-                    let dateCurrentString: string = dateString;
-                    const isoDate = formatISO(currentDate);
-                    dateCurrentString = dateCurrentString.toString();
-                    const newIsoDate = isoDate.split("T");
-                    const newDateCurrentString = dateCurrentString.split("T");
+                    let date = new Date(dateString);
+                    let dateCurrentString = date.toLocaleString();
+                    let currentNewDate = currentDate.toLocaleString();
+                    const newCurrentDate = currentNewDate.split(",");
+                    const newDateCurrentString = dateCurrentString.split(",");
 
-                    return newDateCurrentString[0] === newIsoDate[0];
+                    return newDateCurrentString[0] === newCurrentDate[0];
                 })
 
-            return <Cell onClick={() => handleClickDate(index + 1)} fuckWhatever={fuckWhatever} key={currentDate.toISOString()}>{day}</Cell>;
+            return <Cell onClick={() => handleClickDate(index + 1)} fuckWhatever={fuckWhatever} key={currentDate.toLocaleString()}>{day}</Cell>;
             })}
 
             {Array.from({length: suffixDays}).map((_, index) => {
