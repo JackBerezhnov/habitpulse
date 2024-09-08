@@ -19,7 +19,7 @@ const Habit: React.FC<HabitProps> = ({ name, documentID }) => {
     console.log("Current Date: ", currentDate);
 
     return (
-      <div className="flex justify-between items-center p-4 m-4 border border-slate-700 rounded">
+      <div className="flex justify-between items-center p-4 m-4 border border-gray-500 rounded">
         <div className="dropdown">
           <div tabIndex={0} role="button" className="btn m-1">{name} <span>Last time:</span>{format(currentDate, 'dd LLLL yyyy')}</div>
           <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-100 p-5 shadow">
