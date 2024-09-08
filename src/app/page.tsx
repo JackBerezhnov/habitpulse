@@ -107,7 +107,7 @@ export default function Home() {
       <dialog id="my_modal_2" className="modal">
         <div className="modal-box">
           <h3 className="font-bold text-lg">Start to crete your habit</h3>
-          <form onSubmit={handleAddHabit} className="w-9/12 flex items-center justify-center">
+          <form onSubmit={handleAddHabit} className="w-9/12 mt-4">
             <input 
               className="mr-10 input input-bordered w-full max-w-xs"
               type="text"
@@ -115,7 +115,17 @@ export default function Home() {
               onChange={(e) => setHabitName(e.target.value)}
               placeholder="Enter a habit" 
             />
-            <button className="btn btn-primary" type="submit">Add Habit</button>
+            <label className="form-control w-full max-w-xs mt-4">
+              <div className="label">
+                <span className="label-text">Pick the category for your habit</span>
+              </div>
+              <select className="select select-bordered">
+                <option>Strength</option>
+                <option>Inteligent</option>
+                <option>Agility</option>
+              </select>
+            </label>
+            <button className="btn btn-primary mt-4" type="submit">Add Habit</button>
           </form>
         </div>
         <form method="dialog" className="modal-backdrop">
