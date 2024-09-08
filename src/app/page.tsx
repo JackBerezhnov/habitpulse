@@ -94,7 +94,7 @@ export default function Home() {
   console.log("Habits DB State: ", habitsDB);
 
   return (
-    <div className="pt-20 flex flex-col items-center gap-8 hero bg-base-200 min-h-screen">
+    <div className="pt-20 flex flex-col items-center gap-8 hero bg-base-200 h-[150vh]">
       <h2>Welcome to the HabitPulse, {userName}</h2>
       <p>Start to create habits</p>
       <button className="btn btn-outline" onClick={logout}>Logout</button>
