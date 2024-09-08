@@ -98,16 +98,30 @@ export default function Home() {
       <h2>Welcome to the HabitPulse, {userName}</h2>
       <p>Start to create habits</p>
       <button className="btn btn-outline" onClick={logout}>Logout</button>
-      <form onSubmit={handleAddHabit} className="w-9/12 flex items-center justify-center">
-        <input 
-          className="mr-10 input input-bordered w-full max-w-xs"
-          type="text"
-          value={habitName}
-          onChange={(e) => setHabitName(e.target.value)}
-          placeholder="Enter a habit" 
-        />
-        <button className="btn btn-primary" type="submit">Add Habit</button>
-      </form>
+      <button className="btn" onClick={() => { 
+        const modal = document.getElementById('my_modal_2') as HTMLDialogElement | null;
+        if(modal) {
+          modal.showModal();
+        }
+      } }>Create Habit</button>
+      <dialog id="my_modal_2" className="modal">
+        <div className="modal-box">
+          <h3 className="font-bold text-lg">Start to crete your habit</h3>
+          <form onSubmit={handleAddHabit} className="w-9/12 flex items-center justify-center">
+            <input 
+              className="mr-10 input input-bordered w-full max-w-xs"
+              type="text"
+              value={habitName}
+              onChange={(e) => setHabitName(e.target.value)}
+              placeholder="Enter a habit" 
+            />
+            <button className="btn btn-primary" type="submit">Add Habit</button>
+          </form>
+        </div>
+        <form method="dialog" className="modal-backdrop">
+          <button>close</button>
+        </form>
+      </dialog>
       <div className="habits flex flex-col">
         {habitsDB.map((habit) => (
           <Habit key={habit.$id} documentID={habit.$id} name={habit.name} UserID={currentUserID}/>
