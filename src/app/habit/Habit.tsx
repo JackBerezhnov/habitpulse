@@ -19,13 +19,15 @@ const Habit: React.FC<HabitProps> = ({ name, documentID }) => {
     console.log("Current Date: ", currentDate);
 
     return (
+      <div>
         <div className="dropdown">
           <div tabIndex={0} role="button" className="btn m-1">{name} <span>Last time:</span>{format(currentDate, 'dd LLLL yyyy')}</div>
-          <button onClick={handleDeleteButton} className="btn btn-outline btn-error">Delete</button>
           <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-100 p-5 shadow">
             <Calendar value={currentDate} id={documentID} onChange={setCurrentDate}/>
           </ul>
         </div>
+        <button onClick={handleDeleteButton} className="btn btn-outline btn-error">Delete</button>
+      </div>
     );
 };
 
