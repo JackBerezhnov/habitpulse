@@ -10,6 +10,7 @@ export default function Home() {
   const [habits, setHabits] = useState<HabitProps[]>([]);
   const [habitsDB, setHabitsDB] = useState<Models.Document[]>([]);
   const [habitName, setHabitName] = useState<string>('');
+  const [habitType, setHabitType] = useState<string>('');
   const [currentUserID, setCurrentUserID] = useState<string>('');
   const [userName, setUserName] = useState<string>('');
   const router = useRouter();
@@ -72,6 +73,7 @@ export default function Home() {
   
     const newHabit: HabitProps = {
       name: habitName,
+      Type: habitType,
       UserID: currentUserID,
       documentID: ID.unique(),
     };
@@ -119,7 +121,11 @@ export default function Home() {
               <div className="label">
                 <span className="label-text">Pick the category for your habit</span>
               </div>
-              <select className="select select-bordered">
+              <select 
+                className="select select-bordered"
+                value={habitType}
+                onChange={(e) => setHabitType(e.target.value)}
+              >
                 <option>Strength</option>
                 <option>Inteligent</option>
                 <option>Agility</option>
@@ -134,7 +140,7 @@ export default function Home() {
       </dialog>
       <div className="habits flex flex-col">
         {habitsDB.map((habit) => (
-          <Habit key={habit.$id} documentID={habit.$id} name={habit.name} UserID={currentUserID}/>
+          <Habit key={habit.$id} documentID={habit.$id} name={habit.name} Type={habit.type} UserID={currentUserID}/>
         ))}
       </div>
     </div>

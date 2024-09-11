@@ -4,6 +4,7 @@ import { format } from "date-fns";
 
 export interface HabitProps {
     name: string;
+    Type: string;
     UserID: string;
     documentID: string;
 }
