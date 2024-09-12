@@ -19,6 +19,7 @@ const Habit: React.FC<HabitProps> = ({ name, documentID, Type }) => {
     const [currentDate, setCurrentDate] = useState(new Date());
 
     console.log("Current Date: ", currentDate);
+    console.log("Type: ", Type);
 
     return (
       <div className="flex justify-between items-center p-4 m-4 border border-gray-500 rounded">

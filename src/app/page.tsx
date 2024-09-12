@@ -140,7 +140,7 @@ export default function Home() {
       </dialog>
       <div className="habits flex flex-col">
         {habitsDB.map((habit) => (
-          <Habit key={habit.$id} documentID={habit.$id} name={habit.name} Type={habit.type} UserID={currentUserID}/>
+          <Habit key={habit.$id} documentID={habit.$id} name={habit.name} Type={habit.Type} UserID={currentUserID}/>
         ))}
       </div>
     </div>
