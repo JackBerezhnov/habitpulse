@@ -1,4 +1,5 @@
 import Calendar from "../calendar/Calendar";
+import HabitType from "../habit_type/HabitType";
 import { useState } from "react";
 import { format } from "date-fns";
 
@@ -13,7 +14,7 @@ const handleDeleteButton = () => {
   alert("Delete Button Clicked");
 }
 
-const Habit: React.FC<HabitProps> = ({ name, documentID }) => {
+const Habit: React.FC<HabitProps> = ({ name, documentID, Type }) => {
     
     const [currentDate, setCurrentDate] = useState(new Date());
 
@@ -27,6 +28,7 @@ const Habit: React.FC<HabitProps> = ({ name, documentID }) => {
             <Calendar value={currentDate} id={documentID} onChange={setCurrentDate}/>
           </ul>
         </div>
+        <HabitType Type={Type} />
         <button onClick={handleDeleteButton} className="btn btn-outline btn-error">Delete</button>
       </div>
     );
