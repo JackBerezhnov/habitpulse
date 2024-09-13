@@ -1,6 +1,6 @@
 import Calendar from "../calendar/Calendar";
 import HabitType from "../habit_type/HabitType";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { databases } from "../appwrite";
 
@@ -14,9 +14,14 @@ export interface HabitProps {
 const Habit: React.FC<HabitProps> = ({ name, documentID, Type }) => {
     
     const [currentDate, setCurrentDate] = useState(new Date());
-
+    const [isMounted, setIsMounted] = useState(false);
     console.log("Current Date: ", currentDate);
     console.log("Type: ", Type);
+    
+    useEffect(() => {
+      setIsMounted(true); // Ensures this code runs only in the browser
+    }, []);
+
     
     const handleDeleteButton = async() => {
       const deleteHabit = await databases.deleteDocument(
@@ -24,6 +29,7 @@ const Habit: React.FC<HabitProps> = ({ name, documentID, Type }) => {
         `${process.env.NEXT_PUBLIC_DB_COLLECTION}`,
         `${documentID}`
       );
+      window.location.reload();
     }
 
     return (
