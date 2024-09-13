@@ -62,6 +62,7 @@ export default function Home() {
         newHabit,
       );
       console.log('Habit added successfully:', response);
+      window.location.reload();
     } catch (error) {
       console.log('Failed to add habit:', error);
     }
