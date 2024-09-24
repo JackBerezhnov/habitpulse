@@ -100,6 +100,7 @@ export default function Home() {
     <div className="pt-20 flex flex-col items-center gap-8 hero bg-base-200 h-[150vh]">
       <h2>Welcome to the HabitPulse, {userName}</h2>
       <p>Start to create habits</p>
+      <p>Let's create something awesome!</p>
       <button className="btn btn-outline" onClick={logout}>Logout</button>
       <button className="btn" onClick={() => { 
         const modal = document.getElementById('my_modal_2') as HTMLDialogElement | null;
