@@ -4,6 +4,7 @@ import Habit, {HabitProps}  from "./habit/Habit";
 import { account, databases, ID } from "./appwrite";
 import { useRouter } from "next/navigation";
 import { Models } from "appwrite";
+import Navbar from "./navbar/Navbar";
 
 export default function Home() {
 
@@ -97,7 +98,8 @@ export default function Home() {
   console.log("Habits DB State: ", habitsDB);
 
   return (
-    <div className="pt-20 flex flex-col items-center gap-8 hero bg-base-200 h-[150vh]">
+    <div className="flex flex-col items-center gap-8 hero bg-base-200 h-[150vh]">
+      <Navbar />
       <h2>Welcome to the HabitPulse, {userName}</h2>
       <p>Start to create habits</p>
       <p>Let's create something awesome!</p>
