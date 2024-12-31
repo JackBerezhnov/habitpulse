@@ -1,7 +1,10 @@
 import React from 'react';
 
+interface NavbarProps {
+    onLogout: () => void;
+}
 
-const Navbar: React.FC = () => {
+const Navbar: React.FC<NavbarProps> = ({ onLogout }) => {
     return (
         <div className="navbar bg-base-100">
             <div className="navbar-start">
@@ -37,7 +40,7 @@ const Navbar: React.FC = () => {
                 <a className="btn btn-ghost text-xl">HabitPulse</a>
             </div>
             <div className="navbar-end">
-                <a className="btn">Button</a>
+                <a className="btn" onClick={onLogout}>Logout</a>
             </div>
         </div>
     );
