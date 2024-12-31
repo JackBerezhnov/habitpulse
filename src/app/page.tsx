@@ -129,6 +129,7 @@ export default function Home() {
                 value={habitType}
                 onChange={(e) => setHabitType(e.target.value)}
               >
+                <option>Select</option>
                 <option>Strength</option>
                 <option>Inteligent</option>
                 <option>Agility</option>
