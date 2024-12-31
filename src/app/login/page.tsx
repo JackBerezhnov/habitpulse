@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { account, ID } from "../appwrite";
+import { OAuthProvider } from "appwrite";
 
 interface User {
   $id: string;
@@ -32,6 +33,13 @@ const LoginPage: React.FC = () => {
 
     fetchUser();
   }, [router]);
+
+  const loginSIWG = async () => {
+    account.createOAuth2Session(
+      OAuthProvider.Google,
+      "http://localhost:3000"
+    )
+  }
 
   const login = async (email: string, password: string) => {
     try {
@@ -142,6 +150,9 @@ const LoginPage: React.FC = () => {
         </button>
         <button type="button" className="btn btn-active btn-ghost" onClick={register}>
           Register
+        </button>
+        <button type="button" id="btn-siwg" onClick={loginSIWG}>
+          Sign in with Google
         </button>
       </form>
     </div>
