@@ -30,6 +30,26 @@ export default function Home() {
   useEffect(() => {
     if (!currentUserID) return;
 
+    console.log("Current User Id for User as Player", currentUserID);
+
+    const createUserAsPlayer = async() => {
+      const result = await databases.createDocument(
+        `${process.env.NEXT_PUBLIC_DB}`,
+        `${process.env.NEXT_PUBLIC_DB_USER_COLLECTION}`,
+        `${currentUserID}`,
+        {
+          userID: `${currentUserID}`,
+          Name: `${userName}`
+        }
+      );
+    }
+
+    createUserAsPlayer();
+  }, [currentUserID]);
+
+  useEffect(() => {
+    if (!currentUserID) return;
+
     const fetchHabits = async() => {
       const habitsOfCurrentUser: any = [];
       const response = await databases.listDocuments(
@@ -38,17 +58,12 @@ export default function Home() {
       );
   
       response.documents.forEach(newHabit => {
-        console.log(currentUserID);
-        console.log(newHabit.UserID);
         if(currentUserID === newHabit.UserID) {
           habitsOfCurrentUser.push(newHabit);
         }
-        console.log(newHabit);
       });
   
       setHabitsDB(habitsOfCurrentUser);
-      console.log("Habist BEFORE add to DB State: ", response.documents);
-      console.log("Habits from DB: ", response);
     };
 
     fetchHabits();
@@ -62,7 +77,6 @@ export default function Home() {
         `${newHabit.documentID}`,
         newHabit,
       );
-      console.log('Habit added successfully:', response);
       window.location.reload();
     } catch (error) {
       console.log('Failed to add habit:', error);
@@ -94,8 +108,6 @@ export default function Home() {
       console.log('Error logging out: ', error);
     }
   }
-
-  console.log("Habits DB State: ", habitsDB);
 
   return (
     <div className="flex flex-col items-center gap-8 hero bg-base-200 h-[150vh]">
