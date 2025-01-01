@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { differenceInDays, endOfMonth, startOfMonth, sub, format, add, setDate, formatISO, parse } from "date-fns";
-import { databases } from "../appwrite";
+import { account, databases } from "../appwrite";
 import Cell from "./Cell";
 import { get } from "http";
 
@@ -18,6 +18,7 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
     const endDate = endOfMonth(value);
     const numDays = differenceInDays(endDate, startDate) + 1;
     const checkedDayNumbers = checkedDays.map(dateString => new Date(dateString)).map(date => date.getDate())
+    const [currentUserID, setCurrentUserID] = useState<string>('');
    console.log({ checkedDayNumbers })
  
     useEffect(() => {
@@ -32,6 +33,16 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
        getData();
        console.log(checkedDays);
     },  [])
+
+    useEffect(() => {
+        const fetchUser = async () => {
+          const currentUser = await account.get();
+          const userId = currentUser.$id;
+          setCurrentUserID(userId);
+        };
+    
+        fetchUser();
+    }, []);
 
     const prefixDays = startDate.getDay();
     const suffixDays = 6 - endDate.getDay();
@@ -61,6 +72,26 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
                 Dates: checkedDays
             },
         );
+        addExperienceToTheUser();
+    }
+
+    const addExperienceToTheUser = async() => {
+        const user = await databases.getDocument(
+            `${process.env.NEXT_PUBLIC_DB}`,
+            `${process.env.NEXT_PUBLIC_DB_USER_COLLECTION}`,
+            `${currentUserID}`
+        );
+
+        let experience = user.Experience + 100;
+
+        const addExperienceToTheUserInDB = await databases.updateDocument(
+            `${process.env.NEXT_PUBLIC_DB}`,
+            `${process.env.NEXT_PUBLIC_DB_USER_COLLECTION}`,
+            `${currentUserID}`,
+            {
+                Experience: experience
+            },
+        );        
     }
 
     return <div className="w-[400px] border-t border-l" id={id}>
@@ -89,7 +120,6 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
                     let currentNewDate = currentDate.toLocaleString();
                     const newCurrentDate = currentNewDate.split(",");
                     const newDateCurrentString = dateCurrentString.split(",");
-
                     return newDateCurrentString[0] === newCurrentDate[0];
                 })
 
