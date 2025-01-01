@@ -83,7 +83,7 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
                 const day = index + 1;
                 const currentDate = setDate(value, day);
                 
-                const fuckWhatever = checkedDays.some(dateString => {
+                const isCurrentDay = checkedDays.some(dateString => {
                     let date = new Date(dateString);
                     let dateCurrentString = date.toLocaleString();
                     let currentNewDate = currentDate.toLocaleString();
@@ -93,7 +93,7 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
                     return newDateCurrentString[0] === newCurrentDate[0];
                 })
 
-            return <Cell onClick={() => handleClickDate(index + 1)} fuckWhatever={fuckWhatever} key={currentDate.toLocaleString()}>{day}</Cell>;
+            return <Cell onClick={() => handleClickDate(index + 1)} isCurrentDay={isCurrentDay} key={currentDate.toLocaleString()}>{day}</Cell>;
             })}
 
             {Array.from({length: suffixDays}).map((_, index) => {

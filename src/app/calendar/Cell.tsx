@@ -4,10 +4,10 @@ import { useState } from "react";
 interface Props extends React.PropsWithChildren {
     onClick?: () => void;
     className?: string;
-    fuckWhatever?: boolean;
+    isCurrentDay?: boolean;
 }
 
-const Cell: React.FC<Props> = ({onClick, className, fuckWhatever, children}) => {
+const Cell: React.FC<Props> = ({onClick, className, isCurrentDay, children}) => {
     
 
     const handleClick = () => {
@@ -21,7 +21,7 @@ const Cell: React.FC<Props> = ({onClick, className, fuckWhatever, children}) => 
                 "h-12 flex items-center justify-center border-b border-r",
                 {
                     "cursor-pointer hover:bg-gray-100 hover:text-black active:bg-gray-200": !!onClick,
-                    "bg-green-500 text-white": fuckWhatever
+                    "bg-green-500 text-white": isCurrentDay
                 },
                 className
             )}
