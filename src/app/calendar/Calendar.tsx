@@ -73,6 +73,7 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
             },
         );
         addExperienceToTheUser();
+        addStats();
     }
 
     const addExperienceToTheUser = async() => {
@@ -92,6 +93,55 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
                 Experience: experience
             },
         );        
+    }
+
+    const addStats = async() => {
+        const user = await databases.getDocument(
+            `${process.env.NEXT_PUBLIC_DB}`,
+            `${process.env.NEXT_PUBLIC_DB_USER_COLLECTION}`,
+            `${currentUserID}`
+        );
+        const habit = await databases.getDocument(
+            `${process.env.NEXT_PUBLIC_DB}`,
+            `${process.env.NEXT_PUBLIC_DB_COLLECTION}`,
+            `${id}`,
+        );
+
+        if(habit.Type === "Strength") {
+            let strength = user.Strength + 1;
+            const addStatToTheUserInDB = await databases.updateDocument(
+                `${process.env.NEXT_PUBLIC_DB}`,
+                `${process.env.NEXT_PUBLIC_DB_USER_COLLECTION}`,
+                `${currentUserID}`,
+                {
+                    Strength: strength
+                },
+            );
+        }
+
+        if(habit.Type === "Agility") {
+            let agility = user.Agility + 1;
+            const addStatToTheUserInDB = await databases.updateDocument(
+                `${process.env.NEXT_PUBLIC_DB}`,
+                `${process.env.NEXT_PUBLIC_DB_USER_COLLECTION}`,
+                `${currentUserID}`,
+                {
+                    Agility: agility
+                },
+            );
+        }
+
+        if(habit.Type === "Inteligent") {
+            let inteligent = user.Inteligent + 1;
+            const addStatToTheUserInDB = await databases.updateDocument(
+                `${process.env.NEXT_PUBLIC_DB}`,
+                `${process.env.NEXT_PUBLIC_DB_USER_COLLECTION}`,
+                `${currentUserID}`,
+                {
+                    Inteligent: inteligent
+                },
+            );
+        }
     }
 
     return <div className="w-[400px] border-t border-l" id={id}>
