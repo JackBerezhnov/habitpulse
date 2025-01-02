@@ -114,7 +114,11 @@ export default function Home() {
     <div className="flex flex-col items-center gap-8 hero bg-base-200 h-[150vh]">
       <Navbar onLogout={logout}/>
       <h2>Welcome to the HabitPulse, {userName}</h2>
-      <Stat stat={1}/>
+      <div className="flex flex-wrap items-center">
+        <Stat statType="Strength" stat={1}/>
+        <Stat statType="Agility" stat={1}/>
+        <Stat statType="Inteligent" stat={1}/>
+      </div>
       <p>Start to create habits</p>
       <button className="btn" onClick={() => { 
         const modal = document.getElementById('my_modal_2') as HTMLDialogElement | null;
