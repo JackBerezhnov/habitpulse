@@ -10,8 +10,8 @@ const Stat: React.FC<StatProps> = ({stat, statType}) => {
         return(
             <div className="stats shadow m-5">
                 <div className="stat">
-                    <div className="stat-title">Strength</div>
-                    <div className="stat-value">{stat}</div>
+                    <div className="stat-title text-error">Strength</div>
+                    <div className="stat-value text-error">{stat}</div>
                 </div>
             </div>
         )
@@ -21,8 +21,8 @@ const Stat: React.FC<StatProps> = ({stat, statType}) => {
         return(
             <div className="stats shadow m-5">
                 <div className="stat">
-                    <div className="stat-title">Agility</div>
-                    <div className="stat-value">{stat}</div>
+                    <div className="stat-title text-accent">Agility</div>
+                    <div className="stat-value text-accent">{stat}</div>
                 </div>
             </div>
         )
@@ -32,8 +32,8 @@ const Stat: React.FC<StatProps> = ({stat, statType}) => {
         return(
             <div className="stats shadow m-5">
                 <div className="stat">
-                    <div className="stat-title">Inteligent</div>
-                    <div className="stat-value">{stat}</div>
+                    <div className="stat-title text-info">Inteligent</div>
+                    <div className="stat-value text-info">{stat}</div>
                 </div>
             </div>
         )
