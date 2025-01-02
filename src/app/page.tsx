@@ -5,6 +5,7 @@ import { account, databases, ID } from "./appwrite";
 import { useRouter } from "next/navigation";
 import { Models } from "appwrite";
 import Navbar from "./navbar/Navbar";
+import Stat from "./stat/Stat";
 
 export default function Home() {
 
@@ -113,8 +114,8 @@ export default function Home() {
     <div className="flex flex-col items-center gap-8 hero bg-base-200 h-[150vh]">
       <Navbar onLogout={logout}/>
       <h2>Welcome to the HabitPulse, {userName}</h2>
+      <Stat stat={1}/>
       <p>Start to create habits</p>
-      <p>Let's create something awesome!</p>
       <button className="btn" onClick={() => { 
         const modal = document.getElementById('my_modal_2') as HTMLDialogElement | null;
         if(modal) {
