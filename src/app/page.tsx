@@ -15,6 +15,7 @@ export default function Home() {
   const [habitType, setHabitType] = useState<string>('');
   const [currentUserID, setCurrentUserID] = useState<string>('');
   const [userName, setUserName] = useState<string>('');
+  const [user, setUser] = useState<any>(); 
   const router = useRouter();
 
   useEffect(() => {
@@ -46,6 +47,23 @@ export default function Home() {
     }
 
     createUserAsPlayer();
+  }, [currentUserID]);
+
+  useEffect(() => {
+    if (!currentUserID) return;
+
+    const getUser = async() => {
+      const user = await databases.getDocument(
+        `${process.env.NEXT_PUBLIC_DB}`,
+        `${process.env.NEXT_PUBLIC_DB_USER_COLLECTION}`,
+        `${currentUserID}`
+      );
+
+      setUser(user);
+    }
+
+    getUser();
+
   }, [currentUserID]);
 
   useEffect(() => {
@@ -110,14 +128,20 @@ export default function Home() {
     }
   }
 
+  console.log("Player", user);
+
+  if(!user) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="flex flex-col items-center gap-8 hero bg-base-200 h-[150vh]">
       <Navbar onLogout={logout}/>
       <h2>Welcome to the HabitPulse, {userName}</h2>
       <div className="flex flex-wrap items-center">
-        <Stat statType="Strength" stat={1}/>
-        <Stat statType="Agility" stat={1}/>
-        <Stat statType="Inteligent" stat={1}/>
+        <Stat statType="Strength" stat={user.Strength}/>
+        <Stat statType="Agility" stat={user.Agility}/>
+        <Stat statType="Inteligent" stat={user.Inteligent}/>
       </div>
       <p>Start to create habits</p>
       <button className="btn" onClick={() => { 
