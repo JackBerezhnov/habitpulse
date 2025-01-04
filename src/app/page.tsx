@@ -138,6 +138,7 @@ export default function Home() {
     <div className="flex flex-col items-center gap-8 hero bg-base-200 h-[150vh]">
       <Navbar onLogout={logout}/>
       <h2>Welcome to the HabitPulse, {userName}</h2>
+      <h4>{user.Experience}</h4>
       <div className="flex flex-wrap items-center">
         <Stat statType="Strength" stat={user.Strength}/>
         <Stat statType="Agility" stat={user.Agility}/>
