@@ -15,7 +15,8 @@ export default function Home() {
   const [habitType, setHabitType] = useState<string>('');
   const [currentUserID, setCurrentUserID] = useState<string>('');
   const [userName, setUserName] = useState<string>('');
-  const [user, setUser] = useState<any>(); 
+  const [user, setUser] = useState<any>();
+  const [progressLevel, setProgressLevel] = useState<number>(); 
   const router = useRouter();
 
   useEffect(() => {
@@ -88,6 +89,30 @@ export default function Home() {
     fetchHabits();
   }, [currentUserID]);
 
+  useEffect(() => {
+    if (!user) return;
+
+    const calculateXP = (level: number) => {
+      return 50 * Math.pow(level, 2);
+    }
+    
+    const canLevelUp = () => {
+      const nextLevelXP = calculateXP(user.Level + 1);
+      return user.Experience >= nextLevelXP; // True if enough XP
+    }
+
+    const progressToNextLevel = () => {
+      const currentXP = user.Experience;
+      const currentLevelXP = calculateXP(user.Level);
+      const nextLevelXP = calculateXP(user.Level + 1);
+    
+      return ((currentXP - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100;
+    }
+    
+    setProgressLevel(progressToNextLevel);
+
+  }, [user]);
+
   const addHabitToDb = async (newHabit: HabitProps) => {
     try{
       const response = await databases.createDocument(
@@ -139,6 +164,7 @@ export default function Home() {
       <Navbar onLogout={logout}/>
       <h2>Welcome to the HabitPulse, {userName}</h2>
       <h4>{user.Experience}</h4>
+      <h3>Progress next level: {progressLevel}</h3>
       <div className="flex flex-wrap items-center">
         <Stat statType="Strength" stat={user.Strength}/>
         <Stat statType="Agility" stat={user.Agility}/>
