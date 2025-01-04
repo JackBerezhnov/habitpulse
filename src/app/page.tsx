@@ -131,7 +131,7 @@ export default function Home() {
   console.log("Player", user);
 
   if(!user) {
-    return <div>Loading...</div>;
+    return <div className="flex flex-col justify-center items-center gap-8 hero bg-base-200 h-[150vh]">Loading...</div>;
   }
 
   return (
