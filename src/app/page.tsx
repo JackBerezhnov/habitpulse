@@ -95,11 +95,6 @@ export default function Home() {
     const calculateXP = (level: number) => {
       return 50 * Math.pow(level, 2);
     }
-    
-    const canLevelUp = () => {
-      const nextLevelXP = calculateXP(user.Level + 1);
-      return user.Experience >= nextLevelXP; // True if enough XP
-    }
 
     const progressToNextLevel = () => {
       const currentXP = user.Experience;
@@ -163,6 +158,7 @@ export default function Home() {
     <div className="flex flex-col items-center gap-8 hero bg-base-200 h-[150vh]">
       <Navbar onLogout={logout}/>
       <h2>Welcome to the HabitPulse, {userName}</h2>
+      <h4>{user.Level}</h4>
       <h4>{user.Experience}</h4>
       <h3>Progress next level: {progressLevel}</h3>
       <div className="flex flex-wrap items-center">

@@ -82,6 +82,34 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
             `${process.env.NEXT_PUBLIC_DB_USER_COLLECTION}`,
             `${currentUserID}`
         );
+        /*
+
+        const calculateXP = (level: number) => {
+            return 50 * Math.pow(level, 2);
+        
+        
+        // Function to handle XP gain and leveling up
+        async function gainXP(user: any, earnedXP: number) {
+            // Add XP to user
+            user.experience += earnedXP;
+        
+            let leveledUp = false;
+        
+            // Check if user can level up
+            while (user.experience >= calculateXP(user.level + 1)) {
+            user.level += 1; // Increase level
+            leveledUp = true;
+        
+            // Update the database with the new level
+            await updateUserLevel(user.id, user.level);
+        
+            console.log(`Congrats! You've leveled up to Level ${user.level}`);
+            }
+        
+            if (!leveledUp) {
+            console.log('XP gained, but no level up.');
+            }
+        }}
 
         let experience = user.Experience + 100;
 
@@ -92,7 +120,69 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
             {
                 Experience: experience
             },
-        );        
+        ); */
+        
+        
+        // Calculate required XP for a given level
+        function calculateXP(level: number) {
+            return 50 * Math.pow(level, 2); // Example formula
+        }
+        
+        // Update XP in the database
+        async function updateUserXP(currentUserID: string, newXP: number) {
+            try {
+            const response = await databases.updateDocument(
+                `${process.env.NEXT_PUBLIC_DB}`,
+                `${process.env.NEXT_PUBLIC_DB_USER_COLLECTION}`,
+                `${currentUserID}`,
+                { Experience: newXP } // Update XP field
+            );
+            console.log('XP updated:', response);
+            } catch (error) {
+            console.error('Failed to update XP:', error);
+            }
+        }
+        
+        // Update level in the database
+        async function updateUserLevel(newLevel: number) {
+            try {
+            const response = await databases.updateDocument(
+                `${process.env.NEXT_PUBLIC_DB}`,
+                `${process.env.NEXT_PUBLIC_DB_USER_COLLECTION}`,
+                `${currentUserID}`,
+                { Level: newLevel } // Update level field
+            );
+            console.log('Level updated:', response);
+            } catch (error) {
+            console.error('Failed to update level:', error);
+            }
+        }
+        
+        // Handle XP Gain and Level Up Together
+        async function gainXP(user: any, earnedXP: number) {
+            // Update XP
+            user.Experience += earnedXP;
+            await updateUserXP(currentUserID, user.Experience); // Update XP immediately
+        
+            let leveledUp = false;
+        
+            // Check if user leveled up
+            while (user.Experience >= calculateXP(user.Level + 1)) {
+            user.Level += 1;
+            leveledUp = true;
+        
+            // Update level in database
+            await updateUserLevel(user.Level);
+        
+            console.log(`Congrats! You've leveled up to Level ${user.Level}`);
+            }
+        
+            if (!leveledUp) {
+            console.log('XP gained, but no level up.');
+            }
+        }
+        
+        gainXP(user, 100);
     }
 
     const addStats = async() => {
