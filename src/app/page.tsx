@@ -16,7 +16,7 @@ export default function Home() {
   const [currentUserID, setCurrentUserID] = useState<string>('');
   const [userName, setUserName] = useState<string>('');
   const [user, setUser] = useState<any>();
-  const [progressLevel, setProgressLevel] = useState<number>(); 
+  const [progressLevel, setProgressLevel] = useState<string>(''); 
   const router = useRouter();
 
   useEffect(() => {
@@ -100,8 +100,9 @@ export default function Home() {
       const currentXP = user.Experience;
       const currentLevelXP = calculateXP(user.Level);
       const nextLevelXP = calculateXP(user.Level + 1);
+      const progressInPrecentage = ((currentXP - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100;
     
-      return ((currentXP - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100;
+      return progressInPrecentage.toFixed(2);
     }
     
     setProgressLevel(progressToNextLevel);
@@ -162,7 +163,9 @@ export default function Home() {
       <h2>Welcome to the HabitPulse, {userName}</h2>
       <h4>{user.Level}</h4>
       <h4>{user.Experience}</h4>
-      <h3>Progress next level: {progressLevel}</h3>
+      <h3>Progress next level: <div className="radial-progress text-primary" style={{ "--value": progressLevel }} role="progressbar">
+  {progressLevel}%
+</div></h3>
       <div className="flex flex-wrap items-center">
         <Stat statType="Strength" stat={user.Strength}/>
         <Stat statType="Agility" stat={user.Agility}/>
