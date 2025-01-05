@@ -168,7 +168,6 @@ export default function Home() {
         <Stat statType="Agility" stat={user.Agility}/>
         <Stat statType="Inteligent" stat={user.Inteligent}/>
       </div>
-      <p>Start to create habits</p>
       <button className="btn" onClick={() => { 
         const modal = document.getElementById('my_modal_2') as HTMLDialogElement | null;
         if(modal) {
@@ -177,7 +176,7 @@ export default function Home() {
       } }>Create Habit</button>
       <dialog id="my_modal_2" className="modal">
         <div className="modal-box">
-          <h3 className="font-bold text-lg">Start to crete your habit</h3>
+          <h3 className="font-bold text-lg">Start to create your habit</h3>
           <form onSubmit={handleAddHabit} className="w-9/12 mt-4">
             <input 
               className="mr-10 input input-bordered w-full max-w-xs"
