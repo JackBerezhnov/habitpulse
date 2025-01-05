@@ -152,17 +152,22 @@ export default function Home() {
   console.log("Player", user);
 
   if(!user) {
-    return <div className="flex flex-col justify-center items-center gap-8 hero bg-base-200 h-[150vh]">
+    return <div className="flex flex-col justify-center items-center gap-8 hero bg-base-200 h-[100vh]">
       <span className="loading loading-spinner loading-lg"></span>
     </div>;
   }
 
   return (
-    <div className="flex flex-col items-center gap-8 hero bg-base-200 h-[150vh]">
+    <div className="flex flex-col items-center gap-8 hero bg-base-200 h-[300vh]">
       <Navbar onLogout={logout}/>
       <h2>Welcome to the HabitPulse, {userName}</h2>
-      <h4>{user.Level}</h4>
-      <h4>{user.Experience}</h4>
+      <div className="stats shadow">
+        <div className="stat">
+          <div className="stat-title">Level</div>
+          <div className="stat-value">{user.Level}</div>
+          <div className="stat-desc">Your exp: {user.Experience}</div>
+        </div>
+      </div>
       <h3>Progress next level: <div className="radial-progress text-primary" style={{ "--value": progressLevel }} role="progressbar">
   {progressLevel}%
 </div></h3>
