@@ -33,8 +33,6 @@ export default function Home() {
   useEffect(() => {
     if (!currentUserID) return;
 
-    console.log("Current User Id for User as Player", currentUserID);
-
     const createUserAsPlayer = async() => {
       const result = await databases.createDocument(
         `${process.env.NEXT_PUBLIC_DB}`,
@@ -148,8 +146,6 @@ export default function Home() {
       console.log('Error logging out: ', error);
     }
   }
-
-  console.log("Player", user);
 
   if(!user) {
     return <div className="flex flex-col justify-center items-center gap-8 hero bg-base-200 h-[100vh]">

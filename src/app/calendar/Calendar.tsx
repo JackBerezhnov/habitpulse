@@ -19,7 +19,6 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
     const numDays = differenceInDays(endDate, startDate) + 1;
     const checkedDayNumbers = checkedDays.map(dateString => new Date(dateString)).map(date => date.getDate())
     const [currentUserID, setCurrentUserID] = useState<string>('');
-   console.log({ checkedDayNumbers })
  
     useEffect(() => {
        async function getData() {
@@ -31,7 +30,6 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
         setCheckedDays(getHabit.Dates)
        }
        getData();
-       console.log(checkedDays);
     },  [])
 
     useEffect(() => {
@@ -82,46 +80,6 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
             `${process.env.NEXT_PUBLIC_DB_USER_COLLECTION}`,
             `${currentUserID}`
         );
-        /*
-
-        const calculateXP = (level: number) => {
-            return 50 * Math.pow(level, 2);
-        
-        
-        // Function to handle XP gain and leveling up
-        async function gainXP(user: any, earnedXP: number) {
-            // Add XP to user
-            user.experience += earnedXP;
-        
-            let leveledUp = false;
-        
-            // Check if user can level up
-            while (user.experience >= calculateXP(user.level + 1)) {
-            user.level += 1; // Increase level
-            leveledUp = true;
-        
-            // Update the database with the new level
-            await updateUserLevel(user.id, user.level);
-        
-            console.log(`Congrats! You've leveled up to Level ${user.level}`);
-            }
-        
-            if (!leveledUp) {
-            console.log('XP gained, but no level up.');
-            }
-        }}
-
-        let experience = user.Experience + 100;
-
-        const addExperienceToTheUserInDB = await databases.updateDocument(
-            `${process.env.NEXT_PUBLIC_DB}`,
-            `${process.env.NEXT_PUBLIC_DB_USER_COLLECTION}`,
-            `${currentUserID}`,
-            {
-                Experience: experience
-            },
-        ); */
-        
         
         // Calculate required XP for a given level
         function calculateXP(level: number) {

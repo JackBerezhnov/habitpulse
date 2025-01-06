@@ -4,7 +4,6 @@ export interface HabitTypeProps {
 
 const HabitType: React.FC<HabitTypeProps> = ({ Type }) => {
     if(Type === "Strength") {
-        console.log("Type: ", Type);
         return(
             <div className="badge badge-error badge-outline mr-4 ml-4">{ Type }</div>
         )
