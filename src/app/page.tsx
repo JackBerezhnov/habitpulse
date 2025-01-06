@@ -164,7 +164,7 @@ export default function Home() {
           <div className="stat-desc">Your exp: {user.Experience}</div>
         </div>
       </div>
-      <h3>Progress next level: <div className="radial-progress text-primary" style={{ "--value": progressLevel }} role="progressbar">
+      <h3>Progress next level: <div className="radial-progress text-primary" style={{"--value": progressLevel } as React.CSSProperties} role="progressbar">
   {progressLevel}%
 </div></h3>
       <div className="flex flex-wrap items-center">

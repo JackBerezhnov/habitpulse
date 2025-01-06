@@ -15,8 +15,6 @@ const Habit: React.FC<HabitProps> = ({ name, documentID, Type }) => {
     
     const [currentDate, setCurrentDate] = useState(new Date());
     const [isMounted, setIsMounted] = useState(false);
-    console.log("Current Date: ", currentDate);
-    console.log("Type: ", Type);
     
     useEffect(() => {
       setIsMounted(true); // Ensures this code runs only in the browser
