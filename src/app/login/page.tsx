@@ -34,7 +34,7 @@ const LoginPage: React.FC = () => {
   const loginSIWG = async () => {
     account.createOAuth2Session(
       OAuthProvider.Google,
-      "/"
+      "https://habitpulse-2jtdiddgo-jackberezhnovs-projects.vercel.app/"
     )
   }
 
