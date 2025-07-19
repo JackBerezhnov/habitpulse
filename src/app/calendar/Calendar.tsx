@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { differenceInDays, endOfMonth, startOfMonth, sub, format, add, setDate, formatISO, parse } from "date-fns";
-import { account, databases } from "../appwrite";
+import { databases } from "../appwrite";
 import Cell from "./Cell";
-import { get } from "http";
+import { useAppStore } from "../store/useAppStore";
 
 const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -13,12 +13,20 @@ interface Props {
 }
 
 const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
-    const [checkedDays, setCheckedDays] = useState([])
+    const [checkedDays, setCheckedDays] = useState<string[]>([])
     const startDate = startOfMonth(value);
     const endDate = endOfMonth(value);
     const numDays = differenceInDays(endDate, startDate) + 1;
     const checkedDayNumbers = checkedDays.map(dateString => new Date(dateString)).map(date => date.getDate())
-    const [currentUserID, setCurrentUserID] = useState<string>('');
+    
+    const { 
+        currentUserID, 
+        currentUser, 
+        updateHabitDates, 
+        updateUserExperience, 
+        updateUserLevel, 
+        updateUserStats 
+    } = useAppStore();
  
     useEffect(() => {
        async function getData() {
@@ -32,16 +40,6 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
        getData();
     },  [])
 
-    useEffect(() => {
-        const fetchUser = async () => {
-          const currentUser = await account.get();
-          const userId = currentUser.$id;
-          setCurrentUserID(userId);
-        };
-    
-        fetchUser();
-    }, []);
-
     const prefixDays = startDate.getDay();
     const suffixDays = 6 - endDate.getDay();
 
@@ -52,143 +50,79 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
 
     const handleClickDate = async(index: number) => {
         const date = setDate(value, index);
-        let checkedDays = [];
         onChange && onChange(date);
-        const getHabit = await databases.getDocument(
-            `${process.env.NEXT_PUBLIC_DB}`,
-            `${process.env.NEXT_PUBLIC_DB_COLLECTION}`,
-            `${id}`,
-        );
-        checkedDays = getHabit.Dates;
-        checkedDays.push(date.toISOString());
-        setCheckedDays(checkedDays)
-        const addHabitDate = await databases.updateDocument(
-            `${process.env.NEXT_PUBLIC_DB}`,
-            `${process.env.NEXT_PUBLIC_DB_COLLECTION}`,
-            `${id}`,
-            {
-                Dates: checkedDays
-            },
-        );
-        addExperienceToTheUser();
-        addStats();
+        
+        try {
+            const getHabit = await databases.getDocument(
+                `${process.env.NEXT_PUBLIC_DB}`,
+                `${process.env.NEXT_PUBLIC_DB_COLLECTION}`,
+                `${id}`,
+            );
+            
+            const updatedDates = [...(getHabit.Dates || []), date.toISOString()];
+            setCheckedDays(updatedDates);
+            
+            // Update habit dates in store and database
+            await updateHabitDates(id, updatedDates);
+            
+            // Add experience and stats
+            await addExperienceToTheUser();
+            await addStats();
+        } catch (error) {
+            console.error('Failed to update habit date:', error);
+        }
     }
 
     const addExperienceToTheUser = async() => {
-        const user = await databases.getDocument(
-            `${process.env.NEXT_PUBLIC_DB}`,
-            `${process.env.NEXT_PUBLIC_DB_USER_COLLECTION}`,
-            `${currentUserID}`
-        );
+        if (!currentUser) return;
         
         // Calculate required XP for a given level
         function calculateXP(level: number) {
-            return 50 * Math.pow(level, 2); // Example formula
+            return 50 * Math.pow(level, 2);
         }
         
-        // Update XP in the database
-        async function updateUserXP(currentUserID: string, newXP: number) {
-            try {
-            const response = await databases.updateDocument(
-                `${process.env.NEXT_PUBLIC_DB}`,
-                `${process.env.NEXT_PUBLIC_DB_USER_COLLECTION}`,
-                `${currentUserID}`,
-                { Experience: newXP } // Update XP field
-            );
-            console.log('XP updated:', response);
-            } catch (error) {
-            console.error('Failed to update XP:', error);
-            }
+        // Handle XP Gain and Level Up
+        const earnedXP = 100;
+        const newXP = currentUser.Experience + earnedXP;
+        
+        // Update XP using Zustand store
+        await updateUserExperience(newXP);
+        
+        // Check if user leveled up
+        let currentLevel = currentUser.Level;
+        while (newXP >= calculateXP(currentLevel + 1)) {
+            currentLevel += 1;
+            await updateUserLevel(currentLevel);
+            console.log(`Congrats! You've leveled up to Level ${currentLevel}`);
         }
-        
-        // Update level in the database
-        async function updateUserLevel(newLevel: number) {
-            try {
-            const response = await databases.updateDocument(
-                `${process.env.NEXT_PUBLIC_DB}`,
-                `${process.env.NEXT_PUBLIC_DB_USER_COLLECTION}`,
-                `${currentUserID}`,
-                { Level: newLevel } // Update level field
-            );
-            console.log('Level updated:', response);
-            } catch (error) {
-            console.error('Failed to update level:', error);
-            }
-        }
-        
-        // Handle XP Gain and Level Up Together
-        async function gainXP(user: any, earnedXP: number) {
-            // Update XP
-            user.Experience += earnedXP;
-            await updateUserXP(currentUserID, user.Experience); // Update XP immediately
-        
-            let leveledUp = false;
-        
-            // Check if user leveled up
-            while (user.Experience >= calculateXP(user.Level + 1)) {
-            user.Level += 1;
-            leveledUp = true;
-        
-            // Update level in database
-            await updateUserLevel(user.Level);
-        
-            console.log(`Congrats! You've leveled up to Level ${user.Level}`);
-            }
-        
-            if (!leveledUp) {
-            console.log('XP gained, but no level up.');
-            }
-        }
-        
-        gainXP(user, 100);
     }
 
     const addStats = async() => {
-        const user = await databases.getDocument(
-            `${process.env.NEXT_PUBLIC_DB}`,
-            `${process.env.NEXT_PUBLIC_DB_USER_COLLECTION}`,
-            `${currentUserID}`
-        );
-        const habit = await databases.getDocument(
-            `${process.env.NEXT_PUBLIC_DB}`,
-            `${process.env.NEXT_PUBLIC_DB_COLLECTION}`,
-            `${id}`,
-        );
-
-        if(habit.Type === "Strength") {
-            let strength = user.Strength + 1;
-            const addStatToTheUserInDB = await databases.updateDocument(
+        if (!currentUser) return;
+        
+        try {
+            const habit = await databases.getDocument(
                 `${process.env.NEXT_PUBLIC_DB}`,
-                `${process.env.NEXT_PUBLIC_DB_USER_COLLECTION}`,
-                `${currentUserID}`,
-                {
-                    Strength: strength
-                },
+                `${process.env.NEXT_PUBLIC_DB_COLLECTION}`,
+                `${id}`,
             );
-        }
 
-        if(habit.Type === "Agility") {
-            let agility = user.Agility + 1;
-            const addStatToTheUserInDB = await databases.updateDocument(
-                `${process.env.NEXT_PUBLIC_DB}`,
-                `${process.env.NEXT_PUBLIC_DB_USER_COLLECTION}`,
-                `${currentUserID}`,
-                {
-                    Agility: agility
-                },
-            );
-        }
+            if(habit.Type === "Strength") {
+                const newStrength = currentUser.Strength + 1;
+                await updateUserStats('Strength', newStrength);
+            }
 
-        if(habit.Type === "Inteligent") {
-            let inteligent = user.Inteligent + 1;
-            const addStatToTheUserInDB = await databases.updateDocument(
-                `${process.env.NEXT_PUBLIC_DB}`,
-                `${process.env.NEXT_PUBLIC_DB_USER_COLLECTION}`,
-                `${currentUserID}`,
-                {
-                    Inteligent: inteligent
-                },
-            );
+            if(habit.Type === "Agility") {
+                const newAgility = currentUser.Agility + 1;
+                await updateUserStats('Agility', newAgility);
+            }
+
+            if(habit.Type === "Inteligent") {
+                const newInteligent = currentUser.Inteligent + 1;
+                await updateUserStats('Inteligent', newInteligent);
+            }
+        } catch (error) {
+            console.error('Failed to update stats:', error);
         }
     }
 

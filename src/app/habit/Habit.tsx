@@ -2,7 +2,7 @@ import Calendar from "../calendar/Calendar";
 import HabitType from "../habit_type/HabitType";
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
-import { databases } from "../appwrite";
+import { useAppStore } from "../store/useAppStore";
 
 export interface HabitProps {
     name: string;
@@ -20,14 +20,10 @@ const Habit: React.FC<HabitProps> = ({ name, documentID, Type }) => {
       setIsMounted(true); // Ensures this code runs only in the browser
     }, []);
 
+    const { deleteHabit } = useAppStore();
     
     const handleDeleteButton = async() => {
-      const deleteHabit = await databases.deleteDocument(
-        `${process.env.NEXT_PUBLIC_DB}`,
-        `${process.env.NEXT_PUBLIC_DB_COLLECTION}`,
-        `${documentID}`
-      );
-      window.location.reload();
+      await deleteHabit(documentID);
     }
 
     return (

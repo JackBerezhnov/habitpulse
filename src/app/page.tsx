@@ -1,129 +1,57 @@
 "use client"
 import { useState, useEffect } from "react";
-import Habit, {HabitProps}  from "./habit/Habit";
-import { account, databases, ID } from "./appwrite";
+import Habit from "./habit/Habit";
+import { account, ID } from "./appwrite";
 import { useRouter } from "next/navigation";
-import { Models } from "appwrite";
 import Navbar from "./navbar/Navbar";
 import Stat from "./stat/Stat";
+import { useAppStore, HabitProps } from "./store/useAppStore";
 
 export default function Home() {
-
-  const [habits, setHabits] = useState<HabitProps[]>([]);
-  const [habitsDB, setHabitsDB] = useState<Models.Document[]>([]);
   const [habitName, setHabitName] = useState<string>('');
   const [habitType, setHabitType] = useState<string>('');
-  const [currentUserID, setCurrentUserID] = useState<string>('');
-  const [userName, setUserName] = useState<string>('');
-  const [user, setUser] = useState<any>();
-  const [progressLevel, setProgressLevel] = useState<string>(''); 
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const currentUser = await account.get();
-      const userId = currentUser.$id;
-      setCurrentUserID(userId);
-      setUserName(currentUser.name);
-    };
+  // Zustand store
+  const {
+    currentUser,
+    currentUserID,
+    userName,
+    progressLevel,
+    habits,
+    isLoading,
+    fetchUser,
+    createUserAsPlayer,
+    getUser,
+    fetchHabits,
+    addHabit,
+  } = useAppStore();
 
-    fetchUser();
-  }, []);
+  useEffect(() => {
+    const initializeUser = async () => {
+      await fetchUser();
+    };
+    initializeUser();
+  }, [fetchUser]);
 
   useEffect(() => {
     if (!currentUserID) return;
-
-    const createUserAsPlayer = async() => {
-      const result = await databases.createDocument(
-        `${process.env.NEXT_PUBLIC_DB}`,
-        `${process.env.NEXT_PUBLIC_DB_USER_COLLECTION}`,
-        `${currentUserID}`,
-        {
-          userID: `${currentUserID}`,
-          Name: `${userName}`
-        }
-      );
-    }
-
     createUserAsPlayer();
-  }, [currentUserID]);
+  }, [currentUserID, createUserAsPlayer]);
 
   useEffect(() => {
     if (!currentUserID) return;
-
-    const getUser = async() => {
-      const user = await databases.getDocument(
-        `${process.env.NEXT_PUBLIC_DB}`,
-        `${process.env.NEXT_PUBLIC_DB_USER_COLLECTION}`,
-        `${currentUserID}`
-      );
-
-      setUser(user);
-    }
-
     getUser();
-
-  }, [currentUserID]);
+  }, [currentUserID, getUser]);
 
   useEffect(() => {
     if (!currentUserID) return;
-
-    const fetchHabits = async() => {
-      const habitsOfCurrentUser: any = [];
-      const response = await databases.listDocuments(
-        `${process.env.NEXT_PUBLIC_DB}`,
-        `${process.env.NEXT_PUBLIC_DB_COLLECTION}`
-      );
-  
-      response.documents.forEach(newHabit => {
-        if(currentUserID === newHabit.UserID) {
-          habitsOfCurrentUser.push(newHabit);
-        }
-      });
-  
-      setHabitsDB(habitsOfCurrentUser);
-    };
-
     fetchHabits();
-  }, [currentUserID]);
+  }, [currentUserID, fetchHabits]);
 
-  useEffect(() => {
-    if (!user) return;
-
-    const calculateXP = (level: number) => {
-      return 50 * Math.pow(level, 2);
-    }
-
-    const progressToNextLevel = () => {
-      const currentXP = user.Experience;
-      const currentLevelXP = calculateXP(user.Level);
-      const nextLevelXP = calculateXP(user.Level + 1);
-      const progressInPrecentage = ((currentXP - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100;
-    
-      return progressInPrecentage.toFixed(2);
-    }
-    
-    setProgressLevel(progressToNextLevel);
-
-  }, [user]);
-
-  const addHabitToDb = async (newHabit: HabitProps) => {
-    try{
-      const response = await databases.createDocument(
-        `${process.env.NEXT_PUBLIC_DB}`,
-        `${process.env.NEXT_PUBLIC_DB_COLLECTION}`,
-        `${newHabit.documentID}`,
-        newHabit,
-      );
-      window.location.reload();
-    } catch (error) {
-      console.log('Failed to add habit:', error);
-    }
-  }
-
-  const handleAddHabit = (e: React.FormEvent) => {
+  const handleAddHabit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if(habitName.trim() === '') return;
+    if(habitName.trim() === '' || habitType === '') return;
   
     const newHabit: HabitProps = {
       name: habitName,
@@ -132,9 +60,15 @@ export default function Home() {
       documentID: ID.unique(),
     };
 
-    addHabitToDb(newHabit);
-    setHabits([...habits, newHabit]);
+    await addHabit(newHabit);
     setHabitName('');
+    setHabitType('');
+    
+    // Close modal after successful addition
+    const modal = document.getElementById('my_modal_2') as HTMLDialogElement | null;
+    if(modal) {
+      modal.close();
+    }
   }
 
   const logout = async () => {
@@ -147,7 +81,7 @@ export default function Home() {
     }
   }
 
-  if(!user) {
+  if(!currentUser || isLoading) {
     return <div className="flex flex-col justify-center items-center gap-8 hero bg-base-200 h-[100vh]">
       <span className="loading loading-spinner loading-lg"></span>
     </div>;
@@ -160,17 +94,17 @@ export default function Home() {
       <div className="stats shadow">
         <div className="stat">
           <div className="stat-title">Level</div>
-          <div className="stat-value">{user.Level}</div>
-          <div className="stat-desc">Your exp: {user.Experience}</div>
+          <div className="stat-value">{currentUser.Level}</div>
+          <div className="stat-desc">Your exp: {currentUser.Experience}</div>
         </div>
       </div>
       <h3>Progress next level: <div className="radial-progress text-primary" style={{"--value": progressLevel } as React.CSSProperties} role="progressbar">
   {progressLevel}%
 </div></h3>
       <div className="flex flex-wrap items-center">
-        <Stat statType="Strength" stat={user.Strength}/>
-        <Stat statType="Agility" stat={user.Agility}/>
-        <Stat statType="Inteligent" stat={user.Inteligent}/>
+        <Stat statType="Strength" stat={currentUser.Strength}/>
+        <Stat statType="Agility" stat={currentUser.Agility}/>
+        <Stat statType="Inteligent" stat={currentUser.Inteligent}/>
       </div>
       <button className="btn" onClick={() => { 
         const modal = document.getElementById('my_modal_2') as HTMLDialogElement | null;
@@ -212,7 +146,7 @@ export default function Home() {
         </form>
       </dialog>
       <div className="habits flex flex-col">
-        {habitsDB.map((habit) => (
+        {habits.map((habit) => (
           <Habit key={habit.$id} documentID={habit.$id} name={habit.name} Type={habit.Type} UserID={currentUserID}/>
         ))}
       </div>
