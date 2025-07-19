@@ -157,16 +157,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   addHabit: async (newHabit: HabitProps) => {
     try {
-      set({ isLoading: true });
-      
-      await databases.createDocument(
-        `${process.env.NEXT_PUBLIC_DB}`,
-        `${process.env.NEXT_PUBLIC_DB_COLLECTION}`,
-        `${newHabit.documentID}`,
-        newHabit,
-      );
-
-      // Add to local state immediately instead of refetching
+      // Add to local state immediately for instant UI update
       const { habits } = get();
       const newHabitDocument = {
         ...newHabit,
@@ -181,34 +172,50 @@ export const useAppStore = create<AppState>((set, get) => ({
       const updatedHabits = [...habits, newHabitDocument];
       set({ habits: updatedHabits });
       
+      // Save to database in background
+      await databases.createDocument(
+        `${process.env.NEXT_PUBLIC_DB}`,
+        `${process.env.NEXT_PUBLIC_DB_COLLECTION}`,
+        `${newHabit.documentID}`,
+        newHabit,
+      );
+      
     } catch (error) {
       console.error('Failed to add habit:', error);
-      // If there's an error, refetch to ensure consistency
+      // If there's an error, remove from local state and refetch
+      const { habits } = get();
+      const revertedHabits = habits.filter(h => h.$id !== newHabit.documentID);
+      set({ habits: revertedHabits });
       await get().fetchHabits();
-    } finally {
-      set({ isLoading: false });
     }
   },
 
   deleteHabit: async (documentID: string) => {
+    // Store habit to delete for potential restoration
+    const { habits } = get();
+    const habitToDelete = habits.find(h => h.$id === documentID);
+    
     try {
-      set({ isLoading: true });
+      // Remove from local state immediately for instant UI update
+      const updatedHabits = habits.filter(habit => habit.$id !== documentID);
+      set({ habits: updatedHabits });
       
+      // Delete from database in background
       await databases.deleteDocument(
         `${process.env.NEXT_PUBLIC_DB}`,
         `${process.env.NEXT_PUBLIC_DB_COLLECTION}`,
         `${documentID}`
       );
-
-      // Remove from local state immediately
-      const { habits } = get();
-      const updatedHabits = habits.filter(habit => habit.$id !== documentID);
-      set({ habits: updatedHabits });
       
     } catch (error) {
       console.error('Failed to delete habit:', error);
-    } finally {
-      set({ isLoading: false });
+      // If there's an error, restore the habit and refetch
+      if (habitToDelete) {
+        const { habits: currentHabits } = get();
+        const restoredHabits = [...currentHabits, habitToDelete];
+        set({ habits: restoredHabits });
+      }
+      await get().fetchHabits();
     }
   },
 
