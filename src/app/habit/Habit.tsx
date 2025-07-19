@@ -15,6 +15,8 @@ const Habit: React.FC<HabitProps> = ({ name, documentID, Type }) => {
     
     const [currentDate, setCurrentDate] = useState(new Date());
     const [isMounted, setIsMounted] = useState(false);
+    const [currentStreak, setCurrentStreak] = useState(0);
+    const [streakEmoji, setStreakEmoji] = useState('💤');
     
     useEffect(() => {
       setIsMounted(true); // Ensures this code runs only in the browser
@@ -22,10 +24,16 @@ const Habit: React.FC<HabitProps> = ({ name, documentID, Type }) => {
 
     const { deleteHabit, calculateHabitStreak, getStreakEmoji, habits } = useAppStore();
     
-    // Find current habit data to get streak info
-    const currentHabit = habits.find(h => h.$id === documentID);
-    const currentStreak = currentHabit ? calculateHabitStreak(currentHabit.Dates || []) : 0;
-    const streakEmoji = getStreakEmoji(currentStreak);
+    // Update streak whenever habits data changes
+    useEffect(() => {
+        const currentHabit = habits.find(h => h.$id === documentID);
+        if (currentHabit) {
+            const newStreak = calculateHabitStreak(currentHabit.Dates || []);
+            const newEmoji = getStreakEmoji(newStreak);
+            setCurrentStreak(newStreak);
+            setStreakEmoji(newEmoji);
+        }
+    }, [habits, documentID, calculateHabitStreak, getStreakEmoji]);
     
     const handleDeleteButton = async() => {
       await deleteHabit(documentID);

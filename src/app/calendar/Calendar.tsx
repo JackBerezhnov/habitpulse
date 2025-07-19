@@ -22,6 +22,7 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
     const { 
         currentUserID, 
         currentUser, 
+        habits,
         updateHabitDates, 
         updateUserExperience, 
         updateUserLevel, 
@@ -29,17 +30,13 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
         updateHabitStreak 
     } = useAppStore();
  
+    // Get habit data from store instead of fetching separately
     useEffect(() => {
-       async function getData() {
-            const getHabit = await databases.getDocument(
-                `${process.env.NEXT_PUBLIC_DB}`,
-                `${process.env.NEXT_PUBLIC_DB_COLLECTION}`,
-                `${id}`,
-            );
-        setCheckedDays(getHabit.Dates)
-       }
-       getData();
-    },  [])
+        const currentHabit = habits.find(h => h.$id === id);
+        if (currentHabit && currentHabit.Dates) {
+            setCheckedDays(currentHabit.Dates);
+        }
+    }, [habits, id]);
 
     const prefixDays = startDate.getDay();
     const suffixDays = 6 - endDate.getDay();
@@ -54,13 +51,11 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
         onChange && onChange(date);
         
         try {
-            const getHabit = await databases.getDocument(
-                `${process.env.NEXT_PUBLIC_DB}`,
-                `${process.env.NEXT_PUBLIC_DB_COLLECTION}`,
-                `${id}`,
-            );
+            // Get current habit data from store
+            const currentHabit = habits.find(h => h.$id === id);
+            const currentDates = currentHabit?.Dates || [];
             
-            const updatedDates = [...(getHabit.Dates || []), date.toISOString()];
+            const updatedDates = [...currentDates, date.toISOString()];
             setCheckedDays(updatedDates);
             
             // Update habit dates in store and database
