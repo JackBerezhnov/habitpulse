@@ -10,6 +10,7 @@ import { useAppStore, HabitProps } from "./store/useAppStore";
 export default function Home() {
   const [habitName, setHabitName] = useState<string>('');
   const [habitType, setHabitType] = useState<string>('');
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const router = useRouter();
 
   // Zustand store
@@ -63,12 +64,7 @@ export default function Home() {
     await addHabit(newHabit);
     setHabitName('');
     setHabitType('');
-    
-    // Close modal after successful addition
-    const modal = document.getElementById('my_modal_2') as HTMLDialogElement | null;
-    if(modal) {
-      modal.close();
-    }
+    setIsModalOpen(false); // Close modal after successful addition
   }
 
   const logout = async () => {
@@ -88,9 +84,10 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col items-center gap-8 hero bg-base-200 h-[300vh]">
+    <div className="min-h-screen bg-base-200">
       <Navbar onLogout={logout}/>
-      <h2>Welcome to the HabitPulse, {userName}</h2>
+      <div className="flex flex-col items-center gap-6 px-4 py-8">
+        <h2 className="text-2xl font-bold">Welcome to HabitPulse, {userName}</h2>
       <div className="stats shadow">
         <div className="stat">
           <div className="stat-title">Level</div>
@@ -106,49 +103,52 @@ export default function Home() {
         <Stat statType="Agility" stat={currentUser.Agility}/>
         <Stat statType="Inteligent" stat={currentUser.Inteligent}/>
       </div>
-      <button className="btn" onClick={() => { 
-        const modal = document.getElementById('my_modal_2') as HTMLDialogElement | null;
-        if(modal) {
-          modal.showModal();
-        }
-      } }>Create Habit</button>
-      <dialog id="my_modal_2" className="modal">
-        <div className="modal-box">
-          <h3 className="font-bold text-lg">Start to create your habit</h3>
-          <form onSubmit={handleAddHabit} className="w-9/12 mt-4">
-            <input 
-              className="mr-10 input input-bordered w-full max-w-xs"
-              type="text"
-              value={habitName}
-              onChange={(e) => setHabitName(e.target.value)}
-              placeholder="Enter a habit" 
-            />
-            <label className="form-control w-full max-w-xs mt-4">
-              <div className="label">
-                <span className="label-text">Pick the category for your habit</span>
-              </div>
-              <select 
-                className="select select-bordered"
-                value={habitType}
-                onChange={(e) => setHabitType(e.target.value)}
-              >
-                <option>Select</option>
-                <option>Strength</option>
-                <option>Inteligent</option>
-                <option>Agility</option>
-              </select>
-            </label>
-            <button className="btn btn-primary mt-4" type="submit">Add Habit</button>
-          </form>
+      <button className="btn" onClick={() => setIsModalOpen(true)}>Create Habit</button>
+      {isModalOpen && (
+        <div className="modal modal-open">
+          <div className="modal-box">
+            <h3 className="font-bold text-lg">Start to create your habit</h3>
+            <button 
+              className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+              onClick={() => setIsModalOpen(false)}
+            >
+              ✕
+            </button>
+            <form onSubmit={handleAddHabit} className="w-9/12 mt-4">
+              <input 
+                className="mr-10 input input-bordered w-full max-w-xs"
+                type="text"
+                value={habitName}
+                onChange={(e) => setHabitName(e.target.value)}
+                placeholder="Enter a habit" 
+              />
+              <label className="form-control w-full max-w-xs mt-4">
+                <div className="label">
+                  <span className="label-text">Pick the category for your habit</span>
+                </div>
+                <select 
+                  className="select select-bordered"
+                  value={habitType}
+                  onChange={(e) => setHabitType(e.target.value)}
+                >
+                  <option>Select</option>
+                  <option>Strength</option>
+                  <option>Inteligent</option>
+                  <option>Agility</option>
+                </select>
+              </label>
+              <button className="btn btn-primary mt-4" type="submit">Add Habit</button>
+            </form>
+          </div>
+          <div className="modal-backdrop" onClick={() => setIsModalOpen(false)}>
+          </div>
         </div>
-        <form method="dialog" className="modal-backdrop">
-          <button>close</button>
-        </form>
-      </dialog>
+      )}
       <div className="habits flex flex-col">
         {habits.map((habit) => (
           <Habit key={habit.$id} documentID={habit.$id} name={habit.name} Type={habit.Type} UserID={currentUserID}/>
         ))}
+      </div>
       </div>
     </div>
   );
