@@ -166,11 +166,25 @@ export const useAppStore = create<AppState>((set, get) => ({
         newHabit,
       );
 
-      // Refresh habits after adding
-      await get().fetchHabits();
+      // Add to local state immediately instead of refetching
+      const { habits } = get();
+      const newHabitDocument = {
+        ...newHabit,
+        $id: newHabit.documentID,
+        $collectionId: process.env.NEXT_PUBLIC_DB_COLLECTION || '',
+        $databaseId: process.env.NEXT_PUBLIC_DB || '',
+        $createdAt: new Date().toISOString(),
+        $updatedAt: new Date().toISOString(),
+        $permissions: [],
+        Dates: []
+      } as Models.Document;
+      const updatedHabits = [...habits, newHabitDocument];
+      set({ habits: updatedHabits });
       
     } catch (error) {
       console.error('Failed to add habit:', error);
+      // If there's an error, refetch to ensure consistency
+      await get().fetchHabits();
     } finally {
       set({ isLoading: false });
     }

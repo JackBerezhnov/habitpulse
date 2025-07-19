@@ -32,22 +32,22 @@ export default function Home() {
       await fetchUser();
     };
     initializeUser();
-  }, [fetchUser]);
+  }, []); // Remove fetchUser dependency to prevent loops
 
   useEffect(() => {
     if (!currentUserID) return;
     createUserAsPlayer();
-  }, [currentUserID, createUserAsPlayer]);
+  }, [currentUserID]); // Remove createUserAsPlayer dependency
 
   useEffect(() => {
     if (!currentUserID) return;
     getUser();
-  }, [currentUserID, getUser]);
+  }, [currentUserID]); // Remove getUser dependency
 
   useEffect(() => {
     if (!currentUserID) return;
     fetchHabits();
-  }, [currentUserID, fetchHabits]);
+  }, [currentUserID]); // Remove fetchHabits dependency
 
   const handleAddHabit = async (e: React.FormEvent) => {
     e.preventDefault();
