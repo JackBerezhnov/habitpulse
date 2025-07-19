@@ -58,15 +58,15 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
             const updatedDates = [...currentDates, date.toISOString()];
             setCheckedDays(updatedDates);
             
-            // Update habit dates in store and database
-            await updateHabitDates(id, updatedDates);
+            // Update habit dates in store and database (no await for instant UI)
+            updateHabitDates(id, updatedDates);
             
-            // Update streak after adding new date
-            await updateHabitStreak(id);
+            // Update streak after adding new date (no await for instant UI)
+            updateHabitStreak(id);
             
-            // Add experience and stats
-            await addExperienceToTheUser();
-            await addStats();
+            // Add experience and stats (no await for instant UI updates)
+            addExperienceToTheUser();
+            addStats();
         } catch (error) {
             console.error('Failed to update habit date:', error);
         }
@@ -84,44 +84,38 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
         const earnedXP = 100;
         const newXP = currentUser.Experience + earnedXP;
         
-        // Update XP using Zustand store
-        await updateUserExperience(newXP);
+        // Update XP using Zustand store (no await for instant UI update)
+        updateUserExperience(newXP);
         
         // Check if user leveled up
         let currentLevel = currentUser.Level;
         while (newXP >= calculateXP(currentLevel + 1)) {
             currentLevel += 1;
-            await updateUserLevel(currentLevel);
+            updateUserLevel(currentLevel); // No await for instant UI update
             console.log(`Congrats! You've leveled up to Level ${currentLevel}`);
         }
     }
 
-    const addStats = async() => {
+    const addStats = () => {
         if (!currentUser) return;
         
-        try {
-            const habit = await databases.getDocument(
-                `${process.env.NEXT_PUBLIC_DB}`,
-                `${process.env.NEXT_PUBLIC_DB_COLLECTION}`,
-                `${id}`,
-            );
+        // Get habit data from store instead of fetching from database
+        const habit = habits.find(h => h.$id === id);
+        if (!habit) return;
 
-            if(habit.Type === "Strength") {
-                const newStrength = currentUser.Strength + 1;
-                await updateUserStats('Strength', newStrength);
-            }
+        if(habit.Type === "Strength") {
+            const newStrength = currentUser.Strength + 1;
+            updateUserStats('Strength', newStrength); // No await for instant UI update
+        }
 
-            if(habit.Type === "Agility") {
-                const newAgility = currentUser.Agility + 1;
-                await updateUserStats('Agility', newAgility);
-            }
+        if(habit.Type === "Agility") {
+            const newAgility = currentUser.Agility + 1;
+            updateUserStats('Agility', newAgility); // No await for instant UI update
+        }
 
-            if(habit.Type === "Inteligent") {
-                const newInteligent = currentUser.Inteligent + 1;
-                await updateUserStats('Inteligent', newInteligent);
-            }
-        } catch (error) {
-            console.error('Failed to update stats:', error);
+        if(habit.Type === "Inteligent") {
+            const newInteligent = currentUser.Inteligent + 1;
+            updateUserStats('Inteligent', newInteligent); // No await for instant UI update
         }
     }
 

@@ -244,21 +244,28 @@ export const useAppStore = create<AppState>((set, get) => ({
     const { currentUserID, currentUser } = get();
     if (!currentUserID || !currentUser) return;
 
+    const oldXP = currentUser.Experience;
+    
     try {
+      // Update local state immediately for instant UI update
+      const updatedUser = { ...currentUser, Experience: newXP };
+      set({ currentUser: updatedUser });
+      get().calculateProgressToNextLevel();
+      
+      // Update database in background
       await databases.updateDocument(
         `${process.env.NEXT_PUBLIC_DB}`,
         `${process.env.NEXT_PUBLIC_DB_USER_COLLECTION}`,
         `${currentUserID}`,
         { Experience: newXP }
       );
-
-      // Update local state
-      const updatedUser = { ...currentUser, Experience: newXP };
-      set({ currentUser: updatedUser });
-      get().calculateProgressToNextLevel();
       
     } catch (error) {
       console.error('Failed to update user experience:', error);
+      // Revert to old value on error
+      const revertedUser = { ...get().currentUser!, Experience: oldXP };
+      set({ currentUser: revertedUser });
+      get().calculateProgressToNextLevel();
     }
   },
 
@@ -266,21 +273,28 @@ export const useAppStore = create<AppState>((set, get) => ({
     const { currentUserID, currentUser } = get();
     if (!currentUserID || !currentUser) return;
 
+    const oldLevel = currentUser.Level;
+    
     try {
+      // Update local state immediately for instant UI update
+      const updatedUser = { ...currentUser, Level: newLevel };
+      set({ currentUser: updatedUser });
+      get().calculateProgressToNextLevel();
+      
+      // Update database in background
       await databases.updateDocument(
         `${process.env.NEXT_PUBLIC_DB}`,
         `${process.env.NEXT_PUBLIC_DB_USER_COLLECTION}`,
         `${currentUserID}`,
         { Level: newLevel }
       );
-
-      // Update local state
-      const updatedUser = { ...currentUser, Level: newLevel };
-      set({ currentUser: updatedUser });
-      get().calculateProgressToNextLevel();
       
     } catch (error) {
       console.error('Failed to update user level:', error);
+      // Revert to old value on error
+      const revertedUser = { ...get().currentUser!, Level: oldLevel };
+      set({ currentUser: revertedUser });
+      get().calculateProgressToNextLevel();
     }
   },
 
@@ -288,20 +302,26 @@ export const useAppStore = create<AppState>((set, get) => ({
     const { currentUserID, currentUser } = get();
     if (!currentUserID || !currentUser) return;
 
+    const oldValue = (currentUser as any)[statType];
+    
     try {
+      // Update local state immediately for instant UI update
+      const updatedUser = { ...currentUser, [statType]: newValue };
+      set({ currentUser: updatedUser });
+      
+      // Update database in background
       await databases.updateDocument(
         `${process.env.NEXT_PUBLIC_DB}`,
         `${process.env.NEXT_PUBLIC_DB_USER_COLLECTION}`,
         `${currentUserID}`,
         { [statType]: newValue }
       );
-
-      // Update local state
-      const updatedUser = { ...currentUser, [statType]: newValue };
-      set({ currentUser: updatedUser });
       
     } catch (error) {
       console.error(`Failed to update user ${statType}:`, error);
+      // Revert to old value on error
+      const revertedUser = { ...get().currentUser!, [statType]: oldValue };
+      set({ currentUser: revertedUser });
     }
   },
 
