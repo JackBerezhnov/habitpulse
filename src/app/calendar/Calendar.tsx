@@ -25,7 +25,8 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
         updateHabitDates, 
         updateUserExperience, 
         updateUserLevel, 
-        updateUserStats 
+        updateUserStats,
+        updateHabitStreak 
     } = useAppStore();
  
     useEffect(() => {
@@ -64,6 +65,9 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
             
             // Update habit dates in store and database
             await updateHabitDates(id, updatedDates);
+            
+            // Update streak after adding new date
+            await updateHabitStreak(id);
             
             // Add experience and stats
             await addExperienceToTheUser();

@@ -8,6 +8,7 @@ export interface HabitProps {
   UserID: string;
   documentID: string;
   Dates?: string[];
+  currentStreak?: number;
 }
 
 export interface User {
@@ -53,6 +54,11 @@ interface AppState {
   updateUserLevel: (newLevel: number) => Promise<void>;
   updateUserStats: (statType: string, newValue: number) => Promise<void>;
   calculateProgressToNextLevel: () => void;
+  
+  // Streak system
+  calculateHabitStreak: (dates: string[]) => number;
+  getStreakEmoji: (streak: number) => string;
+  updateHabitStreak: (habitId: string) => Promise<void>;
 }
 
 const calculateXP = (level: number) => {
@@ -288,5 +294,87 @@ export const useAppStore = create<AppState>((set, get) => ({
     const progressInPercentage = ((currentXP - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100;
     
     set({ progressLevel: progressInPercentage.toFixed(2) });
+  },
+
+  // Streak system implementation
+  calculateHabitStreak: (dates: string[]) => {
+    if (!dates || dates.length === 0) return 0;
+
+    // Sort dates in descending order (most recent first)
+    const sortedDates = dates
+      .map(dateStr => new Date(dateStr))
+      .sort((a, b) => b.getTime() - a.getTime());
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    let streak = 0;
+    let currentDate = new Date(today);
+
+    // Check if the most recent completion was today or yesterday
+    const mostRecentDate = new Date(sortedDates[0]);
+    mostRecentDate.setHours(0, 0, 0, 0);
+    
+    const daysDiff = Math.floor((today.getTime() - mostRecentDate.getTime()) / (1000 * 60 * 60 * 24));
+    
+    // If last completion was more than 1 day ago, streak is broken
+    if (daysDiff > 1) return 0;
+    
+    // Count consecutive days
+    for (const completionDate of sortedDates) {
+      const checkDate = new Date(completionDate);
+      checkDate.setHours(0, 0, 0, 0);
+      
+      if (checkDate.getTime() === currentDate.getTime()) {
+        streak++;
+        currentDate.setDate(currentDate.getDate() - 1);
+      } else {
+        break;
+      }
+    }
+
+    return streak;
+  },
+
+  getStreakEmoji: (streak: number) => {
+    if (streak === 0) return '💤'; // No streak
+    if (streak === 1) return '🌱'; // Just started
+    if (streak <= 3) return '🔥'; // Getting warmed up
+    if (streak <= 7) return '⚡'; // One week!
+    if (streak <= 14) return '💪'; // Two weeks strong
+    if (streak <= 30) return '🏆'; // Monthly champion
+    if (streak <= 60) return '👑'; // Royalty level
+    if (streak <= 100) return '🚀'; // Sky high
+    return '🌟'; // Legendary status
+  },
+
+  updateHabitStreak: async (habitId: string) => {
+    try {
+      const habit = await databases.getDocument(
+        `${process.env.NEXT_PUBLIC_DB}`,
+        `${process.env.NEXT_PUBLIC_DB_COLLECTION}`,
+        habitId
+      );
+
+      const currentStreak = get().calculateHabitStreak(habit.Dates || []);
+      
+      // Update the habit with current streak
+      await databases.updateDocument(
+        `${process.env.NEXT_PUBLIC_DB}`,
+        `${process.env.NEXT_PUBLIC_DB_COLLECTION}`,
+        habitId,
+        { currentStreak }
+      );
+
+      // Update local state
+      const { habits } = get();
+      const updatedHabits = habits.map(h => 
+        h.$id === habitId ? { ...h, currentStreak } : h
+      );
+      set({ habits: updatedHabits });
+      
+    } catch (error) {
+      console.error('Failed to update habit streak:', error);
+    }
   },
 }));
