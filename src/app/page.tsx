@@ -5,6 +5,7 @@ import { account, ID } from "./appwrite";
 import { useRouter } from "next/navigation";
 import Navbar from "./navbar/Navbar";
 import Stat from "./stat/Stat";
+import Footer from "./footer/Footer";
 import { useAppStore, HabitProps } from "./store/useAppStore";
 
 export default function Home() {
@@ -84,9 +85,9 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-base-200">
+    <div className="min-h-screen bg-base-200 flex flex-col">
       <Navbar onLogout={logout}/>
-      <div className="flex flex-col items-center gap-6 px-4 py-8">
+      <div className="flex flex-col items-center gap-6 px-4 py-8 flex-grow">
         <h2 className="text-2xl font-bold">Welcome to HabitPulse, {userName}</h2>
       <div className="stats shadow">
         <div className="stat">
@@ -150,6 +151,7 @@ export default function Home() {
         ))}
       </div>
       </div>
+      <Footer />
     </div>
   );
 }
