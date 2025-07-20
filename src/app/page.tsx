@@ -13,6 +13,48 @@ export default function Home() {
   const [habitType, setHabitType] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
+  
+  // Motivational quotes that change daily
+  const motivationalQuotes = [
+    "Small steps every day lead to big changes every year.",
+    "The secret of getting ahead is getting started.",
+    "Success is the sum of small efforts repeated day in and day out.",
+    "Don't watch the clock; do what it does. Keep going.",
+    "The only impossible journey is the one you never begin.",
+    "Your future is created by what you do today, not tomorrow.",
+    "Progress, not perfection, is the goal.",
+    "Every expert was once a beginner. Every pro was once an amateur.",
+    "The best time to plant a tree was 20 years ago. The second best time is now.",
+    "Consistency is the mother of mastery.",
+    "You don't have to be great to get started, but you have to get started to be great.",
+    "The difference between ordinary and extraordinary is that little extra.",
+    "Champions keep playing until they get it right.",
+    "Success isn't just about what you accomplish, but what you inspire others to do.",
+    "The only way to do great work is to love what you do.",
+    "Believe you can and you're halfway there.",
+    "It always seems impossible until it's done.",
+    "The journey of a thousand miles begins with one step.",
+    "Your limitation—it's only your imagination.",
+    "Great things never come from comfort zones.",
+    "Dream it. Wish it. Do it.",
+    "Success doesn't just find you. You have to go out and get it.",
+    "The harder you work for something, the greater you'll feel when you achieve it.",
+    "Don't stop when you're tired. Stop when you're done.",
+    "Wake up with determination. Go to bed with satisfaction.",
+    "Do something today that your future self will thank you for.",
+    "Little things make big days.",
+    "It's going to be hard, but hard does not mean impossible.",
+    "Don't wait for opportunity. Create it.",
+    "Sometimes we're tested not to show our weaknesses, but to discover our strengths.",
+    "The key to success is to focus on goals, not obstacles."
+  ];
+  
+  // Get daily quote based on current date
+  const getDailyQuote = () => {
+    const today = new Date();
+    const dayOfYear = Math.floor((today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) / 1000 / 60 / 60 / 24);
+    return motivationalQuotes[dayOfYear % motivationalQuotes.length];
+  };
   const router = useRouter();
 
   // Zustand store
@@ -116,6 +158,20 @@ export default function Home() {
                     <div className="stat-title text-xs sm:text-sm">Level</div>
                     <div className="stat-value text-2xl sm:text-3xl">{currentUser.Level}</div>
                     <div className="stat-desc text-xs">XP: {currentUser.Experience}</div>
+                  </div>
+                </div>
+                
+                {/* Daily Motivational Quote */}
+                <div className="text-center max-w-md mx-auto px-4">
+                  <div className="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg p-4 border border-primary/20">
+                    <div className="flex items-center justify-center gap-2 mb-2">
+                      <span className="text-primary text-lg">💪</span>
+                      <span className="text-xs font-semibold text-primary uppercase tracking-wide">Daily Motivation</span>
+                      <span className="text-primary text-lg">✨</span>
+                    </div>
+                    <blockquote className="text-sm sm:text-base font-medium text-base-content/80 italic leading-relaxed">
+                      &ldquo;{getDailyQuote()}&rdquo;
+                    </blockquote>
                   </div>
                 </div>
                 
