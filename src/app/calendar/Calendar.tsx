@@ -93,7 +93,7 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id, readOnly 
         while (newXP >= calculateXP(currentLevel + 1)) {
             currentLevel += 1;
             updateUserLevel(currentLevel); // No await for instant UI update
-            console.log(`Congrats! You've leveled up to Level ${currentLevel}`);
+            // User leveled up - handled silently
         }
     }
 

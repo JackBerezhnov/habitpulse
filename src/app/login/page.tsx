@@ -22,7 +22,7 @@ const LoginPage: React.FC = () => {
         setLoggedInUser(user);
         router.push("/"); // Redirect to home if logged in
       } catch (error) {
-        console.log("No user is logged in.");
+        // Silently handle login check errors
       } finally {
         setLoading(false);
       }

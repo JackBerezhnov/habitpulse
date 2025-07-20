@@ -114,10 +114,9 @@ export default function Home() {
   const logout = async () => {
     try {
       await account.deleteSession('current');
-      console.log('Logged out successfully');
       router.push("/login");
     } catch (error) {
-      console.log('Error logging out: ', error);
+      // Silently handle logout errors
     }
   }
 

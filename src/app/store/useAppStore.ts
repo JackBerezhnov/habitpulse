@@ -113,8 +113,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         }
       );
     } catch (error) {
-      // User might already exist, which is fine
-      console.log('User creation result:', error);
+      // Silently handle user creation errors
     }
   },
 
@@ -395,6 +394,5 @@ export const useAppStore = create<AppState>((set, get) => ({
   updateHabitStreak: async (habitId: string) => {
     // Since streaks are calculated dynamically, we don't need to store them in DB
     // This function is kept for compatibility but doesn't do database updates
-    console.log('Streak updated for habit:', habitId, '(calculated dynamically)');
   },
 }));
