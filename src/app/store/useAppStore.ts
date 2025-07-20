@@ -339,11 +339,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   // Streak system implementation
   calculateHabitStreak: (dates: string[]) => {
-    console.log('🔍 STREAK DEBUG: Input dates:', dates);
-    if (!dates || dates.length === 0) {
-      console.log('🔍 STREAK DEBUG: No dates, returning 0');
-      return 0;
-    }
+    if (!dates || dates.length === 0) return 0;
 
     // Helper function to normalize date to local midnight
     const normalizeToLocalMidnight = (dateStr: string) => {
@@ -357,12 +353,9 @@ export const useAppStore = create<AppState>((set, get) => ({
       .map(dateStr => normalizeToLocalMidnight(dateStr))
       .sort((a, b) => b.getTime() - a.getTime());
 
-    console.log('🔍 STREAK DEBUG: Sorted normalized dates:', sortedDates.map(d => d.toDateString()));
-
     // Get today at local midnight
     const today = new Date();
     const todayNormalized = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    console.log('🔍 STREAK DEBUG: Today normalized:', todayNormalized.toDateString());
     
     let streak = 0;
     let currentDate = new Date(todayNormalized);
@@ -370,28 +363,20 @@ export const useAppStore = create<AppState>((set, get) => ({
     // Check if the most recent completion was today or yesterday
     const mostRecentDate = sortedDates[0];
     const daysDiff = Math.floor((todayNormalized.getTime() - mostRecentDate.getTime()) / (1000 * 60 * 60 * 24));
-    console.log('🔍 STREAK DEBUG: Most recent:', mostRecentDate.toDateString(), 'Days diff:', daysDiff);
     
     // If last completion was more than 1 day ago, streak is broken
-    if (daysDiff > 1) {
-      console.log('🔍 STREAK DEBUG: Streak broken - too old');
-      return 0;
-    }
+    if (daysDiff > 1) return 0;
     
     // Count consecutive days
     for (const completionDate of sortedDates) {
-      console.log('🔍 STREAK DEBUG: Comparing', completionDate.toDateString(), 'vs', currentDate.toDateString());
       if (completionDate.getTime() === currentDate.getTime()) {
         streak++;
-        console.log('🔍 STREAK DEBUG: Match! Streak now:', streak);
         currentDate.setDate(currentDate.getDate() - 1);
       } else {
-        console.log('🔍 STREAK DEBUG: No match, breaking');
         break;
       }
     }
 
-    console.log('🔍 STREAK DEBUG: Final streak:', streak);
     return streak;
   },
 

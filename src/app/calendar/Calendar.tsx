@@ -139,6 +139,10 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
                 const day = index + 1;
                 const currentDate = setDate(value, day);
                 
+                // Check if this date is today
+                const today = new Date();
+                const isToday = currentDate.toDateString() === today.toDateString();
+                
                 const isCurrentDay = checkedDays.some(dateString => {
                     let date = new Date(dateString);
                     let dateCurrentString = date.toLocaleString();
@@ -148,7 +152,15 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
                     return newDateCurrentString[0] === newCurrentDate[0];
                 })
 
-            return <Cell onClick={() => handleClickDate(index + 1)} isCurrentDay={isCurrentDay} key={currentDate.toLocaleString()}>{day}</Cell>;
+            return <Cell 
+                onClick={isToday ? () => handleClickDate(index + 1) : undefined} 
+                isCurrentDay={isCurrentDay} 
+                isToday={isToday}
+                isDisabled={!isToday}
+                key={currentDate.toLocaleString()}
+            >
+                {day}
+            </Cell>;
             })}
 
             {Array.from({length: suffixDays}).map((_, index) => {
