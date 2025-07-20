@@ -138,13 +138,13 @@ export default function Home() {
         
         {/* Create Habit Button - Mobile Friendly */}
         <button 
-          className="btn btn-primary btn-md w-full sm:w-auto touch-manipulation" 
+          className="btn btn-primary btn-lg w-full sm:w-auto sm:btn-md touch-manipulation" 
           onClick={() => setIsModalOpen(true)}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
-          <span className="text-sm sm:text-base">Create New Habit</span>
+          Create New Habit
         </button>
       {isModalOpen && (
         <div className="modal modal-open">
