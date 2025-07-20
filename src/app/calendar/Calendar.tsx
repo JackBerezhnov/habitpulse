@@ -152,11 +152,16 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
                     return newDateCurrentString[0] === newCurrentDate[0];
                 })
 
+                // Disable if not today, OR if today is already completed
+                const isDisabled = !isToday || isCurrentDay;
+                // Only allow clicking if it's today AND not already completed
+                const canClick = isToday && !isCurrentDay;
+
             return <Cell 
-                onClick={isToday ? () => handleClickDate(index + 1) : undefined} 
+                onClick={canClick ? () => handleClickDate(index + 1) : undefined} 
                 isCurrentDay={isCurrentDay} 
                 isToday={isToday}
-                isDisabled={!isToday}
+                isDisabled={isDisabled}
                 key={currentDate.toLocaleString()}
             >
                 {day}

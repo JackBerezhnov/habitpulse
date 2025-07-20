@@ -25,7 +25,7 @@ const Cell: React.FC<Props> = ({onClick, className, isCurrentDay, isToday, isDis
                     "cursor-pointer hover:bg-gray-100 hover:text-black active:bg-gray-200": !!onClick && !isDisabled,
                     "bg-green-500 text-white": isCurrentDay,
                     "bg-blue-100 border-blue-300 font-semibold": isToday && !isCurrentDay,
-                    "text-gray-400 cursor-not-allowed": isDisabled,
+                    "text-gray-400 cursor-not-allowed": isDisabled && !isCurrentDay,
                     "cursor-default": !onClick || isDisabled
                 },
                 className
