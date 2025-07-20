@@ -136,7 +136,7 @@ const Habit: React.FC<HabitProps> = ({ name, documentID, Type }) => {
             
             {/* Calendar Progress View */}
             <div className="dropdown dropdown-end">
-              <div tabIndex={0} role="button" className="btn btn-ghost btn-sm tooltip" data-tip="View Progress">
+              <div tabIndex={0} role="button" className="btn btn-ghost btn-sm tooltip flex" data-tip="View Progress">
                 <Icon icon="material-symbols:calendar-month-outline" className="w-5 h-5" />
               </div>
               <div tabIndex={0} className="dropdown-content bg-base-100 rounded-box z-[1] shadow-lg border">
