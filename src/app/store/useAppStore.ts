@@ -341,32 +341,35 @@ export const useAppStore = create<AppState>((set, get) => ({
   calculateHabitStreak: (dates: string[]) => {
     if (!dates || dates.length === 0) return 0;
 
-    // Sort dates in descending order (most recent first)
+    // Helper function to normalize date to local midnight
+    const normalizeToLocalMidnight = (dateStr: string) => {
+      const date = new Date(dateStr);
+      // Create a new date using local timezone components
+      return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    };
+
+    // Sort dates in descending order (most recent first) and normalize to local midnight
     const sortedDates = dates
-      .map(dateStr => new Date(dateStr))
+      .map(dateStr => normalizeToLocalMidnight(dateStr))
       .sort((a, b) => b.getTime() - a.getTime());
 
+    // Get today at local midnight
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const todayNormalized = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     
     let streak = 0;
-    let currentDate = new Date(today);
+    let currentDate = new Date(todayNormalized);
 
     // Check if the most recent completion was today or yesterday
-    const mostRecentDate = new Date(sortedDates[0]);
-    mostRecentDate.setHours(0, 0, 0, 0);
-    
-    const daysDiff = Math.floor((today.getTime() - mostRecentDate.getTime()) / (1000 * 60 * 60 * 24));
+    const mostRecentDate = sortedDates[0];
+    const daysDiff = Math.floor((todayNormalized.getTime() - mostRecentDate.getTime()) / (1000 * 60 * 60 * 24));
     
     // If last completion was more than 1 day ago, streak is broken
     if (daysDiff > 1) return 0;
     
     // Count consecutive days
     for (const completionDate of sortedDates) {
-      const checkDate = new Date(completionDate);
-      checkDate.setHours(0, 0, 0, 0);
-      
-      if (checkDate.getTime() === currentDate.getTime()) {
+      if (completionDate.getTime() === currentDate.getTime()) {
         streak++;
         currentDate.setDate(currentDate.getDate() - 1);
       } else {
@@ -390,32 +393,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   updateHabitStreak: async (habitId: string) => {
-    try {
-      const habit = await databases.getDocument(
-        `${process.env.NEXT_PUBLIC_DB}`,
-        `${process.env.NEXT_PUBLIC_DB_COLLECTION}`,
-        habitId
-      );
-
-      const currentStreak = get().calculateHabitStreak(habit.Dates || []);
-      
-      // Update the habit with current streak
-      await databases.updateDocument(
-        `${process.env.NEXT_PUBLIC_DB}`,
-        `${process.env.NEXT_PUBLIC_DB_COLLECTION}`,
-        habitId,
-        { currentStreak }
-      );
-
-      // Update local state
-      const { habits } = get();
-      const updatedHabits = habits.map(h => 
-        h.$id === habitId ? { ...h, currentStreak } : h
-      );
-      set({ habits: updatedHabits });
-      
-    } catch (error) {
-      console.error('Failed to update habit streak:', error);
-    }
+    // Since streaks are calculated dynamically, we don't need to store them in DB
+    // This function is kept for compatibility but doesn't do database updates
+    console.log('Streak updated for habit:', habitId, '(calculated dynamically)');
   },
 }));
