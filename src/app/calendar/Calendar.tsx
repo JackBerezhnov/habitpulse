@@ -10,9 +10,10 @@ interface Props {
     value?: Date;
     onChange?: (value: Date) => void;
     id: string;
+    readOnly?: boolean;
 }
 
-const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
+const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id, readOnly = false }) => {
     const [checkedDays, setCheckedDays] = useState<string[]>([])
     const startDate = startOfMonth(value);
     const endDate = endOfMonth(value);
@@ -152,10 +153,10 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id }) => {
                     return newDateCurrentString[0] === newCurrentDate[0];
                 })
 
-                // Disable if not today, OR if today is already completed
-                const isDisabled = !isToday || isCurrentDay;
-                // Only allow clicking if it's today AND not already completed
-                const canClick = isToday && !isCurrentDay;
+                // Disable if not today, OR if today is already completed, OR if readOnly
+                const isDisabled = !isToday || isCurrentDay || readOnly;
+                // Only allow clicking if it's today AND not already completed AND not readOnly
+                const canClick = isToday && !isCurrentDay && !readOnly;
 
             return <Cell 
                 onClick={canClick ? () => handleClickDate(index + 1) : undefined} 
