@@ -66,26 +66,26 @@ const Habit: React.FC<HabitProps> = ({ name, documentID, Type }) => {
             // Update streak
             await updateHabitStreak(documentID);
             
-            // Add experience and stats
+            // Add XP and handle level up (no await for instant UI updates)
             const earnedXP = 100;
             const newXP = currentUser.Experience + earnedXP;
-            await updateUserExperience(newXP);
+            updateUserExperience(newXP); // Instant UI update
             
-            // Handle level up
+            // Handle level up (no await for instant UI updates)
             const calculateXP = (level: number) => 50 * Math.pow(level, 2);
             let currentLevel = currentUser.Level;
             while (newXP >= calculateXP(currentLevel + 1)) {
                 currentLevel += 1;
-                await updateUserLevel(currentLevel);
+                updateUserLevel(currentLevel); // Instant UI update
             }
             
-            // Add stats based on habit type
+            // Add stats based on habit type (no await for instant UI updates)
             if (currentHabit?.Type === "Strength") {
-                await updateUserStats('Strength', currentUser.Strength + 1);
+                updateUserStats('Strength', currentUser.Strength + 1); // Instant UI update
             } else if (currentHabit?.Type === "Agility") {
-                await updateUserStats('Agility', currentUser.Agility + 1);
+                updateUserStats('Agility', currentUser.Agility + 1); // Instant UI update
             } else if (currentHabit?.Type === "Inteligent") {
-                await updateUserStats('Inteligent', currentUser.Inteligent + 1);
+                updateUserStats('Inteligent', currentUser.Inteligent + 1); // Instant UI update
             }
             
             // Show animation feedback
