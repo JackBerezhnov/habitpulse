@@ -8,9 +8,9 @@ interface StatProps {
 const Stat: React.FC<StatProps> = ({stat, statType}) => {
     if(statType === "Strength") {
         return(
-            <div className="stats shadow m-5">
-                <div className="stat">
-                    <div className="stat-title text-error">Strength</div>
+            <div className="stats shadow m-2 sm:m-5">
+                <div className="stat place-items-center">
+                    <div className="stat-title text-error">💪 Strength</div>
                     <div className="stat-value text-error">{stat}</div>
                 </div>
             </div>
@@ -19,9 +19,9 @@ const Stat: React.FC<StatProps> = ({stat, statType}) => {
 
     if(statType === "Agility") {
         return(
-            <div className="stats shadow m-5">
-                <div className="stat">
-                    <div className="stat-title text-accent">Agility</div>
+            <div className="stats shadow m-2 sm:m-5">
+                <div className="stat place-items-center">
+                    <div className="stat-title text-accent">⚡ Agility</div>
                     <div className="stat-value text-accent">{stat}</div>
                 </div>
             </div>
@@ -30,9 +30,9 @@ const Stat: React.FC<StatProps> = ({stat, statType}) => {
 
     if(statType === "Inteligent") {
         return(
-            <div className="stats shadow m-5">
-                <div className="stat">
-                    <div className="stat-title text-info">Inteligent</div>
+            <div className="stats shadow m-2 sm:m-5">
+                <div className="stat place-items-center">
+                    <div className="stat-title text-info">🧠 Intelligence</div>
                     <div className="stat-value text-info">{stat}</div>
                 </div>
             </div>
