@@ -35,22 +35,22 @@ export default function Home() {
       await fetchUser();
     };
     initializeUser();
-  }, []); // Remove fetchUser dependency to prevent loops
+  }, [fetchUser]);
 
   useEffect(() => {
     if (!currentUserID) return;
     createUserAsPlayer();
-  }, [currentUserID]); // Remove createUserAsPlayer dependency
+  }, [currentUserID, createUserAsPlayer]);
 
   useEffect(() => {
     if (!currentUserID) return;
     getUser();
-  }, [currentUserID]); // Remove getUser dependency
+  }, [currentUserID, getUser]);
 
   useEffect(() => {
     if (!currentUserID) return;
     fetchHabits();
-  }, [currentUserID]); // Remove fetchHabits dependency
+  }, [currentUserID, fetchHabits]);
 
   const handleAddHabit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -221,15 +221,15 @@ export default function Home() {
                       <div className="flex-shrink-0 w-6 h-6 bg-primary text-primary-content rounded-full flex items-center justify-center text-xs sm:text-sm font-bold mt-0.5">1</div>
                       <div>
                         <h4 className="font-semibold text-sm sm:text-base mb-1">Create Your First Habit</h4>
-                        <p className="text-xs sm:text-sm text-base-content/70">Click "Create New Habit" to add activities that will help you grow. Choose from Strength (physical), Agility (skills), or Intelligence (learning) categories.</p>
+                        <p className="text-xs sm:text-sm text-base-content/70">Click &ldquo;Create New Habit&rdquo; to add activities that will help you grow. Choose from Strength (physical), Agility (skills), or Intelligence (learning) categories.</p>
                       </div>
                     </div>
                     
                     <div className="flex items-start gap-3">
                       <div className="flex-shrink-0 w-6 h-6 bg-primary text-primary-content rounded-full flex items-center justify-center text-xs sm:text-sm font-bold mt-0.5">2</div>
                       <div>
-                        <h4 className="font-semibold text-sm sm:text-base mb-1">Mark Habits as "Completed Today"</h4>
-                        <p className="text-xs sm:text-sm text-base-content/70">Each day, click the "Mark as Done" button when you complete a habit. You'll earn 10 XP and increase your character stats!</p>
+                        <h4 className="font-semibold text-sm sm:text-base mb-1">Mark Habits as &ldquo;Completed Today&rdquo;</h4>
+                        <p className="text-xs sm:text-sm text-base-content/70">Each day, click the &ldquo;Mark as Done&rdquo; button when you complete a habit. You&rsquo;ll earn 10 XP and increase your character stats!</p>
                       </div>
                     </div>
                     
@@ -244,7 +244,7 @@ export default function Home() {
                     <div className="flex items-start gap-3">
                       <div className="flex-shrink-0 w-6 h-6 bg-warning text-warning-content rounded-full flex items-center justify-center text-xs font-bold mt-0.5">⚠️</div>
                       <div>
-                        <h4 className="font-semibold text-sm sm:text-base mb-1 text-warning">Don't Break Your Streak!</h4>
+                        <h4 className="font-semibold text-sm sm:text-base mb-1 text-warning">Don&rsquo;t Break Your Streak!</h4>
                         <p className="text-xs sm:text-sm text-base-content/70">Missing a day will reset your streak to 0. Stay consistent to maintain your progress and keep those streak emojis growing!</p>
                       </div>
                     </div>
@@ -256,7 +256,7 @@ export default function Home() {
                     className="btn btn-primary btn-block touch-manipulation"
                     onClick={() => setIsHelpModalOpen(false)}
                   >
-                    <span className="text-sm sm:text-base">Got it! Let's start building habits 🚀</span>
+                    <span className="text-sm sm:text-base">Got it! Let&rsquo;s start building habits 🚀</span>
                   </button>
                 </div>
               </div>
