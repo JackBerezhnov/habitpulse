@@ -38,17 +38,6 @@ const LoginPage: React.FC = () => {
     )
   }
 
-  const login = async (email: string, password: string) => {
-    try {
-      await account.createEmailPasswordSession(email, password);
-      const user = await account.get<User>();
-      setLoggedInUser(user);
-      router.push("/"); // Redirect to home after login
-    } catch (error) {
-      // Silently handle login errors
-    }
-  };
-
   const logout = async () => {
     try {
       await account.deleteSession("current");
