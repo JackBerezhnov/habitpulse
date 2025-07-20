@@ -14,7 +14,7 @@ const Footer: React.FC = () => {
                     Build better habits, level up your life
                 </p>
                 <p className="text-xs opacity-50">
-                    © {currentYear} HabitPulse. Made with ❤️ for habit builders
+                    © {currentYear} HabitPulse. Made with ❤️ for habit builders by Jack Sighton
                 </p>
             </div>
         </footer>
