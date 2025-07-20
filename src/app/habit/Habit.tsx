@@ -93,7 +93,7 @@ const Habit: React.FC<HabitProps> = ({ name, documentID, Type }) => {
             setTimeout(() => setShowAnimation(false), 1000);
             
         } catch (error) {
-            console.error('Failed to mark habit as done:', error);
+            // Silently handle habit completion errors
         }
     }
 

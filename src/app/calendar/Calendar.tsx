@@ -69,7 +69,7 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id, readOnly 
             addExperienceToTheUser();
             addStats();
         } catch (error) {
-            console.error('Failed to update habit date:', error);
+            // Silently handle habit date update errors
         }
     }
 

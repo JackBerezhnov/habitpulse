@@ -89,12 +89,14 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   // Async actions
   fetchUser: async () => {
+    set({ isLoading: true });
     try {
       const currentUser = await account.get();
       const userId = currentUser.$id;
-      set({ currentUserID: userId, userName: currentUser.name });
+      set({ currentUserID: userId, userName: currentUser.name, isLoading: false });
     } catch (error) {
-      console.error('Failed to fetch user:', error);
+      // Silently handle authentication errors
+      set({ isLoading: false });
     }
   },
 
@@ -130,7 +132,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       set({ currentUser: user as unknown as User });
       get().calculateProgressToNextLevel();
     } catch (error) {
-      console.error('Failed to get user:', error);
+      // Silently handle user data fetch errors
     }
   },
 
@@ -150,7 +152,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 
       set({ habits: userHabits });
     } catch (error) {
-      console.error('Failed to fetch habits:', error);
+      // Silently handle habit fetch errors
     }
   },
 
@@ -180,8 +182,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       );
       
     } catch (error) {
-      console.error('Failed to add habit:', error);
-      // If there's an error, remove from local state and refetch
+      // Silently handle habit creation errors
       const { habits } = get();
       const revertedHabits = habits.filter(h => h.$id !== newHabit.documentID);
       set({ habits: revertedHabits });
@@ -207,8 +208,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       );
       
     } catch (error) {
-      console.error('Failed to delete habit:', error);
-      // If there's an error, restore the habit and refetch
+      // Silently handle habit deletion errors
       if (habitToDelete) {
         const { habits: currentHabits } = get();
         const restoredHabits = [...currentHabits, habitToDelete];
@@ -235,7 +235,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       set({ habits: updatedHabits });
       
     } catch (error) {
-      console.error('Failed to update habit dates:', error);
+      // Silently handle habit date update errors
     }
   },
 
@@ -260,8 +260,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       );
       
     } catch (error) {
-      console.error('Failed to update user experience:', error);
-      // Revert to old value on error
+      // Silently handle user experience update errors
       const revertedUser = { ...get().currentUser!, Experience: oldXP };
       set({ currentUser: revertedUser });
       get().calculateProgressToNextLevel();
@@ -289,8 +288,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       );
       
     } catch (error) {
-      console.error('Failed to update user level:', error);
-      // Revert to old value on error
+      // Silently handle user level update errors
       const revertedUser = { ...get().currentUser!, Level: oldLevel };
       set({ currentUser: revertedUser });
       get().calculateProgressToNextLevel();
@@ -317,8 +315,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       );
       
     } catch (error) {
-      console.error(`Failed to update user ${statType}:`, error);
-      // Revert to old value on error
+      // Silently handle user stats update errors
       const revertedUser = { ...get().currentUser!, [statType]: oldValue };
       set({ currentUser: revertedUser });
     }

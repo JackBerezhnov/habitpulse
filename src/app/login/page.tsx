@@ -45,7 +45,7 @@ const LoginPage: React.FC = () => {
       setLoggedInUser(user);
       router.push("/"); // Redirect to home after login
     } catch (error) {
-      console.error("Failed to log in:", error);
+      // Silently handle login errors
     }
   };
 
@@ -54,7 +54,7 @@ const LoginPage: React.FC = () => {
       await account.deleteSession("current");
       setLoggedInUser(null);
     } catch (error) {
-      console.error("Failed to log out:", error);
+      // Silently handle logout errors
     }
   };
 
