@@ -91,12 +91,21 @@ export const useAppStore = create<AppState>((set, get) => ({
   fetchUser: async () => {
     set({ isLoading: true });
     try {
-      const currentUser = await account.get();
-      const userId = currentUser.$id;
-      set({ currentUserID: userId, userName: currentUser.name, isLoading: false });
+      // Check if session exists first to avoid 401 errors
+      const userSession = await account.getSession('current').catch(e => null);
+      
+      if (userSession) {
+        // Session exists, now safely get user data
+        const currentUser = await account.get();
+        const userId = currentUser.$id;
+        set({ currentUserID: userId, userName: currentUser.name, isLoading: false });
+      } else {
+        // No session found - clear user state
+        set({ currentUserID: '', userName: '', currentUser: null, isLoading: false });
+      }
     } catch (error) {
-      // Silently handle authentication errors
-      set({ isLoading: false });
+      // Silently handle session check errors
+      set({ currentUserID: '', userName: '', currentUser: null, isLoading: false });
     }
   },
 

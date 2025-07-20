@@ -16,19 +16,29 @@ const LoginPage: React.FC = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const checkSession = async () => {
       try {
-        const user = await account.get<User>();
-        setLoggedInUser(user);
-        router.push("/"); // Redirect to home if logged in
+        // Check if session exists first to avoid 401 errors
+        const userSession = await account.getSession('current').catch(e => null);
+        
+        if (userSession) {
+          // Session exists, now safely get user data
+          const user = await account.get<User>();
+          setLoggedInUser(user);
+          router.push("/"); // Redirect to home if logged in
+        } else {
+          // No session found - user needs to login
+          setLoggedInUser(null);
+        }
       } catch (error) {
-        // Silently handle login check errors
+        // Silently handle session check errors
+        setLoggedInUser(null);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchUser();
+    checkSession();
   }, [router]);
 
   const loginSIWG = async () => {
