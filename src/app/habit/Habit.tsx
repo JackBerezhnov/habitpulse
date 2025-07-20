@@ -136,13 +136,35 @@ const Habit: React.FC<HabitProps> = ({ name, documentID, Type }) => {
             
             {/* Calendar Progress View */}
             <div className="dropdown dropdown-end">
-              <div tabIndex={0} role="button" className="btn btn-ghost btn-sm tooltip flex" data-tip="View Progress">
+              <div tabIndex={0} role="button" className="btn btn-ghost btn-sm tooltip flex hover:bg-base-200 transition-colors" data-tip="View Progress">
                 <Icon icon="material-symbols:calendar-month-outline" className="w-5 h-5" />
               </div>
-              <div tabIndex={0} className="dropdown-content bg-base-100 rounded-box z-[1] shadow-lg border">
-                <div className="p-2">
-                  <div className="text-xs text-center mb-2 font-semibold opacity-70">Progress View (Read Only)</div>
-                  <Calendar value={currentDate} id={documentID} onChange={setCurrentDate} readOnly={true}/>
+              <div tabIndex={0} className="dropdown-content bg-base-100 rounded-xl z-[1] shadow-2xl border border-base-300 mt-2">
+                <div className="p-4">
+                  {/* Header */}
+                  <div className="flex items-center justify-center gap-2 mb-4 pb-3 border-b border-base-200">
+                    <Icon icon="material-symbols:calendar-month-outline" className="w-4 h-4 opacity-60" />
+                    <span className="text-sm font-medium text-base-content/70">Progress Overview</span>
+                  </div>
+                  
+                  {/* Calendar */}
+                  <div className="bg-base-50 rounded-lg p-2">
+                    <Calendar value={currentDate} id={documentID} onChange={setCurrentDate} readOnly={true}/>
+                  </div>
+                  
+                  {/* Footer Stats */}
+                  <div className="mt-4 pt-3 border-t border-base-200">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="flex items-center gap-1 text-base-content/60">
+                        <div className="w-3 h-3 bg-green-500 rounded-sm"></div>
+                        Completed
+                      </span>
+                      <span className="flex items-center gap-1 font-medium">
+                        <Icon icon="material-symbols:local-fire-department" className="w-3 h-3 text-orange-500" />
+                        {currentStreak} day streak
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
