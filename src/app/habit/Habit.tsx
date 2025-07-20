@@ -99,81 +99,110 @@ const Habit: React.FC<HabitProps> = ({ name, documentID, Type }) => {
     const today = new Date();
 
     return (
-      <div className="flex justify-between items-center p-4 m-4 border border-gray-500 rounded">
-        <div className="flex items-center gap-4">
-          <div className="flex flex-col">
-            <h3 className="font-semibold text-lg">{name}</h3>
-            <div className="flex items-center gap-2">
-              <span className="text-sm flex items-center gap-1">
-                📅 Streak: {currentStreak} {streakEmoji}
-                {showAnimation && <span className="animate-bounce">✨</span>}
-              </span>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <button 
-              onClick={handleMarkAsDone}
-              disabled={isCompleted}
-              className={`btn ${
-                isCompleted 
-                  ? 'btn-success cursor-not-allowed' 
-                  : 'btn-primary hover:btn-primary-focus'
-              } transition-all duration-200 ${
-                showAnimation ? 'scale-105' : ''
-              }`}
-            >
-              {isCompleted ? (
-                <span className="flex items-center gap-2">
-                  ✅ Completed Today
-                </span>
-              ) : (
-                <span className="flex items-center gap-2">
-                  📅 Mark as Done ({format(today, 'MMM dd')})
-                </span>
-              )}
-            </button>
+      <div className="card bg-base-100 shadow-lg mx-2 sm:mx-4 my-3 touch-manipulation">
+        <div className="card-body p-3 sm:p-4">
+          {/* Mobile: Stack layout, Desktop: Flex layout */}
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-4">
             
-            {/* Calendar Progress View */}
-            <div className="dropdown dropdown-end">
-              <div tabIndex={0} role="button" className="btn btn-ghost btn-sm tooltip flex hover:bg-base-200 transition-colors" data-tip="View Progress">
-                <Icon icon="material-symbols:calendar-month-outline" className="w-5 h-5" />
-              </div>
-              <div tabIndex={0} className="dropdown-content bg-base-100 rounded-xl z-[1] shadow-2xl border border-base-300 mt-2">
-                <div className="p-4">
-                  {/* Header */}
-                  <div className="flex items-center justify-center gap-2 mb-4 pb-3 border-b border-base-200">
-                    <Icon icon="material-symbols:calendar-month-outline" className="w-4 h-4 opacity-60" />
-                    <span className="text-sm font-medium text-base-content/70">Progress Overview</span>
-                  </div>
-                  
-                  {/* Calendar */}
-                  <div className="bg-base-50 rounded-lg p-2">
-                    <Calendar value={currentDate} id={documentID} onChange={setCurrentDate} readOnly={true}/>
-                  </div>
-                  
-                  {/* Footer Stats */}
-                  <div className="mt-4 pt-3 border-t border-base-200">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="flex items-center gap-1 text-base-content/60">
-                        <div className="w-3 h-3 bg-green-500 rounded-sm"></div>
-                        Completed
-                      </span>
-                      <span className="flex items-center gap-1 font-medium">
-                        <Icon icon="material-symbols:local-fire-department" className="w-3 h-3 text-orange-500" />
-                        {currentStreak} day streak
-                      </span>
+            {/* Habit Info Section */}
+            <div className="flex-1">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                <div className="flex-1">
+                  <div className="flex items-center justify-between sm:justify-start gap-2">
+                    <h3 className="font-semibold text-base sm:text-lg">{name}</h3>
+                    <div className="sm:hidden">
+                      <HabitType Type={Type} />
                     </div>
+                  </div>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-xs sm:text-sm flex items-center gap-1">
+                      📅 Streak: {currentStreak} {streakEmoji}
+                      {showAnimation && <span className="animate-bounce">✨</span>}
+                    </span>
                   </div>
                 </div>
               </div>
             </div>
+            
+            {/* Action Buttons Section */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+              
+              {/* Main Action Button - Full width on mobile */}
+              <button 
+                onClick={handleMarkAsDone}
+                disabled={isCompleted}
+                className={`btn btn-sm sm:btn-md ${
+                  isCompleted 
+                    ? 'btn-success cursor-not-allowed' 
+                    : 'btn-primary hover:btn-primary-focus'
+                } transition-all duration-200 ${
+                  showAnimation ? 'scale-105' : ''
+                } touch-manipulation w-full sm:w-auto`}
+              >
+                {isCompleted ? (
+                  <span className="flex items-center gap-2 text-xs sm:text-sm">
+                    ✅ Completed Today
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2 text-xs sm:text-sm">
+                    📅 Mark as Done ({format(today, 'MMM dd')})
+                  </span>
+                )}
+              </button>
+              
+              {/* Secondary Actions Row */}
+              <div className="flex items-center justify-between sm:justify-end gap-2">
+                
+                {/* Calendar Progress View */}
+                <div className="dropdown dropdown-end">
+                  <div tabIndex={0} role="button" className="btn btn-ghost btn-sm tooltip flex hover:bg-base-200 transition-colors touch-manipulation" data-tip="View Progress">
+                    <Icon icon="material-symbols:calendar-month-outline" className="w-4 h-4 sm:w-5 sm:h-5" />
+                  </div>
+                  <div tabIndex={0} className="dropdown-content bg-base-100 rounded-xl z-[1] shadow-2xl border border-base-300 mt-2">
+                    <div className="p-3 sm:p-4">
+                      {/* Header */}
+                      <div className="flex items-center justify-center gap-2 mb-3 sm:mb-4 pb-2 sm:pb-3 border-b border-base-200">
+                        <Icon icon="material-symbols:calendar-month-outline" className="w-4 h-4 opacity-60" />
+                        <span className="text-xs sm:text-sm font-medium text-base-content/70">Progress Overview</span>
+                      </div>
+                      
+                      {/* Calendar */}
+                      <div className="bg-base-50 rounded-lg p-1 sm:p-2">
+                        <Calendar value={currentDate} id={documentID} onChange={setCurrentDate} readOnly={true}/>
+                      </div>
+                      
+                      {/* Footer Stats */}
+                      <div className="mt-3 sm:mt-4 pt-2 sm:pt-3 border-t border-base-200">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="flex items-center gap-1 text-base-content/60">
+                            <div className="w-3 h-3 bg-green-500 rounded-sm"></div>
+                            Completed
+                          </span>
+                          <span className="flex items-center gap-1 font-medium">
+                            <Icon icon="material-symbols:local-fire-department" className="w-3 h-3 text-orange-500" />
+                            {currentStreak} day streak
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Desktop Habit Type and Delete */}
+                <div className="hidden sm:flex items-center gap-2">
+                  <HabitType Type={Type} />
+                  <button onClick={handleDeleteButton} className="btn btn-outline btn-error btn-sm touch-manipulation">Delete</button>
+                </div>
+                
+                {/* Mobile Delete Button */}
+                <button onClick={handleDeleteButton} className="btn btn-outline btn-error btn-sm sm:hidden touch-manipulation">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
-        
-        <div className="flex items-center gap-2">
-          <HabitType Type={Type} />
-          <button onClick={handleDeleteButton} className="btn btn-outline btn-error">Delete</button>
         </div>
       </div>
     );
