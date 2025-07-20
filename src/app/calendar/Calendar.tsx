@@ -120,7 +120,7 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id, readOnly 
         }
     }
 
-    return <div className="w-[400px] border-t border-l" id={id}>
+    return <div className="w-full max-w-md mx-auto border-t border-l" id={id}>
         <div className="grid grid-cols-7 items-center justify-center text-center">
             <Cell onClick={prevYear}>{"<<"}</Cell>
             <Cell onClick={prevMonth}>{"<"}</Cell>

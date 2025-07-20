@@ -185,7 +185,7 @@ const Habit: React.FC<HabitProps> = ({ name, documentID, Type }) => {
       {/* Calendar Progress Modal */}
       {isCalendarModalOpen && (
         <div className="modal modal-open">
-          <div className="modal-box w-11/12 max-w-lg sm:max-w-xl md:max-w-2xl lg:max-w-3xl">
+          <div className="modal-box w-11/12 max-w-sm sm:max-w-md md:max-w-lg overflow-x-hidden">
             <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
               <Icon icon="material-symbols:calendar-month-outline" className="w-5 h-5" />
               {name} - Progress Overview
@@ -199,7 +199,7 @@ const Habit: React.FC<HabitProps> = ({ name, documentID, Type }) => {
             
             <div className="space-y-4">
               {/* Calendar */}
-              <div className="bg-base-50 rounded-lg p-2">
+              <div className="bg-base-50 rounded-lg p-3 overflow-x-hidden">
                 <Calendar value={currentDate} id={documentID} onChange={setCurrentDate} readOnly={true}/>
               </div>
               
