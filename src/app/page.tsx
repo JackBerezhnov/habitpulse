@@ -88,7 +88,8 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-base-200 flex flex-col">
       <Navbar onLogout={logout}/>
-      <div className="flex flex-col items-center gap-4 sm:gap-6 px-3 sm:px-4 py-4 sm:py-8 flex-grow max-w-4xl mx-auto w-full">
+      <main className="flex-grow flex flex-col">
+        <div className="flex flex-col items-center gap-4 sm:gap-6 px-3 sm:px-4 py-4 sm:py-8 max-w-4xl mx-auto w-full">
         <div className="text-center">
           <h2 className="text-xl sm:text-2xl font-bold mb-2">Welcome to HabitPulse, {userName}</h2>
           
@@ -146,6 +147,16 @@ export default function Home() {
           </svg>
           <span className="text-sm sm:text-base">Create New Habit</span>
         </button>
+        
+        {/* Habits Section */}
+        <div className="habits flex flex-col w-full">
+          {habits.map((habit) => (
+            <Habit key={habit.$id} documentID={habit.$id} name={habit.name} Type={habit.Type} UserID={currentUserID}/>
+          ))}
+        </div>
+        </div>
+      </main>
+      
       {isModalOpen && (
         <div className="modal modal-open">
           <div className="modal-box w-11/12 max-w-2xl">
@@ -266,13 +277,7 @@ export default function Home() {
           </div>
         </div>
       )}
-      
-      <div className="habits flex flex-col">
-        {habits.map((habit) => (
-          <Habit key={habit.$id} documentID={habit.$id} name={habit.name} Type={habit.Type} UserID={currentUserID}/>
-        ))}
-      </div>
-      </div>
+
       <Footer />
     </div>
   );

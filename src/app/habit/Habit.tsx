@@ -19,6 +19,7 @@ const Habit: React.FC<HabitProps> = ({ name, documentID, Type }) => {
     const [streakEmoji, setStreakEmoji] = useState('💤');
     const [isCompleted, setIsCompleted] = useState(false);
     const [showAnimation, setShowAnimation] = useState(false);
+  const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
     const [currentDate, setCurrentDate] = useState(new Date());
     
     useEffect(() => {
@@ -99,6 +100,7 @@ const Habit: React.FC<HabitProps> = ({ name, documentID, Type }) => {
     const today = new Date();
 
     return (
+      <>
       <div className="card bg-base-100 shadow-lg mx-2 sm:mx-4 my-3 touch-manipulation">
         <div className="card-body p-3 sm:p-4">
           {/* Mobile: Stack layout, Desktop: Flex layout */}
@@ -153,40 +155,14 @@ const Habit: React.FC<HabitProps> = ({ name, documentID, Type }) => {
               {/* Secondary Actions Row */}
               <div className="flex items-center justify-between sm:justify-end gap-2">
                 
-                {/* Calendar Progress View */}
-                <div className="dropdown dropdown-end">
-                  <div tabIndex={0} role="button" className="btn btn-ghost btn-sm tooltip flex hover:bg-base-200 transition-colors touch-manipulation" data-tip="View Progress">
-                    <Icon icon="material-symbols:calendar-month-outline" className="w-4 h-4 sm:w-5 sm:h-5" />
-                  </div>
-                  <div tabIndex={0} className="dropdown-content bg-base-100 rounded-xl z-[1] shadow-2xl border border-base-300 mt-2">
-                    <div className="p-3 sm:p-4">
-                      {/* Header */}
-                      <div className="flex items-center justify-center gap-2 mb-3 sm:mb-4 pb-2 sm:pb-3 border-b border-base-200">
-                        <Icon icon="material-symbols:calendar-month-outline" className="w-4 h-4 opacity-60" />
-                        <span className="text-xs sm:text-sm font-medium text-base-content/70">Progress Overview</span>
-                      </div>
-                      
-                      {/* Calendar */}
-                      <div className="bg-base-50 rounded-lg p-1 sm:p-2">
-                        <Calendar value={currentDate} id={documentID} onChange={setCurrentDate} readOnly={true}/>
-                      </div>
-                      
-                      {/* Footer Stats */}
-                      <div className="mt-3 sm:mt-4 pt-2 sm:pt-3 border-t border-base-200">
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="flex items-center gap-1 text-base-content/60">
-                            <div className="w-3 h-3 bg-green-500 rounded-sm"></div>
-                            Completed
-                          </span>
-                          <span className="flex items-center gap-1 font-medium">
-                            <Icon icon="material-symbols:local-fire-department" className="w-3 h-3 text-orange-500" />
-                            {currentStreak} day streak
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                {/* Calendar Progress View Button */}
+                <button 
+                  onClick={() => setIsCalendarModalOpen(true)}
+                  className="btn btn-ghost btn-sm tooltip flex hover:bg-base-200 transition-colors touch-manipulation" 
+                  data-tip="View Progress"
+                >
+                  <Icon icon="material-symbols:calendar-month-outline" className="w-4 h-4 sm:w-5 sm:h-5" />
+                </button>
                 
                 {/* Desktop Habit Type and Delete */}
                 <div className="hidden sm:flex items-center gap-2">
@@ -205,6 +181,55 @@ const Habit: React.FC<HabitProps> = ({ name, documentID, Type }) => {
           </div>
         </div>
       </div>
+      
+      {/* Calendar Progress Modal */}
+      {isCalendarModalOpen && (
+        <div className="modal modal-open">
+          <div className="modal-box w-11/12 max-w-lg sm:max-w-xl md:max-w-2xl lg:max-w-3xl">
+            <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+              <Icon icon="material-symbols:calendar-month-outline" className="w-5 h-5" />
+              {name} - Progress Overview
+            </h3>
+            <button 
+              className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 touch-manipulation"
+              onClick={() => setIsCalendarModalOpen(false)}
+            >
+              ✕
+            </button>
+            
+            <div className="space-y-4">
+              {/* Calendar */}
+              <div className="bg-base-50 rounded-lg p-2">
+                <Calendar value={currentDate} id={documentID} onChange={setCurrentDate} readOnly={true}/>
+              </div>
+              
+              {/* Stats */}
+              <div className="flex items-center justify-between p-4 bg-base-100 rounded-lg border">
+                <span className="flex items-center gap-2 text-sm">
+                  <div className="w-4 h-4 bg-green-500 rounded-sm"></div>
+                  Completed Days
+                </span>
+                <span className="flex items-center gap-2 font-medium text-sm">
+                  <Icon icon="material-symbols:local-fire-department" className="w-4 h-4 text-orange-500" />
+                  {currentStreak} day streak {streakEmoji}
+                </span>
+              </div>
+            </div>
+            
+            <div className="modal-action">
+              <button 
+                className="btn btn-primary touch-manipulation" 
+                onClick={() => setIsCalendarModalOpen(false)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+          <div className="modal-backdrop" onClick={() => setIsCalendarModalOpen(false)}>
+          </div>
+        </div>
+      )}
+      </>
     );
 };
 
