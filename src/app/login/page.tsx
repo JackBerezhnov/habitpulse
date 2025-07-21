@@ -78,7 +78,7 @@ const LoginPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/10 via-base-200 to-secondary/10">
-      {/* Header */}
+      
       <div className="navbar bg-base-100/80 backdrop-blur-sm shadow-lg">
         <div className="flex-1">
           <div className="text-2xl font-bold text-primary flex items-center gap-2">
@@ -88,10 +88,10 @@ const LoginPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Main Content */}
+      
       <div className="hero min-h-[calc(100vh-4rem)]">
         <div className="hero-content flex-col lg:flex-row-reverse max-w-6xl">
-          {/* Right Side - Features */}
+          
           <div className="text-center lg:text-left lg:w-1/2">
             <div className="space-y-6">
               <div className="text-6xl mb-4">🚀</div>
@@ -102,7 +102,7 @@ const LoginPage: React.FC = () => {
                 Transform your daily habits into an epic RPG adventure. Gain XP, level up, and build the life you've always wanted.
               </p>
               
-              {/* Feature Cards */}
+              
               <div className="grid gap-4 mt-8">
                 <div className="flex items-center gap-4 p-4 bg-base-100/50 rounded-lg backdrop-blur-sm">
                   <div className="text-2xl">⚡</div>
@@ -129,7 +129,7 @@ const LoginPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Left Side - Login Card */}
+          
           <div className="lg:w-1/2 w-full max-w-md">
             <div className="card bg-base-100 shadow-2xl border border-base-300/50">
               <div className="card-body p-8">
