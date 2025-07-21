@@ -169,9 +169,11 @@ export const useAppStore = create<AppState>((set, get) => ({
         
         set({ currentUser: user });
         get().calculateProgressToNextLevel();
-      } catch (error) {
-        console.log("User data fetch failed", error);
-        
+      } catch (error: any) {
+        if(error.code === 404) {
+          // Expected behavior for newly created users
+          console.log("User not found, retrying...");
+        }
         // Retry logic for newly created users (race condition)
         if (retryCount < 3) {
           console.log(`Retrying getUser, attempt ${retryCount + 1}`);
@@ -181,7 +183,6 @@ export const useAppStore = create<AppState>((set, get) => ({
         }
         
         // If all retries failed, create default user state
-        console.log("All retries failed, creating default user state");
         set({ 
           currentUser: {
             $id: currentUserID,
