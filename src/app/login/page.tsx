@@ -99,7 +99,7 @@ const LoginPage: React.FC = () => {
                 Level Up Your Life
               </h1>
               <p className="text-xl text-base-content/80 leading-relaxed">
-                Transform your daily habits into an epic RPG adventure. Gain XP, level up, and build the life you've always wanted.
+                Transform your daily habits into an epic RPG adventure. Gain XP, level up, and build the life you&apos;ve always wanted.
               </p>
               
               
