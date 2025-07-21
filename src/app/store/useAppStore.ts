@@ -147,18 +147,57 @@ export const useAppStore = create<AppState>((set, get) => ({
     const { currentUserID } = get();
     if (!currentUserID) return;
 
-    try {
-      const user = await databases.getDocument(
-        `${process.env.NEXT_PUBLIC_DB}`,
-        `${process.env.NEXT_PUBLIC_DB_USER_COLLECTION}`,
-        `${currentUserID}`
-      );
-      set({ currentUser: user as unknown as User });
-      get().calculateProgressToNextLevel();
-    } catch (error) {
-      console.log("User data fetch failed", error);
-      // Silently handle user data fetch errors
-    }
+    // Internal retry helper function
+    const fetchUserWithRetry = async (retryCount = 0): Promise<void> => {
+      try {
+        const userDoc = await databases.getDocument(
+          `${process.env.NEXT_PUBLIC_DB}`,
+          `${process.env.NEXT_PUBLIC_DB_USER_COLLECTION}`,
+          `${currentUserID}`
+        );
+        
+        // Properly extract user data from Appwrite document
+        const user: User = {
+          $id: userDoc.$id,
+          Name: userDoc.Name || 'Player',
+          Level: userDoc.Level || 1,
+          Experience: userDoc.Experience || 0,
+          Strength: userDoc.Strength || 0,
+          Agility: userDoc.Agility || 0,
+          Inteligent: userDoc.Inteligent || 0
+        };
+        
+        set({ currentUser: user });
+        get().calculateProgressToNextLevel();
+      } catch (error) {
+        console.log("User data fetch failed", error);
+        
+        // Retry logic for newly created users (race condition)
+        if (retryCount < 3) {
+          console.log(`Retrying getUser, attempt ${retryCount + 1}`);
+          // Wait a bit before retrying (exponential backoff)
+          await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 500));
+          return await fetchUserWithRetry(retryCount + 1);
+        }
+        
+        // If all retries failed, create default user state
+        console.log("All retries failed, creating default user state");
+        set({ 
+          currentUser: {
+            $id: currentUserID,
+            Name: get().userName || 'Player',
+            Level: 1,
+            Experience: 0,
+            Strength: 0,
+            Agility: 0,
+            Inteligent: 0
+          } as User
+        });
+        get().calculateProgressToNextLevel();
+      }
+    };
+
+    await fetchUserWithRetry();
   },
 
   fetchHabits: async () => {
