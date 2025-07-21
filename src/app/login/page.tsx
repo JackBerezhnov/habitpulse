@@ -41,19 +41,6 @@ const LoginPage: React.FC = () => {
 
     // Check session on initial load
     checkSession();
-    
-    // Re-check session when user returns from OAuth (page regains focus)
-    const handleFocus = () => {
-      setLoading(true);
-      checkSession();
-    };
-    
-    window.addEventListener('focus', handleFocus);
-    
-    // Cleanup event listener
-    return () => {
-      window.removeEventListener('focus', handleFocus);
-    };
   }, [router]);
 
   const loginSIWG = async () => {
