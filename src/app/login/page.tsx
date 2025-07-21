@@ -31,6 +31,7 @@ const LoginPage: React.FC = () => {
           setLoggedInUser(null);
         }
       } catch (error) {
+        console.log("Session check failed", error);
         // Silently handle session check errors
         setLoggedInUser(null);
       } finally {

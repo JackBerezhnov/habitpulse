@@ -156,6 +156,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       set({ currentUser: user as unknown as User });
       get().calculateProgressToNextLevel();
     } catch (error) {
+      console.log("User data fetch failed", error);
       // Silently handle user data fetch errors
     }
   },
