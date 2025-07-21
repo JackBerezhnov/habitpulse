@@ -2,6 +2,11 @@ import { create } from 'zustand';
 import { Models } from 'appwrite';
 import { databases, account, ID } from '../appwrite';
 
+// Configuration constants
+const DB_ID = process.env.NEXT_PUBLIC_DB || '';
+const HABITS_COLLECTION_ID = process.env.NEXT_PUBLIC_DB_COLLECTION || '';
+const USERS_COLLECTION_ID = process.env.NEXT_PUBLIC_DB_USER_COLLECTION || '';
+
 export interface HabitProps {
   name: string;
   Type: string;
@@ -113,7 +118,21 @@ export const useAppStore = create<AppState>((set, get) => ({
     const { currentUserID, userName } = get();
     if (!currentUserID) return;
 
+    // Check if user already exists
     try {
+      await databases.getDocument(
+        `${process.env.NEXT_PUBLIC_DB}`,
+      `${process.env.NEXT_PUBLIC_DB_USER_COLLECTION}`,
+        `${currentUserID}`
+      );
+      // User already exists, no need to create
+      return;
+    } catch (error) {
+      // User doesn't exist, proceed with creation
+    }
+
+    try {
+      // Create new user document
       await databases.createDocument(
         `${process.env.NEXT_PUBLIC_DB}`,
         `${process.env.NEXT_PUBLIC_DB_USER_COLLECTION}`,
@@ -124,6 +143,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         }
       );
     } catch (error) {
+      console.log("User creation failed", error);
       // Silently handle user creation errors
     }
   },
