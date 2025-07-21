@@ -103,7 +103,10 @@ export const useAppStore = create<AppState>((set, get) => ({
         // No session found - clear user state
         set({ currentUserID: '', userName: '', currentUser: null, isLoading: false });
       }
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === 404) {
+        console.log('Document not found — this is normal for new users.');
+      }
       // Silently handle session check errors
       set({ currentUserID: '', userName: '', currentUser: null, isLoading: false });
     }
@@ -122,7 +125,10 @@ export const useAppStore = create<AppState>((set, get) => ({
       );
       // User already exists, no need to create
       return;
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === 404) {
+        console.log('Document not found — this is normal for new users.');
+      }
       // User doesn't exist, proceed with creation
     }
 
@@ -137,7 +143,10 @@ export const useAppStore = create<AppState>((set, get) => ({
           Name: `${userName}`
         }
       );
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === 404) {
+        console.log('Document not found — this is normal for new users.');
+      }
       console.log("User creation failed", error);
       // Silently handle user creation errors
     }
@@ -216,7 +225,10 @@ export const useAppStore = create<AppState>((set, get) => ({
       );
 
       set({ habits: userHabits });
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === 404) {
+        console.log('Document not found — this is normal for new users.');
+      }
       // Silently handle habit fetch errors
     }
   },
@@ -246,7 +258,10 @@ export const useAppStore = create<AppState>((set, get) => ({
         newHabit,
       );
       
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === 404) {
+        console.log('Document not found — this is normal for new users.');
+      }
       // Silently handle habit creation errors
       const { habits } = get();
       const revertedHabits = habits.filter(h => h.$id !== newHabit.documentID);
@@ -272,7 +287,10 @@ export const useAppStore = create<AppState>((set, get) => ({
         `${documentID}`
       );
       
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === 404) {
+        console.log('Document not found — this is normal for new users.');
+      }
       // Silently handle habit deletion errors
       if (habitToDelete) {
         const { habits: currentHabits } = get();
@@ -299,8 +317,11 @@ export const useAppStore = create<AppState>((set, get) => ({
       );
       set({ habits: updatedHabits });
       
-    } catch (error) {
-      // Silently handle habit date update errors
+    } catch (error: any) {
+      if (error.code === 404) {
+        console.log('Document not found — this is normal for new users.');
+      }
+      // Silently handle habit update errors
     }
   },
 
@@ -324,7 +345,10 @@ export const useAppStore = create<AppState>((set, get) => ({
         { Experience: newXP }
       );
       
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === 404) {
+        console.log('Document not found — this is normal for new users.');
+      }
       // Silently handle user experience update errors
       const revertedUser = { ...get().currentUser!, Experience: oldXP };
       set({ currentUser: revertedUser });
@@ -352,7 +376,10 @@ export const useAppStore = create<AppState>((set, get) => ({
         { Level: newLevel }
       );
       
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === 404) {
+        console.log('Document not found — this is normal for new users.');
+      }
       // Silently handle user level update errors
       const revertedUser = { ...get().currentUser!, Level: oldLevel };
       set({ currentUser: revertedUser });
@@ -379,7 +406,10 @@ export const useAppStore = create<AppState>((set, get) => ({
         { [statType]: newValue }
       );
       
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === 404) {
+        console.log('Document not found — this is normal for new users.');
+      }
       // Silently handle user stats update errors
       const revertedUser = { ...get().currentUser!, [statType]: oldValue };
       set({ currentUser: revertedUser });
