@@ -2,11 +2,6 @@ import { create } from 'zustand';
 import { Models } from 'appwrite';
 import { databases, account, ID } from '../appwrite';
 
-// Configuration constants
-const DB_ID = process.env.NEXT_PUBLIC_DB || '';
-const HABITS_COLLECTION_ID = process.env.NEXT_PUBLIC_DB_COLLECTION || '';
-const USERS_COLLECTION_ID = process.env.NEXT_PUBLIC_DB_USER_COLLECTION || '';
-
 export interface HabitProps {
   name: string;
   Type: string;
