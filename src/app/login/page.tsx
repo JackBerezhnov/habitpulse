@@ -1,26 +1,28 @@
 "use client";
+import React, { useState, useEffect } from 'react';
 import { useRouter } from "next/navigation";
 import { account } from "../appwrite";
-import { OAuthProvider } from "appwrite";
 import Footer from "../footer/Footer";
+import { loginWithGoogle, getUser } from '../auth';
 
-interface User {
-  $id: string;
-  name: string;
-  email: string;
-}
 
 const LoginPage: React.FC = () => {
+  const [user, setUser] = useState(null)
+
+  useEffect(() => {
+    const checkUser = async () => {
+      try {
+        const userData:any = await getUser();
+        setUser(userData)
+      } catch (error) {
+        setUser(null)
+      }
+    }
+
+    checkUser()
+  }, []);
+
   const router = useRouter();
-
-  const loginSIWG = async () => {
-    account.createOAuth2Session(
-      OAuthProvider.Google,
-      "https://habitpulse-git-master-jackberezhnovs-projects.vercel.app/"
-    )
-  }
-
-
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/10 via-base-200 to-secondary/10">
@@ -90,7 +92,7 @@ const LoginPage: React.FC = () => {
                     type="button" 
                     id="btn-siwg" 
                     className="btn btn-primary btn-lg w-full gap-3 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
-                    onClick={loginSIWG}
+                    onClick={loginWithGoogle}
                   >
                     <svg className="w-5 h-5" viewBox="0 0 24 24">
                       <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>

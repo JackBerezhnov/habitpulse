@@ -7,6 +7,7 @@ import Navbar from "./navbar/Navbar";
 import Stat from "./stat/Stat";
 import Footer from "./footer/Footer";
 import { useAppStore, HabitProps } from "./store/useAppStore";
+import { logoutUser } from './auth';
 
 export default function Home() {
   const [habitName, setHabitName] = useState<string>('');
@@ -111,15 +112,6 @@ export default function Home() {
     setIsModalOpen(false); // Close modal after successful addition
   }
 
-  const logout = async () => {
-    try {
-      await account.deleteSession('current');
-      router.push("/login");
-    } catch (error) {
-      // Silently handle logout errors
-    }
-  }
-
   if(!currentUser || isLoading) {
     return <div className="flex flex-col justify-center items-center gap-8 hero bg-base-200 h-[100vh]">
       <span className="loading loading-spinner loading-lg"></span>
@@ -128,7 +120,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-base-200 flex flex-col">
-      <Navbar onLogout={logout}/>
+      <Navbar onLogout={logoutUser}/>
       <main className="flex-grow flex flex-col">
         <div className="flex flex-col items-center gap-4 sm:gap-6 px-3 sm:px-4 py-4 sm:py-8 max-w-4xl mx-auto w-full">
         <div className="text-center">
