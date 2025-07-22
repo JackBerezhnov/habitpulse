@@ -2,7 +2,10 @@ import { account, OAuthProvider } from './appwrite';
 
 export const loginWithGoogle = async () => {
   try {
-    await account.createOAuth2Session(OAuthProvider.Google)
+    await account.createOAuth2Session(
+        OAuthProvider.Google,
+        "https://habitpulse-git-master-jackberezhnovs-projects.vercel.app/"
+    )
   } catch (error) {
     console.error(error)
   }

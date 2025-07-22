@@ -11,7 +11,6 @@ const LoginPage: React.FC = () => {
   const handleLogin = async () => {
     try {
       await loginWithGoogle();
-      router.push("/");
     } catch (error) {
       console.error('Login error:', error);
     }
