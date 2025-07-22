@@ -7,7 +7,7 @@ import Navbar from "./navbar/Navbar";
 import Stat from "./stat/Stat";
 import Footer from "./footer/Footer";
 import { useAppStore, HabitProps } from "./store/useAppStore";
-import { logoutUser, getUser } from './auth';
+import { logoutUser, getUserData } from './auth';
 
 export default function Home() {
   const [habitName, setHabitName] = useState<string>('');
@@ -20,7 +20,7 @@ export default function Home() {
     useEffect(() => {
       const checkUser = async () => {
         try {
-          const userData:any = await getUser();
+          const userData:any = await getUserData();
           setUser(userData)
         } catch (error) {
           setUser(null)

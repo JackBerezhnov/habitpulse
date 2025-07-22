@@ -16,7 +16,7 @@ export const logoutUser = async () => {
   }
 }
 
-export const getUser = async () => {
+export const getUserData = async () => {
   try {
     return await account.get();
   } catch (error) {
