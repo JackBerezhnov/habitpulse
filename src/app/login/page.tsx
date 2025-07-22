@@ -1,27 +1,11 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useRouter } from "next/navigation";
-import { account } from "../appwrite";
 import Footer from "../footer/Footer";
-import { loginWithGoogle, getUser } from '../auth';
+import { loginWithGoogle } from '../auth';
 
 
 const LoginPage: React.FC = () => {
-  const [user, setUser] = useState(null)
-
-  useEffect(() => {
-    const checkUser = async () => {
-      try {
-        const userData:any = await getUser();
-        setUser(userData)
-      } catch (error) {
-        setUser(null)
-      }
-    }
-
-    checkUser()
-  }, []);
-
   const router = useRouter();
 
   const handleLogin = async () => {

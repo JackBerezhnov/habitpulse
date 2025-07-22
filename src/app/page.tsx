@@ -7,13 +7,28 @@ import Navbar from "./navbar/Navbar";
 import Stat from "./stat/Stat";
 import Footer from "./footer/Footer";
 import { useAppStore, HabitProps } from "./store/useAppStore";
-import { logoutUser } from './auth';
+import { logoutUser, getUser } from './auth';
 
 export default function Home() {
   const [habitName, setHabitName] = useState<string>('');
   const [habitType, setHabitType] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
+
+  const [user, setUser] = useState(null)
+  
+    useEffect(() => {
+      const checkUser = async () => {
+        try {
+          const userData:any = await getUser();
+          setUser(userData)
+        } catch (error) {
+          setUser(null)
+        }
+      }
+  
+      checkUser()
+    }, []);
   
   // Motivational quotes that change daily
   const motivationalQuotes = [
