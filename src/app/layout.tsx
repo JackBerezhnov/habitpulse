@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { PostHogProvider } from './providers'
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -9,14 +10,14 @@ export const metadata: Metadata = {
   description: "Habit Tracking App",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body>
+        <PostHogProvider>
+          {children}
+        </PostHogProvider>
+      </body>
     </html>
-  );
+  )
 }
