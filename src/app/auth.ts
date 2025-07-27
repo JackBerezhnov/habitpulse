@@ -4,7 +4,7 @@ export const loginWithGoogle = async () => {
   try {
     await account.createOAuth2Session(
         OAuthProvider.Google,
-        "https://habitpulse-git-master-jackberezhnovs-projects.vercel.app/"
+        "https://app.habit-pulse.com/"
     )
   } catch (error) {
     console.error(error)
