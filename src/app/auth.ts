@@ -4,7 +4,8 @@ export const loginWithGoogle = async () => {
   try {
     await account.createOAuth2Session(
         OAuthProvider.Google,
-        "https://app.habit-pulse.com/"
+        "https://app.habit-pulse.com/",
+        "https://app.habit-pulse.com/login"
     )
   } catch (error) {
     console.error(error)

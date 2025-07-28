@@ -23,9 +23,7 @@ export default function Home() {
         const userData = await getUserData();
         setUser(userData);
       } catch (error) {
-        console.warn("No session found. Redirecting to login...");
-        setUser(null);
-        router.push("/login");
+        console.warn("No session found.");
       }
     };
   
