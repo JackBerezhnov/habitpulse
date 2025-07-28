@@ -17,18 +17,20 @@ export default function Home() {
 
   const [user, setUser] = useState(null)
   
-    useEffect(() => {
-      const checkUser = async () => {
-        try {
-          const userData:any = await getUserData();
-          setUser(userData)
-        } catch (error) {
-          setUser(null)
-        }
+  useEffect(() => {
+    const checkUser = async () => {
+      try {
+        const userData = await getUserData();
+        setUser(userData);
+      } catch (error) {
+        console.warn("No session found. Redirecting to login...");
+        setUser(null);
+        router.push("/login");
       }
+    };
   
-      checkUser()
-    }, []);
+    checkUser();
+  }, []);
   
   // Motivational quotes that change daily
   const motivationalQuotes = [

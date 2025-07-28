@@ -19,10 +19,15 @@ export const logoutUser = async () => {
   }
 }
 
-export const getUserData = async () => {
-  try {
-    return await account.get();
-  } catch (error) {
-    console.error(error)
+export const getUserData = async (retries = 3, delay = 500): Promise<any> => {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const user = await account.get();
+      return user;
+    } catch (error: any) {
+      if (i === retries - 1) throw error;
+      console.warn(`Retrying account.get()... (${i + 1})`);
+      await new Promise((res) => setTimeout(res, delay));
+    }
   }
 }
