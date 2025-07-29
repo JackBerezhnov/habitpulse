@@ -224,6 +224,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         habit => habit.UserID === currentUserID
       );
 
+      console.log('Habits', response.documents);
       console.log('Fetched habits:', userHabits);
       console.log('Current user ID:', currentUserID);
       console.log('Total documents:', response.documents.length);
