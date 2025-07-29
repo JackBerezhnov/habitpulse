@@ -421,11 +421,15 @@ export const useAppStore = create<AppState>((set, get) => ({
     if (!currentUser) return;
 
     const currentXP = currentUser.Experience;
-    const currentLevelXP = calculateXP(currentUser.Level);
+    // For level 1, start from 0 XP instead of 50 XP
+    const currentLevelXP = currentUser.Level === 1 ? 0 : calculateXP(currentUser.Level);
     const nextLevelXP = calculateXP(currentUser.Level + 1);
     const progressInPercentage = ((currentXP - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100;
     
-    set({ progressLevel: progressInPercentage.toFixed(2) });
+    // Ensure progress is never negative and cap at 100%
+    const clampedProgress = Math.max(0, Math.min(100, progressInPercentage));
+    
+    set({ progressLevel: clampedProgress.toFixed(2) });
   },
 
   // Streak system implementation
