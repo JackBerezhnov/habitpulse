@@ -15,20 +15,7 @@ export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
 
-  const [user, setUser] = useState(null)
-  
-  useEffect(() => {
-    const checkUser = async () => {
-      try {
-        const userData = await getUserData();
-        setUser(userData);
-      } catch (error) {
-        console.warn("No session found.");
-      }
-    };
-  
-    checkUser();
-  }, []);
+  // Remove old user state - using Zustand store instead
   
   // Motivational quotes that change daily
   const motivationalQuotes = [
@@ -89,26 +76,27 @@ export default function Home() {
   } = useAppStore();
 
   useEffect(() => {
-    const initializeUser = async () => {
+    const initializeApp = async () => {
+      // First, check if user is authenticated
       await fetchUser();
     };
-    initializeUser();
+    initializeApp();
   }, [fetchUser]);
 
   useEffect(() => {
     if (!currentUserID) return;
-    createUserAsPlayer();
-  }, [currentUserID, createUserAsPlayer]);
-
-  useEffect(() => {
-    if (!currentUserID) return;
-    getUser();
-  }, [currentUserID, getUser]);
-
-  useEffect(() => {
-    if (!currentUserID) return;
-    fetchHabits();
-  }, [currentUserID, fetchHabits]);
+    
+    const initializeUserData = async () => {
+      // Create user document if it doesn't exist
+      await createUserAsPlayer();
+      // Load user data from database
+      await getUser();
+      // Load user's habits
+      await fetchHabits();
+    };
+    
+    initializeUserData();
+  }, [currentUserID, createUserAsPlayer, getUser, fetchHabits]);
 
   const handleAddHabit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -142,7 +130,7 @@ export default function Home() {
     </div>;
   }
 
-  if(user) {
+  if(currentUserID && !isLoading) {
     return (
       <div className="min-h-screen bg-base-200 flex flex-col">
         <Navbar onLogout={handleLogout}/>

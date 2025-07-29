@@ -224,8 +224,13 @@ export const useAppStore = create<AppState>((set, get) => ({
         habit => habit.UserID === currentUserID
       );
 
+      console.log('Fetched habits:', userHabits);
+      console.log('Current user ID:', currentUserID);
+      console.log('Total documents:', response.documents.length);
+
       set({ habits: userHabits });
     } catch (error: any) {
+      console.error('Error fetching habits:', error);
       if (error.code === 404) {
         console.log('Document not found — this is normal for new users.');
       }
@@ -235,6 +240,8 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   addHabit: async (newHabit: HabitProps) => {
     try {
+      console.log('Adding habit:', newHabit);
+      
       // Add to local state immediately for instant UI update
       const { habits } = get();
       const newHabitDocument = {
@@ -250,15 +257,20 @@ export const useAppStore = create<AppState>((set, get) => ({
       const updatedHabits = [...habits, newHabitDocument];
       set({ habits: updatedHabits });
       
+      console.log('Local state updated with habits:', updatedHabits.length);
+      
       // Save to database in background
-      await databases.createDocument(
+      const savedHabit = await databases.createDocument(
         `${process.env.NEXT_PUBLIC_DB}`,
         `${process.env.NEXT_PUBLIC_DB_COLLECTION}`,
         `${newHabit.documentID}`,
         newHabit,
       );
       
+      console.log('Habit saved to database:', savedHabit);
+      
     } catch (error: any) {
+      console.error('Error adding habit:', error);
       if (error.code === 404) {
         console.log('Document not found — this is normal for new users.');
       }
