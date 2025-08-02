@@ -3,11 +3,11 @@ import { useState, useEffect } from "react";
 import Habit from "./habit/Habit";
 import { account, ID } from "./appwrite";
 import { useRouter } from "next/navigation";
-import Navbar from "./navbar/Navbar";
 import Stat from "./stat/Stat";
 import Footer from "./footer/Footer";
 import { useAppStore, HabitProps } from "./store/useAppStore";
 import { logoutUser, getUserData } from './auth';
+import MainLayout from "./components/MainLayout";
 
 export default function Home() {
   const [habitName, setHabitName] = useState<string>('');
@@ -132,101 +132,101 @@ export default function Home() {
 
   if(currentUserID && !isLoading) {
     return (
-      <div className="min-h-screen bg-base-200 flex flex-col">
-        <Navbar onLogout={handleLogout}/>
-        <main className="flex-grow flex flex-col">
-          <div className="flex flex-col items-center gap-4 sm:gap-6 px-3 sm:px-4 py-4 sm:py-8 max-w-4xl mx-auto w-full">
-          <div className="text-center">
-            <h2 className="text-xl sm:text-2xl font-bold mb-2">Welcome to HabitPulse, {userName}</h2>
+      <MainLayout>
+        <div className="min-h-screen bg-base-200 flex flex-col">
+          <main className="flex-grow flex flex-col">
+            <div className="flex flex-col items-center gap-4 sm:gap-6 px-3 sm:px-4 py-4 sm:py-8 max-w-4xl mx-auto w-full">
+            <div className="text-center">
+              <h2 className="text-xl sm:text-2xl font-bold mb-2">Welcome to HabitPulse, {userName}</h2>
+              
+              {/* Getting Started Button */}
+              <button 
+                className="btn btn-outline btn-sm gap-2 touch-manipulation" 
+                onClick={() => setIsHelpModalOpen(true)}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Getting Started
+              </button>
+            </div>
             
-            {/* Getting Started Button */}
-            <button 
-              className="btn btn-outline btn-sm gap-2 touch-manipulation" 
-              onClick={() => setIsHelpModalOpen(true)}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              Getting Started
-            </button>
-          </div>
-          
-          {/* Stats Section - Mobile Optimized */}
-          <div className="w-full space-y-4">
-            {/* Level and XP Card */}
-            <div className="card bg-base-100 shadow-lg w-full">
-              <div className="card-body p-4 sm:p-6">
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                  <div className="stats stats-vertical sm:stats-horizontal shadow-none bg-transparent">
-                    <div className="stat place-items-center">
-                      <div className="stat-title text-xs sm:text-sm">Level</div>
-                      <div className="stat-value text-2xl sm:text-3xl">{currentUser.Level}</div>
-                      <div className="stat-desc text-xs">XP: {currentUser.Experience}</div>
-                    </div>
-                  </div>
-                  
-                  {/* Daily Motivational Quote */}
-                  <div className="text-center max-w-md mx-auto px-4">
-                    <div className="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg p-4 border border-primary/20">
-                      <div className="flex items-center justify-center gap-2 mb-2">
-                        <span className="text-primary text-lg">💪</span>
-                        <span className="text-xs font-semibold text-primary uppercase tracking-wide">Daily Motivation</span>
-                        <span className="text-primary text-lg">✨</span>
+            {/* Stats Section - Mobile Optimized */}
+            <div className="w-full space-y-4">
+              {/* Level and XP Card */}
+              <div className="card bg-base-100 shadow-lg w-full">
+                <div className="card-body p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div className="stats stats-vertical sm:stats-horizontal shadow-none bg-transparent">
+                      <div className="stat place-items-center">
+                        <div className="stat-title text-xs sm:text-sm">Level</div>
+                        <div className="stat-value text-2xl sm:text-3xl">{currentUser.Level}</div>
+                        <div className="stat-desc text-xs">XP: {currentUser.Experience}</div>
                       </div>
-                      <blockquote className="text-sm sm:text-base font-medium text-base-content/80 italic leading-relaxed">
-                        &ldquo;{getDailyQuote()}&rdquo;
-                      </blockquote>
                     </div>
-                  </div>
-                  
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="text-xs sm:text-sm font-medium">Next Level Progress</div>
-                    <div className="radial-progress text-primary text-xs sm:text-sm" style={{"--value": progressLevel, "--size": "4rem"} as React.CSSProperties} role="progressbar">
-                      {progressLevel}%
+                    
+                    {/* Daily Motivational Quote */}
+                    <div className="text-center max-w-md mx-auto px-4">
+                      <div className="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg p-4 border border-primary/20">
+                        <div className="flex items-center justify-center gap-2 mb-2">
+                          <span className="text-primary text-lg">💪</span>
+                          <span className="text-xs font-semibold text-primary uppercase tracking-wide">Daily Motivation</span>
+                          <span className="text-primary text-lg">✨</span>
+                        </div>
+                        <blockquote className="text-sm sm:text-base font-medium text-base-content/80 italic leading-relaxed">
+                          &ldquo;{getDailyQuote()}&rdquo;
+                        </blockquote>
+                      </div>
+                    </div>
+                    
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="text-xs sm:text-sm font-medium">Next Level Progress</div>
+                      <div className="radial-progress text-primary text-xs sm:text-sm" style={{"--value": progressLevel, "--size": "4rem"} as React.CSSProperties} role="progressbar">
+                        {progressLevel}%
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
+              
+              {/* Character Stats - Mobile Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full">
+                <Stat statType="Strength" stat={currentUser.Strength}/>
+                <Stat statType="Agility" stat={currentUser.Agility}/>
+                <Stat statType="Inteligent" stat={currentUser.Inteligent}/>
+              </div>
             </div>
             
-            {/* Character Stats - Mobile Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full">
-              <Stat statType="Strength" stat={currentUser.Strength}/>
-              <Stat statType="Agility" stat={currentUser.Agility}/>
-              <Stat statType="Inteligent" stat={currentUser.Inteligent}/>
+            {/* Create Habit Button - Mobile Friendly */}
+            <button 
+              className="btn btn-primary btn-md w-full sm:w-auto touch-manipulation" 
+              onClick={() => setIsModalOpen(true)}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              <span className="text-sm sm:text-base">Create New Habit</span>
+            </button>
+            
+            {/* Habits Section */}
+            <div className="habits flex flex-col w-full">
+              {habits.map((habit) => (
+                <Habit key={habit.$id} documentID={habit.$id} name={habit.name} Type={habit.Type} UserID={currentUserID}/>
+              ))}
             </div>
-          </div>
+            </div>
+          </main>
           
-          {/* Create Habit Button - Mobile Friendly */}
-          <button 
-            className="btn btn-primary btn-md w-full sm:w-auto touch-manipulation" 
-            onClick={() => setIsModalOpen(true)}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            <span className="text-sm sm:text-base">Create New Habit</span>
-          </button>
-          
-          {/* Habits Section */}
-          <div className="habits flex flex-col w-full">
-            {habits.map((habit) => (
-              <Habit key={habit.$id} documentID={habit.$id} name={habit.name} Type={habit.Type} UserID={currentUserID}/>
-            ))}
-          </div>
-          </div>
-        </main>
-        
-        {isModalOpen && (
-          <div className="modal modal-open">
-            <div className="modal-box w-11/12 max-w-2xl">
-              <h3 className="font-bold text-lg sm:text-xl mb-4">Create Your Habit</h3>
-              <button 
-                className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 touch-manipulation"
-                onClick={() => setIsModalOpen(false)}
-              >
-                ✕
-              </button>
+          {isModalOpen && (
+            <div className="modal modal-open">
+              <div className="modal-box w-11/12 max-w-2xl">
+                <h3 className="font-bold text-lg sm:text-xl mb-4">Create Your Habit</h3>
+                <button 
+                  className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 touch-manipulation"
+                  onClick={() => setIsModalOpen(false)}
+                >
+                  ✕
+                </button>
               <div className="space-y-4">
                 <div className="form-control">
                   <label className="label">
@@ -339,7 +339,8 @@ export default function Home() {
         )}
 
         <Footer />
-      </div>
+        </div>
+      </MainLayout>
     );
   }
 }
