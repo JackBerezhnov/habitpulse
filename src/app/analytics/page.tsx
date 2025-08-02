@@ -4,7 +4,7 @@ import MainLayout from '../components/MainLayout';
 import { useAppStore } from '../store/useAppStore';
 
 export default function AnalyticsPage() {
-  const { habits, userName, progressLevel } = useAppStore();
+  const { habits, userName, currentUser } = useAppStore();
 
   const completedHabitsToday = habits.filter(habit => {
     if (!habit.lastCompleted) return false;
@@ -66,7 +66,7 @@ export default function AnalyticsPage() {
               </svg>
             </div>
             <div className="stat-title">Current Level</div>
-            <div className="stat-value text-info">{progressLevel}</div>
+            <div className="stat-value text-info">{currentUser?.Level || 1}</div>
             <div className="stat-desc">Keep growing!</div>
           </div>
         </div>

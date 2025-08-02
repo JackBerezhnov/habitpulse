@@ -11,7 +11,7 @@ interface SidenavProps {
 const Sidenav: React.FC<SidenavProps> = ({ onLogout }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const pathname = usePathname();
-  const { userName, progressLevel, currentUser } = useAppStore();
+  const { userName, currentUser } = useAppStore();
 
   const navItems = [
     {
@@ -82,7 +82,7 @@ const Sidenav: React.FC<SidenavProps> = ({ onLogout }) => {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium truncate">{userName || 'User'}</p>
-              <p className="text-xs text-base-content/60">Level {progressLevel}</p>
+              <p className="text-xs text-base-content/60">Level {currentUser?.Level || 1}</p>
             </div>
           </div>
         </div>
