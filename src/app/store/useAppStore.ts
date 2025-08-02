@@ -221,7 +221,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       );
 
       const userHabits = response.documents.filter(
-        habit => habit.userID === currentUserID
+        habit => habit.UserID === currentUserID
       );
 
       console.log('User habits:', userHabits);
