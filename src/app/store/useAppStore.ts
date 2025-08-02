@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Models } from 'appwrite';
+import { Models, Query } from 'appwrite';
 import { databases, account, ID } from '../appwrite';
 
 export interface HabitProps {
@@ -217,17 +217,17 @@ export const useAppStore = create<AppState>((set, get) => ({
     try {
       const response = await databases.listDocuments(
         `${process.env.NEXT_PUBLIC_DB}`,
-        `${process.env.NEXT_PUBLIC_DB_COLLECTION}`
+        `${process.env.NEXT_PUBLIC_DB_COLLECTION}`,
+        [
+          Query.equal('UserID', [currentUserID]),
+          Query.limit(50)
+        ]
       );
 
-      const userHabits = response.documents.filter(
-        habit => habit.UserID === currentUserID
-      );
+      const userHabits = response.documents;
 
       console.log('User habits:', userHabits);
       console.log('Current user ID:', currentUserID);
-      console.log('Total documents:', response.documents.length);
-      console.log('Documents:', response.documents);
       set({ habits: userHabits });
     } catch (error: any) {
       if (error.code === 404) {
