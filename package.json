@@ -13,7 +13,7 @@
     "appwrite": "^18.1.1",
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
-    "next": "15.1.0",
+    "next": "15.1.11",
     "posthog-js": "^1.257.2",
     "react": "^18",
     "react-dom": "^18",
