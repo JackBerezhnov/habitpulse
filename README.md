@@ -35,7 +35,7 @@ A gamified habit tracking application that transforms your daily routines into a
 - **Zustand** - Lightweight state management
 
 ### Backend & Services
-- **Appwrite** - Backend-as-a-Service for authentication and database
+- **Supabase** - Backend-as-a-Service for authentication and Postgres database
 - **Google OAuth** - Secure authentication
 - **PostHog** - Analytics and user insights
 

@@ -13,7 +13,7 @@ export default function AnalyticsPage() {
     return today === lastCompleted;
   }).length;
 
-  const totalStreaks = habits.reduce((sum, habit) => sum + habit.streak, 0);
+  const totalStreaks = habits.reduce((sum, habit) => sum + (habit.streak ?? 0), 0);
   const averageStreak = habits.length > 0 ? Math.round(totalStreaks / habits.length) : 0;
 
   return (
@@ -81,8 +81,10 @@ export default function AnalyticsPage() {
                 <p className="text-sm text-base-content/50">Create some habits to see analytics</p>
               </div>
             ) : (
-              habits.map((habit) => (
-                <div key={habit.$id} className="flex items-center justify-between p-3 bg-base-200 rounded-lg">
+              habits.map((habit) => {
+                const streak = habit.streak ?? 0;
+
+                return <div key={habit.$id} className="flex items-center justify-between p-3 bg-base-200 rounded-lg">
                   <div className="flex items-center gap-3">
                     <div className="w-3 h-3 rounded-full bg-primary"></div>
                     <span className="font-medium">{habit.name}</span>
@@ -90,15 +92,15 @@ export default function AnalyticsPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-base-content/70">Streak:</span>
-                    <span className="font-bold">{habit.streak}</span>
-                    {habit.streak >= 30 && <span>🏆</span>}
-                    {habit.streak >= 14 && habit.streak < 30 && <span>💪</span>}
-                    {habit.streak >= 7 && habit.streak < 14 && <span>⚡</span>}
-                    {habit.streak >= 3 && habit.streak < 7 && <span>🔥</span>}
-                    {habit.streak >= 1 && habit.streak < 3 && <span>🌱</span>}
+                    <span className="font-bold">{streak}</span>
+                    {streak >= 30 && <span>🏆</span>}
+                    {streak >= 14 && streak < 30 && <span>💪</span>}
+                    {streak >= 7 && streak < 14 && <span>⚡</span>}
+                    {streak >= 3 && streak < 7 && <span>🔥</span>}
+                    {streak >= 1 && streak < 3 && <span>🌱</span>}
                   </div>
-                </div>
-              ))
+                </div>;
+              })
             )}
           </div>
         </div>

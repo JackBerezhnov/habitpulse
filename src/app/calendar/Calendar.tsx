@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { differenceInDays, endOfMonth, startOfMonth, sub, format, add, setDate, formatISO, parse } from "date-fns";
-import { databases } from "../appwrite";
+import { differenceInDays, endOfMonth, startOfMonth, sub, format, add, setDate } from "date-fns";
 import Cell from "./Cell";
 import { useAppStore } from "../store/useAppStore";
 
@@ -18,10 +17,8 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id, readOnly 
     const startDate = startOfMonth(value);
     const endDate = endOfMonth(value);
     const numDays = differenceInDays(endDate, startDate) + 1;
-    const checkedDayNumbers = checkedDays.map(dateString => new Date(dateString)).map(date => date.getDate())
     
     const { 
-        currentUserID, 
         currentUser, 
         habits,
         updateHabitDates, 

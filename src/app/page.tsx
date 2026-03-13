@@ -1,13 +1,19 @@
 "use client"
 import { useState, useEffect } from "react";
 import Habit from "./habit/Habit";
-import { account, ID } from "./appwrite";
 import { useRouter } from "next/navigation";
 import Stat from "./stat/Stat";
 import Footer from "./footer/Footer";
 import { useAppStore, HabitProps } from "./store/useAppStore";
-import { logoutUser, getUserData } from './auth';
 import MainLayout from "./components/MainLayout";
+
+const createHabitId = () => {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+
+  return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+};
 
 export default function Home() {
   const [habitName, setHabitName] = useState<string>('');
@@ -98,6 +104,12 @@ export default function Home() {
     initializeUserData();
   }, [currentUserID, createUserAsPlayer, getUser, fetchHabits]);
 
+  useEffect(() => {
+    if (!isLoading && !currentUserID) {
+      router.push('/login');
+    }
+  }, [isLoading, currentUserID, router]);
+
   const handleAddHabit = async (e: React.FormEvent) => {
     e.preventDefault();
     if(habitName.trim() === '' || habitType === '') return;
@@ -106,7 +118,7 @@ export default function Home() {
       name: habitName,
       Type: habitType,
       UserID: currentUserID,
-      documentID: ID.unique(),
+      documentID: createHabitId(),
     };
 
     await addHabit(newHabit);
@@ -115,24 +127,14 @@ export default function Home() {
     setIsModalOpen(false); // Close modal after successful addition
   }
 
-  const handleLogout = async () => {
-    try {
-      await logoutUser();
-      router.push("/login");
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-  }
-
-  if(!currentUser || isLoading) {
+  if (isLoading || !currentUser || !currentUserID) {
     return <div className="flex flex-col justify-center items-center gap-8 hero bg-base-200 h-[100vh]">
       <span className="loading loading-spinner loading-lg"></span>
     </div>;
   }
 
-  if(currentUserID && !isLoading) {
-    return (
-      <MainLayout>
+  return (
+    <MainLayout>
         <div className="min-h-screen bg-base-200 flex flex-col">
           <main className="flex-grow flex flex-col">
             <div className="flex flex-col items-center gap-4 sm:gap-6 px-3 sm:px-4 py-4 sm:py-8 max-w-4xl mx-auto w-full">
@@ -341,6 +343,5 @@ export default function Home() {
         <Footer />
         </div>
       </MainLayout>
-    );
-  }
+  );
 }
