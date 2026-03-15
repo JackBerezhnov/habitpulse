@@ -158,7 +158,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   userName: '',
   progressLevel: '0',
   habits: [],
-  isLoading: false,
+  isLoading: true,
 
   // Simple setters
   setCurrentUserID: (id) => set({ currentUserID: id }),
@@ -177,29 +177,46 @@ export const useAppStore = create<AppState>((set, get) => ({
   fetchUser: async () => {
     set({ isLoading: true });
 
-    try {
-      const { data, error } = await supabase.auth.getUser();
-      if (error) {
-        throw error;
-      }
+    const maxAttempts = 3;
+    const retryDelayMs = 300;
 
-      const authUser = data.user;
-      if (!authUser) {
+    for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+      try {
+        const { data, error } = await supabase.auth.getUser();
+        if (error) {
+          throw error;
+        }
+
+        const authUser = data.user;
+        if (!authUser) {
+          if (attempt < maxAttempts - 1) {
+            await new Promise((resolve) => setTimeout(resolve, retryDelayMs));
+            continue;
+          }
+
+          set({ currentUserID: '', userName: '', currentUser: null, isLoading: false });
+          return;
+        }
+
+        const metadata = (authUser.user_metadata ?? {}) as { full_name?: string; name?: string };
+        const displayName =
+          metadata.full_name ??
+          metadata.name ??
+          authUser.email?.split('@')[0] ??
+          'Player';
+
+        set({ currentUserID: authUser.id, userName: displayName, isLoading: false });
+        return;
+      } catch (error) {
+        if (attempt < maxAttempts - 1) {
+          await new Promise((resolve) => setTimeout(resolve, retryDelayMs));
+          continue;
+        }
+
+        console.error('Session check failed:', error);
         set({ currentUserID: '', userName: '', currentUser: null, isLoading: false });
         return;
       }
-
-      const metadata = (authUser.user_metadata ?? {}) as { full_name?: string; name?: string };
-      const displayName =
-        metadata.full_name ??
-        metadata.name ??
-        authUser.email?.split('@')[0] ??
-        'Player';
-
-      set({ currentUserID: authUser.id, userName: displayName, isLoading: false });
-    } catch (error) {
-      console.error('Session check failed:', error);
-      set({ currentUserID: '', userName: '', currentUser: null, isLoading: false });
     }
   },
 
