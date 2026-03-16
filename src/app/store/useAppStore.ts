@@ -131,6 +131,15 @@ const isSchemaMismatchError = (error: unknown) => {
   );
 };
 
+const isRlsViolationError = (error: unknown) => {
+  if (!error || typeof error !== 'object') return false;
+
+  const supabaseError = error as SupabaseErrorLike;
+  const message = `${supabaseError.message ?? ''} ${supabaseError.details ?? ''}`.toLowerCase();
+
+  return supabaseError.code === '42501' || message.includes('row-level security');
+};
+
 const toErrorLog = (label: string, error: unknown) => {
   if (!error || typeof error !== 'object') {
     return `${label}: ${String(error)}`;
@@ -387,13 +396,24 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   addHabit: async (newHabit: HabitProps) => {
-    const { habits } = get();
+    const { habits, currentUserID } = get();
+
+    let effectiveUserId = currentUserID;
+    if (!effectiveUserId) {
+      const { data } = await supabase.auth.getUser();
+      effectiveUserId = data.user?.id ?? '';
+    }
+
+    if (!effectiveUserId) {
+      console.error('Habit creation failed: missing authenticated user id');
+      return;
+    }
 
     const optimisticHabit: HabitDocument = {
       $id: newHabit.documentID,
       name: newHabit.name,
       Type: newHabit.Type,
-      UserID: newHabit.UserID,
+      UserID: effectiveUserId,
       Dates: newHabit.Dates ?? [],
       $createdAt: new Date().toISOString(),
       $updatedAt: new Date().toISOString(),
@@ -408,17 +428,17 @@ export const useAppStore = create<AppState>((set, get) => ({
         id: newHabit.documentID,
         name: newHabit.name,
         type: newHabit.Type,
-        user_id: newHabit.UserID,
+        user_id: effectiveUserId,
         dates: newHabit.Dates ?? [],
       });
 
       // Support legacy table shape used by early migrations: documentID/Type/UserID/Dates.
-      if (error && isSchemaMismatchError(error)) {
+      if (error && (isSchemaMismatchError(error) || isRlsViolationError(error))) {
         const legacyInsert = await supabase.from(HABITS_TABLE).insert({
           documentID: newHabit.documentID,
           name: newHabit.name,
           Type: newHabit.Type,
-          UserID: newHabit.UserID,
+          UserID: effectiveUserId,
           Dates: newHabit.Dates ?? [],
         });
 
@@ -430,6 +450,11 @@ export const useAppStore = create<AppState>((set, get) => ({
       }
     } catch (error) {
       console.error(toErrorLog('Habit creation failed', error));
+      if (isRlsViolationError(error)) {
+        console.error(
+          `RLS hint: verify INSERT policy on table ${HABITS_TABLE} allows auth.uid() to match the inserted user id column (user_id or UserID).`,
+        );
+      }
       set({ habits: habits.filter((habit) => habit.$id !== newHabit.documentID) });
       await get().fetchHabits();
     }
