@@ -45,13 +45,24 @@ interface ProfileRow {
 }
 
 interface HabitRow {
-  id: string;
+  id?: string;
+  documentID?: string;
   name: string;
-  type: string;
-  user_id: string;
-  dates: string[] | null;
-  created_at: string;
-  updated_at: string;
+  type?: string | null;
+  Type?: string | null;
+  user_id?: string | null;
+  UserID?: string | null;
+  dates?: string[] | null;
+  Dates?: string[] | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
+interface SupabaseErrorLike {
+  code?: string;
+  message?: string;
+  details?: string;
+  hint?: string;
 }
 
 interface AppState {
@@ -95,12 +106,39 @@ interface AppState {
 }
 
 const PROFILES_TABLE = process.env.NEXT_PUBLIC_SUPABASE_USER_TABLE ?? 'profiles';
-const HABITS_TABLE = process.env.NEXT_PUBLIC_SUPABASE_HABITS_TABLE ?? 'habits';
+const HABITS_TABLE =
+  process.env.NEXT_PUBLIC_SUPABASE_HABITS_TABLE ??
+  process.env.NEXT_PUBLIC_SUPABASE_HABIT_TABLE ??
+  'habit';
 
 const statColumnMap: Record<UserStat, keyof Pick<ProfileRow, 'strength' | 'agility' | 'inteligent'>> = {
   Strength: 'strength',
   Agility: 'agility',
   Inteligent: 'inteligent',
+};
+
+const isSchemaMismatchError = (error: unknown) => {
+  if (!error || typeof error !== 'object') return false;
+
+  const supabaseError = error as SupabaseErrorLike;
+  const message = `${supabaseError.message ?? ''} ${supabaseError.details ?? ''}`.toLowerCase();
+
+  return (
+    supabaseError.code === 'PGRST204' ||
+    supabaseError.code === '42703' ||
+    message.includes('column') ||
+    message.includes('does not exist')
+  );
+};
+
+const toErrorLog = (label: string, error: unknown) => {
+  if (!error || typeof error !== 'object') {
+    return `${label}: ${String(error)}`;
+  }
+
+  const supabaseError = error as SupabaseErrorLike;
+
+  return `${label}: code=${supabaseError.code ?? 'unknown'} message=${supabaseError.message ?? 'unknown'} details=${supabaseError.details ?? 'n/a'} hint=${supabaseError.hint ?? 'n/a'}`;
 };
 
 const calculateXP = (level: number) => {
@@ -135,14 +173,15 @@ const mapHabitRowToDocument = (
   habit: HabitRow,
   calculateHabitStreak: (dates: string[]) => number,
 ): HabitDocument => {
-  const dates = habit.dates ?? [];
+  const dates = habit.dates ?? habit.Dates ?? [];
   const sortedDates = sortDatesDescending(dates);
+  const habitId = habit.id ?? habit.documentID ?? '';
 
   return {
-    $id: habit.id,
+    $id: habitId,
     name: habit.name,
-    Type: habit.type,
-    UserID: habit.user_id,
+    Type: habit.type ?? habit.Type ?? 'Strength',
+    UserID: habit.user_id ?? habit.UserID ?? '',
     Dates: dates,
     $createdAt: habit.created_at,
     $updatedAt: habit.updated_at,
@@ -308,12 +347,30 @@ export const useAppStore = create<AppState>((set, get) => ({
     if (!currentUserID) return;
 
     try {
-      const { data, error } = await supabase
+      let data: HabitRow[] | null = null;
+      let error: unknown = null;
+
+      const modernResult = await supabase
         .from(HABITS_TABLE)
         .select('id,name,type,user_id,dates,created_at,updated_at')
         .eq('user_id', currentUserID)
         .order('created_at', { ascending: false })
         .limit(50);
+
+      data = modernResult.data as HabitRow[] | null;
+      error = modernResult.error;
+
+      // Support legacy table shape used by early migrations: documentID/Type/UserID/Dates.
+      if (error && isSchemaMismatchError(error)) {
+        const legacyResult = await supabase
+          .from(HABITS_TABLE)
+          .select('documentID,name,Type,UserID,Dates,created_at,updated_at')
+          .eq('UserID', currentUserID)
+          .limit(50);
+
+        data = legacyResult.data;
+        error = legacyResult.error;
+      }
 
       if (error) {
         throw error;
@@ -325,7 +382,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 
       set({ habits: mappedHabits });
     } catch (error) {
-      console.error('Habit fetch failed', error);
+      console.error(toErrorLog('Habit fetch failed', error));
     }
   },
 
@@ -347,7 +404,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ habits: [...habits, optimisticHabit] });
 
     try {
-      const { error } = await supabase.from(HABITS_TABLE).insert({
+      let { error } = await supabase.from(HABITS_TABLE).insert({
         id: newHabit.documentID,
         name: newHabit.name,
         type: newHabit.Type,
@@ -355,11 +412,24 @@ export const useAppStore = create<AppState>((set, get) => ({
         dates: newHabit.Dates ?? [],
       });
 
+      // Support legacy table shape used by early migrations: documentID/Type/UserID/Dates.
+      if (error && isSchemaMismatchError(error)) {
+        const legacyInsert = await supabase.from(HABITS_TABLE).insert({
+          documentID: newHabit.documentID,
+          name: newHabit.name,
+          Type: newHabit.Type,
+          UserID: newHabit.UserID,
+          Dates: newHabit.Dates ?? [],
+        });
+
+        error = legacyInsert.error;
+      }
+
       if (error) {
         throw error;
       }
     } catch (error) {
-      console.error('Habit creation failed', error);
+      console.error(toErrorLog('Habit creation failed', error));
       set({ habits: habits.filter((habit) => habit.$id !== newHabit.documentID) });
       await get().fetchHabits();
     }
@@ -378,13 +448,24 @@ export const useAppStore = create<AppState>((set, get) => ({
         request = request.eq('user_id', currentUserID);
       }
 
-      const { error } = await request;
+      let { error } = await request;
+
+      if (error && isSchemaMismatchError(error)) {
+        let legacyRequest = supabase.from(HABITS_TABLE).delete().eq('documentID', documentID);
+
+        if (currentUserID) {
+          legacyRequest = legacyRequest.eq('UserID', currentUserID);
+        }
+
+        const legacyDelete = await legacyRequest;
+        error = legacyDelete.error;
+      }
 
       if (error) {
         throw error;
       }
     } catch (error) {
-      console.error('Habit deletion failed', error);
+      console.error(toErrorLog('Habit deletion failed', error));
       if (habitToDelete) {
         const { habits: latestHabits } = get();
         set({ habits: [...latestHabits, habitToDelete] });
@@ -412,16 +493,25 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ habits: optimisticHabits });
 
     try {
-      const { error } = await supabase
+      let { error } = await supabase
         .from(HABITS_TABLE)
         .update({ dates })
         .eq('id', habitId);
+
+      if (error && isSchemaMismatchError(error)) {
+        const legacyUpdate = await supabase
+          .from(HABITS_TABLE)
+          .update({ Dates: dates })
+          .eq('documentID', habitId);
+
+        error = legacyUpdate.error;
+      }
 
       if (error) {
         throw error;
       }
     } catch (error) {
-      console.error('Habit date update failed', error);
+      console.error(toErrorLog('Habit date update failed', error));
       set({ habits });
       await get().fetchHabits();
     }
