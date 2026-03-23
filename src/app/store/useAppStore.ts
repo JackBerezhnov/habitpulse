@@ -5,7 +5,7 @@ export interface HabitProps {
   name: string;
   Type: string;
   UserID: string;
-  documentID: string;
+  id: string;
   Dates?: string[];
   currentStreak?: number;
 }
@@ -47,6 +47,7 @@ interface ProfileRow {
 
 interface HabitRow {
   id?: string;
+  document_id?: string;
   documentID?: string;
   name: string;
   type?: string | null;
@@ -93,7 +94,7 @@ interface AppState {
   getUser: () => Promise<void>;
   fetchHabits: () => Promise<void>;
   addHabit: (habit: HabitProps) => Promise<void>;
-  deleteHabit: (documentID: string) => Promise<void>;
+  deleteHabit: (habitId: string) => Promise<void>;
   updateHabitDates: (habitId: string, dates: string[]) => Promise<void>;
   updateUserExperience: (newXP: number) => Promise<void>;
   updateUserLevel: (newLevel: number) => Promise<void>;
@@ -106,11 +107,10 @@ interface AppState {
   updateHabitStreak: (habitId: string) => Promise<void>;
 }
 
-const PROFILES_TABLE = process.env.NEXT_PUBLIC_SUPABASE_USER_TABLE ?? 'profiles';
-const PROFILE_TABLE_CANDIDATES = Array.from(new Set([PROFILES_TABLE, 'users', 'profiles']));
-const PROFILE_SELECT_COLUMNS = 'id,name,level,experience,strength,agility,inteligent';
-const PROFILE_SELECT_COLUMNS_WITH_USER_ID =
-  'id,user_id,name,level,experience,strength,agility,inteligent';
+const PROFILES_TABLE = process.env.NEXT_PUBLIC_SUPABASE_USER_TABLE ?? 'users';
+const PROFILE_TABLE_CANDIDATES = Array.from(new Set([PROFILES_TABLE, 'users']));
+const PROFILE_SELECT_COLUMNS = '*';
+const PROFILE_SELECT_COLUMNS_WITH_USER_ID = '*';
 
 type ProfileKeyColumn = 'id' | 'user_id';
 
@@ -234,7 +234,7 @@ const findProfileForUser = async (userId: string): Promise<ProfileRow | null> =>
 
     if (data) {
       profileStrategyCache = strategy;
-      return data as ProfileRow;
+      return data as unknown as ProfileRow;
     }
   }
 
@@ -362,7 +362,7 @@ const mapHabitRowToDocument = (
 ): HabitDocument => {
   const dates = habit.dates ?? habit.Dates ?? [];
   const sortedDates = sortDatesDescending(dates);
-  const habitId = habit.id ?? habit.documentID ?? '';
+  const habitId = habit.id ?? habit.document_id ?? habit.documentID ?? '';
 
   return {
     $id: habitId,
@@ -451,33 +451,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     if (!currentUserID) return;
 
     try {
-      const { data: existingProfile, error: fetchError } = await supabase
-        .from(PROFILES_TABLE)
-        .select('id')
-        .eq('id', currentUserID)
-        .maybeSingle();
-
-      if (fetchError) {
-        throw fetchError;
-      }
-
-      if (existingProfile) {
-        return;
-      }
-
-      const { error: insertError } = await supabase.from(PROFILES_TABLE).insert({
-        id: currentUserID,
-        name: userName || 'Player',
-        level: 1,
-        experience: 0,
-        strength: 0,
-        agility: 0,
-        inteligent: 0,
-      });
-
-      if (insertError) {
-        throw insertError;
-      }
+      await createProfileForUser(currentUserID, userName || 'Player');
     } catch (error) {
       console.log('User creation failed', error);
     }
@@ -489,18 +463,9 @@ export const useAppStore = create<AppState>((set, get) => ({
 
     const fallbackName = userName || 'Player';
 
-    // Internal retry helper function
     const fetchUserWithRetry = async (retryCount = 0): Promise<void> => {
       try {
-        const { data: profile, error } = await supabase
-          .from(PROFILES_TABLE)
-          .select('id,name,level,experience,strength,agility,inteligent')
-          .eq('id', currentUserID)
-          .maybeSingle();
-
-        if (error) {
-          throw error;
-        }
+        const profile = await findProfileForUser(currentUserID);
 
         if (!profile) {
           if (retryCount < 3) {
@@ -508,12 +473,14 @@ export const useAppStore = create<AppState>((set, get) => ({
             return fetchUserWithRetry(retryCount + 1);
           }
 
-          set({ currentUser: createDefaultUser(currentUserID, fallbackName) });
+          await createProfileForUser(currentUserID, fallbackName);
+          const created = await findProfileForUser(currentUserID);
+          set({ currentUser: created ? mapProfileToUser(created, fallbackName) : createDefaultUser(currentUserID, fallbackName) });
           get().calculateProgressToNextLevel();
           return;
         }
 
-        set({ currentUser: mapProfileToUser(profile as ProfileRow, fallbackName) });
+        set({ currentUser: mapProfileToUser(profile, fallbackName) });
         get().calculateProgressToNextLevel();
       } catch (error) {
         if (retryCount < 3) {
@@ -539,7 +506,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 
       const modernResult = await supabase
         .from(HABITS_TABLE)
-        .select('id,name,type,user_id,dates,created_at,updated_at')
+        .select('id,document_id,name,type,user_id,dates,created_at,updated_at')
         .eq('user_id', currentUserID)
         .order('created_at', { ascending: false })
         .limit(50);
@@ -551,8 +518,8 @@ export const useAppStore = create<AppState>((set, get) => ({
       if (error && isSchemaMismatchError(error)) {
         const legacyResult = await supabase
           .from(HABITS_TABLE)
-          .select('documentID,name,Type,UserID,Dates,created_at,updated_at')
-          .eq('UserID', currentUserID)
+          .select('document_id,name,type,user_id,dates,created_at,updated_at')
+          .eq('user_id', currentUserID)
           .limit(50);
 
         data = legacyResult.data;
@@ -588,7 +555,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     }
 
     const optimisticHabit: HabitDocument = {
-      $id: newHabit.documentID,
+      $id: newHabit.id,
       name: newHabit.name,
       Type: newHabit.Type,
       UserID: effectiveUserId,
@@ -603,7 +570,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 
     try {
       let { error } = await supabase.from(HABITS_TABLE).insert({
-        id: newHabit.documentID,
+        id: newHabit.id,
         name: newHabit.name,
         type: newHabit.Type,
         user_id: effectiveUserId,
@@ -613,11 +580,11 @@ export const useAppStore = create<AppState>((set, get) => ({
       // Support legacy table shape used by early migrations: documentID/Type/UserID/Dates.
       if (error && (isSchemaMismatchError(error) || isRlsViolationError(error))) {
         const legacyInsert = await supabase.from(HABITS_TABLE).insert({
-          documentID: newHabit.documentID,
+          document_id: newHabit.id,
           name: newHabit.name,
-          Type: newHabit.Type,
-          UserID: effectiveUserId,
-          Dates: newHabit.Dates ?? [],
+          type: newHabit.Type,
+          user_id: effectiveUserId,
+          dates: newHabit.Dates ?? [],
         });
 
         error = legacyInsert.error;
@@ -633,19 +600,19 @@ export const useAppStore = create<AppState>((set, get) => ({
           `RLS hint: verify INSERT policy on table ${HABITS_TABLE} allows auth.uid() to match the inserted user id column (user_id or UserID).`,
         );
       }
-      set({ habits: habits.filter((habit) => habit.$id !== newHabit.documentID) });
+      set({ habits: habits.filter((habit) => habit.$id !== newHabit.id) });
       await get().fetchHabits();
     }
   },
 
-  deleteHabit: async (documentID: string) => {
+  deleteHabit: async (habitId: string) => {
     const { habits, currentUserID } = get();
-    const habitToDelete = habits.find((habit) => habit.$id === documentID);
+    const habitToDelete = habits.find((habit) => habit.$id === habitId);
 
-    set({ habits: habits.filter((habit) => habit.$id !== documentID) });
+    set({ habits: habits.filter((habit) => habit.$id !== habitId) });
 
     try {
-      let request = supabase.from(HABITS_TABLE).delete().eq('id', documentID);
+      let request = supabase.from(HABITS_TABLE).delete().eq('id', habitId);
 
       if (currentUserID) {
         request = request.eq('user_id', currentUserID);
@@ -654,7 +621,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       let { error } = await request;
 
       if (error && isSchemaMismatchError(error)) {
-        let legacyRequest = supabase.from(HABITS_TABLE).delete().eq('documentID', documentID);
+        let legacyRequest = supabase.from(HABITS_TABLE).delete().eq('document_id', habitId);
 
         if (currentUserID) {
           legacyRequest = legacyRequest.eq('UserID', currentUserID);
@@ -705,7 +672,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         const legacyUpdate = await supabase
           .from(HABITS_TABLE)
           .update({ Dates: dates })
-          .eq('documentID', habitId);
+          .eq('document_id', habitId);
 
         error = legacyUpdate.error;
       }
@@ -729,16 +696,9 @@ export const useAppStore = create<AppState>((set, get) => ({
     get().calculateProgressToNextLevel();
 
     try {
-      const { error } = await supabase
-        .from(PROFILES_TABLE)
-        .update({ experience: newXP })
-        .eq('id', currentUserID);
-
-      if (error) {
-        throw error;
-      }
+      await updateProfileForUser(currentUserID, { experience: newXP }, currentUser.Name);
     } catch (error) {
-      console.error('Experience update failed', error);
+      console.error(toErrorLog('Experience update failed', error));
       const restoredUser = { ...get().currentUser!, Experience: oldXP };
       set({ currentUser: restoredUser });
       get().calculateProgressToNextLevel();
@@ -754,16 +714,9 @@ export const useAppStore = create<AppState>((set, get) => ({
     get().calculateProgressToNextLevel();
 
     try {
-      const { error } = await supabase
-        .from(PROFILES_TABLE)
-        .update({ level: newLevel })
-        .eq('id', currentUserID);
-
-      if (error) {
-        throw error;
-      }
+      await updateProfileForUser(currentUserID, { level: newLevel }, currentUser.Name);
     } catch (error) {
-      console.error('Level update failed', error);
+      console.error(toErrorLog('Level update failed', error));
       const restoredUser = { ...get().currentUser!, Level: oldLevel };
       set({ currentUser: restoredUser });
       get().calculateProgressToNextLevel();
@@ -780,18 +733,9 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ currentUser: { ...currentUser, [statType]: newValue } });
 
     try {
-      const payload: Record<string, number> = { [column]: newValue };
-
-      const { error } = await supabase
-        .from(PROFILES_TABLE)
-        .update(payload)
-        .eq('id', currentUserID);
-
-      if (error) {
-        throw error;
-      }
+      await updateProfileForUser(currentUserID, { [column]: newValue }, currentUser.Name);
     } catch (error) {
-      console.error('Stat update failed', error);
+      console.error(toErrorLog('Stat update failed', error));
       set({ currentUser: { ...get().currentUser!, [statType]: oldValue } });
     }
   },

@@ -118,7 +118,7 @@ export default function Home() {
       name: habitName,
       Type: habitType,
       UserID: currentUserID,
-      documentID: createHabitId(),
+      id: createHabitId(),
     };
 
     await addHabit(newHabit);
@@ -213,7 +213,7 @@ export default function Home() {
             {/* Habits Section */}
             <div className="habits flex flex-col w-full">
               {habits.map((habit) => (
-                <Habit key={habit.$id} documentID={habit.$id} name={habit.name} Type={habit.Type} UserID={currentUserID}/>
+                <Habit key={habit.$id} id={habit.$id} name={habit.name} Type={habit.Type} UserID={currentUserID}/>
               ))}
             </div>
             </div>

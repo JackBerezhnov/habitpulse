@@ -9,10 +9,10 @@ export interface HabitProps {
     name: string;
     Type: string;
     UserID: string;
-    documentID: string;
+  id: string;
 }
 
-const Habit: React.FC<HabitProps> = ({ name, documentID, Type }) => {
+const Habit: React.FC<HabitProps> = ({ name, id, Type }) => {
     
     const [isMounted, setIsMounted] = useState(false);
     const [currentStreak, setCurrentStreak] = useState(0);
@@ -30,7 +30,7 @@ const Habit: React.FC<HabitProps> = ({ name, documentID, Type }) => {
     
     // Update streak and completion status whenever habits data changes
     useEffect(() => {
-        const currentHabit = habits.find(h => h.$id === documentID);
+        const currentHabit = habits.find(h => h.$id === id);
         if (currentHabit) {
             const newStreak = calculateHabitStreak(currentHabit.Dates || []);
             const newEmoji = getStreakEmoji(newStreak);
@@ -45,10 +45,10 @@ const Habit: React.FC<HabitProps> = ({ name, documentID, Type }) => {
             }) || false;
             setIsCompleted(todayCompleted);
         }
-    }, [habits, documentID, calculateHabitStreak, getStreakEmoji]);
+    }, [habits, id, calculateHabitStreak, getStreakEmoji]);
     
     const handleDeleteButton = async() => {
-      await deleteHabit(documentID);
+      await deleteHabit(id);
     }
 
     const handleMarkAsDone = async() => {
@@ -56,15 +56,15 @@ const Habit: React.FC<HabitProps> = ({ name, documentID, Type }) => {
         
         try {
             const today = new Date();
-            const currentHabit = habits.find(h => h.$id === documentID);
+            const currentHabit = habits.find(h => h.$id === id);
             const currentDates = currentHabit?.Dates || [];
             const updatedDates = [...currentDates, today.toISOString()];
             
             // Update habit dates
-            await updateHabitDates(documentID, updatedDates);
+            await updateHabitDates(id, updatedDates);
             
             // Update streak
-            await updateHabitStreak(documentID);
+            await updateHabitStreak(id);
             
             // Add XP and handle level up (no await for instant UI updates)
             const earnedXP = 100;
@@ -200,7 +200,7 @@ const Habit: React.FC<HabitProps> = ({ name, documentID, Type }) => {
             <div className="space-y-4">
               {/* Calendar */}
               <div className="bg-base-50 rounded-lg p-3 overflow-x-hidden">
-                <Calendar value={currentDate} id={documentID} onChange={setCurrentDate} readOnly={true}/>
+                <Calendar value={currentDate} id={id} onChange={setCurrentDate} readOnly={true}/>
               </div>
               
               {/* Stats */}
