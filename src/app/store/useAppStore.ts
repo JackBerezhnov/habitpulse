@@ -36,6 +36,7 @@ type UserStat = 'Strength' | 'Agility' | 'Inteligent';
 
 interface ProfileRow {
   id: string;
+  user_id?: string | null;
   name: string | null;
   level: number | null;
   experience: number | null;
@@ -106,6 +107,20 @@ interface AppState {
 }
 
 const PROFILES_TABLE = process.env.NEXT_PUBLIC_SUPABASE_USER_TABLE ?? 'profiles';
+const PROFILE_TABLE_CANDIDATES = Array.from(new Set([PROFILES_TABLE, 'users', 'profiles']));
+const PROFILE_SELECT_COLUMNS = 'id,name,level,experience,strength,agility,inteligent';
+const PROFILE_SELECT_COLUMNS_WITH_USER_ID =
+  'id,user_id,name,level,experience,strength,agility,inteligent';
+
+type ProfileKeyColumn = 'id' | 'user_id';
+
+interface ProfileStrategy {
+  table: string;
+  keyColumn: ProfileKeyColumn;
+}
+
+let profileStrategyCache: ProfileStrategy | null = null;
+
 const HABITS_TABLE =
   process.env.NEXT_PUBLIC_SUPABASE_HABITS_TABLE ??
   process.env.NEXT_PUBLIC_SUPABASE_HABIT_TABLE ??
@@ -125,8 +140,13 @@ const isSchemaMismatchError = (error: unknown) => {
 
   return (
     supabaseError.code === 'PGRST204' ||
+    supabaseError.code === 'PGRST205' ||
     supabaseError.code === '42703' ||
+    supabaseError.code === '42P01' ||
     message.includes('column') ||
+    message.includes('relation') ||
+    message.includes('schema cache') ||
+    message.includes('could not find the table') ||
     message.includes('does not exist')
   );
 };
@@ -138,6 +158,15 @@ const isRlsViolationError = (error: unknown) => {
   const message = `${supabaseError.message ?? ''} ${supabaseError.details ?? ''}`.toLowerCase();
 
   return supabaseError.code === '42501' || message.includes('row-level security');
+};
+
+const isUniqueViolationError = (error: unknown) => {
+  if (!error || typeof error !== 'object') return false;
+
+  const supabaseError = error as SupabaseErrorLike;
+  const message = `${supabaseError.message ?? ''} ${supabaseError.details ?? ''}`.toLowerCase();
+
+  return supabaseError.code === '23505' || message.includes('duplicate key');
 };
 
 const toErrorLog = (label: string, error: unknown) => {
@@ -158,6 +187,155 @@ const sortDatesDescending = (dates: string[]) => {
   return [...dates].sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
 };
 
+const getProfileStrategies = (): ProfileStrategy[] => {
+  const allStrategies: ProfileStrategy[] = [];
+
+  if (profileStrategyCache) {
+    allStrategies.push(profileStrategyCache);
+  }
+
+  for (const table of PROFILE_TABLE_CANDIDATES) {
+    allStrategies.push({ table, keyColumn: 'id' });
+    allStrategies.push({ table, keyColumn: 'user_id' });
+  }
+
+  const seen = new Set<string>();
+
+  return allStrategies.filter((strategy) => {
+    const key = `${strategy.table}:${strategy.keyColumn}`;
+    if (seen.has(key)) {
+      return false;
+    }
+
+    seen.add(key);
+    return true;
+  });
+};
+
+const getProfileSelectColumns = (keyColumn: ProfileKeyColumn) => {
+  return keyColumn === 'user_id' ? PROFILE_SELECT_COLUMNS_WITH_USER_ID : PROFILE_SELECT_COLUMNS;
+};
+
+const findProfileForUser = async (userId: string): Promise<ProfileRow | null> => {
+  for (const strategy of getProfileStrategies()) {
+    const { data, error } = await supabase
+      .from(strategy.table)
+      .select(getProfileSelectColumns(strategy.keyColumn))
+      .eq(strategy.keyColumn, userId)
+      .maybeSingle();
+
+    if (error) {
+      if (isSchemaMismatchError(error)) {
+        continue;
+      }
+
+      throw error;
+    }
+
+    if (data) {
+      profileStrategyCache = strategy;
+      return data as ProfileRow;
+    }
+  }
+
+  return null;
+};
+
+const createProfileForUser = async (userId: string, name: string): Promise<void> => {
+  const existingProfile = await findProfileForUser(userId);
+  if (existingProfile) {
+    return;
+  }
+
+  const basePayload = {
+    id: userId,
+    name: name || 'Player',
+    level: 1,
+    experience: 0,
+    strength: 0,
+    agility: 0,
+    inteligent: 0,
+  };
+
+  let lastError: unknown = null;
+
+  for (const strategy of getProfileStrategies()) {
+    const payload =
+      strategy.keyColumn === 'user_id' ? { ...basePayload, user_id: userId } : basePayload;
+
+    const { error } = await supabase.from(strategy.table).insert(payload);
+
+    if (!error || isUniqueViolationError(error)) {
+      profileStrategyCache = strategy;
+      return;
+    }
+
+    if (isSchemaMismatchError(error) || isRlsViolationError(error)) {
+      lastError = error;
+      continue;
+    }
+
+    throw error;
+  }
+
+  if (lastError) {
+    throw lastError;
+  }
+
+  throw new Error('Failed to create player profile for all known table schemas.');
+};
+
+const updateProfileForUser = async (
+  userId: string,
+  payload: Record<string, number | string>,
+  fallbackName = 'Player',
+): Promise<void> => {
+  let lastError: unknown = null;
+
+  const tryUpdate = async (): Promise<boolean> => {
+    for (const strategy of getProfileStrategies()) {
+      const { data, error } = await supabase
+        .from(strategy.table)
+        .update(payload)
+        .eq(strategy.keyColumn, userId)
+        .select('id')
+        .maybeSingle();
+
+      if (error) {
+        if (isSchemaMismatchError(error) || isRlsViolationError(error)) {
+          lastError = error;
+          continue;
+        }
+
+        throw error;
+      }
+
+      if (data) {
+        profileStrategyCache = strategy;
+        return true;
+      }
+    }
+
+    return false;
+  };
+
+  if (await tryUpdate()) {
+    return;
+  }
+
+  await createProfileForUser(userId, fallbackName);
+
+  if (await tryUpdate()) {
+    return;
+  }
+
+  if (lastError) {
+    throw lastError;
+  }
+
+  throw new Error('Failed to update player profile for all known table schemas.');
+};
+
 const createDefaultUser = (id: string, name: string): User => ({
   $id: id,
   Name: name,
@@ -169,7 +347,7 @@ const createDefaultUser = (id: string, name: string): User => ({
 });
 
 const mapProfileToUser = (profile: ProfileRow, fallbackName: string): User => ({
-  $id: profile.id,
+  $id: profile.user_id ?? profile.id,
   Name: profile.name ?? fallbackName,
   Level: profile.level ?? 1,
   Experience: profile.experience ?? 0,
