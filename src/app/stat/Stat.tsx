@@ -5,39 +5,23 @@ interface StatProps {
     statType: string
 }
 
+const statConfigs: Record<string, { icon: string; label: string; barClass: string }> = {
+    Strength: { icon: '⚔️', label: 'Strength', barClass: 'stat-bar-red' },
+    Agility: { icon: '⚡', label: 'Agility', barClass: 'stat-bar-green' },
+    Inteligent: { icon: '🧠', label: 'Intelligence', barClass: 'stat-bar-blue' },
+};
+
 const Stat: React.FC<StatProps> = ({stat, statType}) => {
-    if(statType === "Strength") {
-        return(
-            <div className="stats shadow m-2 sm:m-5">
-                <div className="stat place-items-center">
-                    <div className="stat-title text-error">💪 Strength</div>
-                    <div className="stat-value text-error">{stat}</div>
-                </div>
-            </div>
-        )
-    }
+    const config = statConfigs[statType];
+    if (!config) return null;
 
-    if(statType === "Agility") {
-        return(
-            <div className="stats shadow m-2 sm:m-5">
-                <div className="stat place-items-center">
-                    <div className="stat-title text-accent">⚡ Agility</div>
-                    <div className="stat-value text-accent">{stat}</div>
-                </div>
-            </div>
-        )
-    }
-
-    if(statType === "Inteligent") {
-        return(
-            <div className="stats shadow m-2 sm:m-5">
-                <div className="stat place-items-center">
-                    <div className="stat-title text-info">🧠 Intelligence</div>
-                    <div className="stat-value text-info">{stat}</div>
-                </div>
-            </div>
-        )
-    }
+    return (
+        <div className={`stat-bar ${config.barClass}`}>
+            <span className="text-2xl">{config.icon}</span>
+            <span className="text-[0.65rem] flex-1">{config.label}</span>
+            <span className="text-lg">{stat}</span>
+        </div>
+    );
 }
 
 export default Stat;

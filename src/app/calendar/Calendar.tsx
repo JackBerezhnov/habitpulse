@@ -117,16 +117,16 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id, readOnly 
         }
     }
 
-    return <div className="w-full max-w-md mx-auto border-t border-l" id={id}>
+    return <div className="w-full max-w-md mx-auto pixel-panel" id={id}>
         <div className="grid grid-cols-7 items-center justify-center text-center">
             <Cell onClick={prevYear}>{"<<"}</Cell>
             <Cell onClick={prevMonth}>{"<"}</Cell>
-            <Cell className="col-span-3">{format(value, 'LLLL yyyy')}</Cell>
+            <Cell className="col-span-3 text-[0.5rem] text-yellow-400">{format(value, 'LLLL yyyy')}</Cell>
             <Cell onClick={nextMonth}>{">"}</Cell>
             <Cell onClick={nextYear}>{">>"}</Cell>
 
             {daysOfWeek.map((day) => (
-                <Cell key={day} className="text-sm font-bold">{day}</Cell>
+                <Cell key={day} className="text-[0.45rem] font-bold text-gray-400">{day}</Cell>
             ))}
 
             {Array.from({length: prefixDays}).map((_, index) => {

@@ -2,22 +2,21 @@ export interface HabitTypeProps {
     Type: string;
 }
 
+const typeConfigs: Record<string, { label: string; btnClass: string }> = {
+    Strength: { label: 'Strong', btnClass: 'pixel-btn-red' },
+    Inteligent: { label: 'Intelligent', btnClass: 'pixel-btn-outline' },
+    Agility: { label: 'Agile', btnClass: 'pixel-btn-green' },
+};
+
 const HabitType: React.FC<HabitTypeProps> = ({ Type }) => {
-    if(Type === "Strength") {
-        return(
-            <div className="badge badge-error badge-outline mr-4 ml-4">{ Type }</div>
-        )
-    }
-    if(Type === "Inteligent") {
-        return(
-            <div className="badge badge-info badge-outline mr-4 ml-4">{ Type }</div>
-        )
-    }
-    if(Type === "Agility") {
-        return(
-            <div className="badge badge-accent badge-outline mr-4 ml-4">{ Type }</div>
-        )
-    }
+    const config = typeConfigs[Type];
+    if (!config) return null;
+
+    return (
+        <span className={`pixel-btn ${config.btnClass} text-[0.45rem] py-1 px-3`}>
+            {config.label}
+        </span>
+    );
 }
 
 export default HabitType; 

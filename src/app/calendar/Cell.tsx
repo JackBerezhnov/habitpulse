@@ -1,5 +1,4 @@
 import clsx from "clsx";
-import { useState } from "react";
 
 interface Props extends React.PropsWithChildren {
     onClick?: () => void;
@@ -10,28 +9,26 @@ interface Props extends React.PropsWithChildren {
 }
 
 const Cell: React.FC<Props> = ({onClick, className, isCurrentDay, isToday, isDisabled, children}) => {
-    
-
     const handleClick = () => {
         if (onClick && !isDisabled) onClick();
     };
 
     return (
         <div
-            onClick={handleClick} 
+            onClick={handleClick}
             className={clsx(
-                "h-12 flex items-center justify-center border-b border-r",
+                "h-10 flex items-center justify-center text-[0.5rem] border border-[#3d2a5c]/40",
                 {
-                    "cursor-pointer hover:bg-gray-100 hover:text-black active:bg-gray-200": !!onClick && !isDisabled,
-                    "bg-green-500 text-white": isCurrentDay,
-                    "bg-blue-100 border-blue-300 font-semibold": isToday && !isCurrentDay,
-                    "text-gray-400 cursor-not-allowed": isDisabled && !isCurrentDay,
+                    "cursor-pointer hover:bg-[#4a3570] active:bg-[#5a4580]": !!onClick && !isDisabled,
+                    "bg-green-600 text-white": isCurrentDay,
+                    "bg-[#2d1b4e] text-yellow-300 font-bold": isToday && !isCurrentDay,
+                    "text-gray-600 cursor-not-allowed": isDisabled && !isCurrentDay,
                     "cursor-default": !onClick || isDisabled
                 },
                 className
             )}
         >
-                {children}
+            {children}
         </div>
     );
 };

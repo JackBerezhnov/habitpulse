@@ -128,139 +128,150 @@ export default function Home() {
   }
 
   if (isLoading || !currentUser || !currentUserID) {
-    return <div className="flex flex-col justify-center items-center gap-8 hero bg-base-200 h-[100vh]">
-      <span className="loading loading-spinner loading-lg"></span>
-    </div>;
+    return (
+      <div className="space-bg min-h-screen flex items-center justify-center">
+        <div className="relative z-10 pixel-panel p-8 text-center">
+          <span className="pixel-loading">Loading...</span>
+        </div>
+      </div>
+    );
   }
 
   return (
     <MainLayout>
-        <div className="min-h-screen bg-base-200 flex flex-col">
-          <main className="flex-grow flex flex-col">
-            <div className="flex flex-col items-center gap-4 sm:gap-6 px-3 sm:px-4 py-4 sm:py-8 max-w-4xl mx-auto w-full">
-            <div className="text-center">
-              <h2 className="text-xl sm:text-2xl font-bold mb-2">Welcome to HabitPulse, {userName}</h2>
-              
-              {/* Getting Started Button */}
-              <button 
-                className="btn btn-outline btn-sm gap-2 touch-manipulation" 
-                onClick={() => setIsHelpModalOpen(true)}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Getting Started
-              </button>
-            </div>
-            
-            {/* Stats Section - Mobile Optimized */}
-            <div className="w-full space-y-4">
-              {/* Level and XP Card */}
-              <div className="card bg-base-100 shadow-lg w-full">
-                <div className="card-body p-4 sm:p-6">
-                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <div className="stats stats-vertical sm:stats-horizontal shadow-none bg-transparent">
-                      <div className="stat place-items-center">
-                        <div className="stat-title text-xs sm:text-sm">Level</div>
-                        <div className="stat-value text-2xl sm:text-3xl">{currentUser.Level}</div>
-                        <div className="stat-desc text-xs">XP: {currentUser.Experience}</div>
-                      </div>
-                    </div>
-                    
-                    {/* Daily Motivational Quote */}
-                    <div className="text-center max-w-md mx-auto px-4">
-                      <div className="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg p-4 border border-primary/20">
-                        <div className="flex items-center justify-center gap-2 mb-2">
-                          <span className="text-primary text-lg">💪</span>
-                          <span className="text-xs font-semibold text-primary uppercase tracking-wide">Daily Motivation</span>
-                          <span className="text-primary text-lg">✨</span>
-                        </div>
-                        <blockquote className="text-sm sm:text-base font-medium text-base-content/80 italic leading-relaxed">
-                          &ldquo;{getDailyQuote()}&rdquo;
-                        </blockquote>
-                      </div>
-                    </div>
-                    
-                    <div className="flex flex-col items-center gap-2">
-                      <div className="text-xs sm:text-sm font-medium">Next Level Progress</div>
-                      <div className="radial-progress text-primary text-xs sm:text-sm" style={{"--value": progressLevel, "--size": "4rem"} as React.CSSProperties} role="progressbar">
-                        {progressLevel}%
-                      </div>
-                    </div>
-                  </div>
+      <div className="flex flex-col min-h-screen">
+        <div className="flex-grow flex flex-col gap-4 p-3 sm:p-6 max-w-5xl mx-auto w-full">
+
+          {/* Welcome Header */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pixel-panel p-4">
+            <h2 className="text-[0.7rem] sm:text-[0.85rem] text-yellow-400 text-center sm:text-left">
+              Welcome to HabitPulse, {userName}
+            </h2>
+            <button
+              className="pixel-btn pixel-btn-outline text-[0.55rem]"
+              onClick={() => setIsHelpModalOpen(true)}
+            >
+              Getting Started
+            </button>
+          </div>
+
+          {/* Three-card row: Level, Motivation, Progress */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Level Card */}
+            <div className="pixel-panel p-4">
+              <h3 className="text-[0.7rem] text-yellow-400 mb-3">Level {currentUser.Level}</h3>
+              <div className="flex items-center gap-4">
+                <div className="pixel-panel-light w-16 h-20 flex items-center justify-center text-3xl flex-shrink-0">
+                  ⚔️
+                </div>
+                <div className="space-y-1 text-[0.5rem]">
+                  <p>Level: <span className="text-yellow-300">{currentUser.Experience}</span></p>
+                  <p>ATK: <span className="text-red-400">{currentUser.Strength}</span></p>
+                  <p>DEF: <span className="text-blue-400">{currentUser.Level + currentUser.Strength}</span></p>
+                  <p>Rax: <span className="text-green-400">{currentUser.Agility}</span></p>
+                  <p>Core: <span className="text-purple-400">{currentUser.Inteligent}</span></p>
                 </div>
               </div>
-              
-              {/* Character Stats - Mobile Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full">
-                <Stat statType="Strength" stat={currentUser.Strength}/>
-                <Stat statType="Agility" stat={currentUser.Agility}/>
-                <Stat statType="Inteligent" stat={currentUser.Inteligent}/>
-              </div>
             </div>
-            
-            {/* Create Habit Button - Mobile Friendly */}
-            <button 
-              className="btn btn-primary btn-md w-full sm:w-auto touch-manipulation" 
-              onClick={() => setIsModalOpen(true)}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              <span className="text-sm sm:text-base">Create New Habit</span>
-            </button>
-            
-            {/* Habits Section */}
-            <div className="habits flex flex-col w-full">
+
+            {/* Daily Motivation Scroll */}
+            <div className="pixel-scroll p-4 flex flex-col items-center justify-center text-center">
+              <div className="flex items-center gap-2 mb-2">
+                <span>⚔️</span>
+                <h3 className="text-[0.6rem] font-bold">Daily Motivation</h3>
+                <span>📋</span>
+              </div>
+              <blockquote className="text-[0.55rem] leading-relaxed italic">
+                &ldquo;{getDailyQuote()}&rdquo;
+              </blockquote>
+            </div>
+
+            {/* Next Level Progress */}
+            <div className="pixel-panel p-4 flex flex-col items-center justify-center">
+              <h3 className="text-[0.6rem] text-gray-300 mb-3">Next Level Progress</h3>
+              <div className="pixel-progress-container">
+                <svg width="100" height="100" viewBox="0 0 36 36">
+                  <path
+                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                    fill="none" stroke="#2d1b4e" strokeWidth="3"
+                  />
+                  <path
+                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                    fill="none" stroke="#4aeadc" strokeWidth="3"
+                    strokeDasharray={`${progressLevel}, 100`}
+                    strokeLinecap="round"
+                  />
+                </svg>
+                <span className="pixel-progress-text">{progressLevel}%</span>
+              </div>
+              <span className="text-lg mt-1">🧪</span>
+            </div>
+          </div>
+
+          {/* Stats + Create/Habits two-column layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* Left: Stat bars */}
+            <div className="flex flex-col gap-3">
+              <Stat statType="Strength" stat={currentUser.Strength}/>
+              <Stat statType="Agility" stat={currentUser.Agility}/>
+              <Stat statType="Inteligent" stat={currentUser.Inteligent}/>
+            </div>
+
+            {/* Right: Create button + Habits */}
+            <div className="flex flex-col gap-3">
+              <button
+                className="pixel-btn pixel-btn-yellow w-full py-4 text-[0.75rem]"
+                onClick={() => setIsModalOpen(true)}
+              >
+                + Create New Habit
+              </button>
+
               {habits.map((habit) => (
                 <Habit key={habit.$id} id={habit.$id} name={habit.name} Type={habit.Type} UserID={currentUserID}/>
               ))}
             </div>
-            </div>
-          </main>
-          
-          {isModalOpen && (
-            <div className="modal modal-open">
-              <div className="modal-box w-11/12 max-w-2xl">
-                <h3 className="font-bold text-lg sm:text-xl mb-4">Create Your Habit</h3>
-                <button 
-                  className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 touch-manipulation"
-                  onClick={() => setIsModalOpen(false)}
-                >
-                  ✕
-                </button>
+          </div>
+        </div>
+
+        {/* Create Habit Modal */}
+        {isModalOpen && (
+          <div className="pixel-modal-overlay" onClick={() => setIsModalOpen(false)}>
+            <div className="pixel-modal" onClick={(e) => e.stopPropagation()}>
+              <h3 className="text-[0.75rem] text-yellow-400 mb-4">Create Your Habit</h3>
+              <button
+                className="absolute right-3 top-3 text-gray-400 hover:text-white text-[0.7rem] cursor-pointer"
+                onClick={() => setIsModalOpen(false)}
+              >
+                ✕
+              </button>
               <div className="space-y-4">
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text text-sm sm:text-base">Habit name</span>
-                  </label>
-                  <input 
-                    type="text" 
-                    placeholder="e.g., Daily workout, Read 30 minutes..." 
-                    className="input input-bordered w-full text-sm sm:text-base touch-manipulation" 
+                <div>
+                  <label className="block text-[0.55rem] text-gray-300 mb-2">Habit name</label>
+                  <input
+                    type="text"
+                    placeholder="e.g., Daily workout, Read 30 minutes..."
+                    className="pixel-input"
                     value={habitName}
                     onChange={(e) => setHabitName(e.target.value)}
                   />
                 </div>
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text text-sm sm:text-base">Habit type</span>
-                  </label>
-                  <select 
-                    className="select select-bordered w-full text-sm sm:text-base touch-manipulation" 
+                <div>
+                  <label className="block text-[0.55rem] text-gray-300 mb-2">Habit type</label>
+                  <select
+                    className="pixel-select"
                     value={habitType}
                     onChange={(e) => setHabitType(e.target.value)}
                   >
                     <option disabled value="">Choose your focus area</option>
-                    <option value="Strength">💪 Strength - Physical fitness & health</option>
-                    <option value="Agility">⚡ Agility - Skills & coordination</option>
-                    <option value="Inteligent">🧠 Intelligence - Learning & knowledge</option>
+                    <option value="Strength">⚔️ Strength - Physical fitness</option>
+                    <option value="Agility">⚡ Agility - Skills &amp; coordination</option>
+                    <option value="Inteligent">🧠 Intelligence - Learning</option>
                   </select>
                 </div>
               </div>
-              <div className="modal-action mt-6">
-                <button 
-                  className="btn btn-primary btn-block sm:btn-auto sm:ml-auto touch-manipulation" 
+              <div className="mt-6">
+                <button
+                  className="pixel-btn pixel-btn-green w-full"
                   onClick={handleAddHabit}
                   disabled={!habitName.trim() || !habitType}
                 >
@@ -268,80 +279,54 @@ export default function Home() {
                 </button>
               </div>
             </div>
-            <div className="modal-backdrop" onClick={() => setIsModalOpen(false)}>
-            </div>
           </div>
         )}
-        
+
         {/* Getting Started Modal */}
         {isHelpModalOpen && (
-          <div className="modal modal-open">
-            <div className="modal-box w-11/12 max-w-3xl max-h-[90vh] overflow-y-auto">
-              <h3 className="font-bold text-lg sm:text-xl mb-4 sm:mb-6">Getting Started with HabitPulse</h3>
-              <button 
-                className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 touch-manipulation"
+          <div className="pixel-modal-overlay" onClick={() => setIsHelpModalOpen(false)}>
+            <div className="pixel-modal max-w-xl" onClick={(e) => e.stopPropagation()}>
+              <h3 className="text-[0.75rem] text-yellow-400 mb-4">Getting Started with HabitPulse</h3>
+              <button
+                className="absolute right-3 top-3 text-gray-400 hover:text-white text-[0.7rem] cursor-pointer"
                 onClick={() => setIsHelpModalOpen(false)}
               >
                 ✕
               </button>
-              
-              <div className="space-y-6">
-                <div>
-                  <h4 className="font-semibold text-lg mb-4 text-primary">Start building your habits — one check at a time.</h4>
-                  <div className="space-y-4 sm:space-y-6">
-                    <div className="space-y-3 sm:space-y-4">
-                      <div className="flex items-start gap-3">
-                        <div className="flex-shrink-0 w-6 h-6 bg-primary text-primary-content rounded-full flex items-center justify-center text-xs sm:text-sm font-bold mt-0.5">1</div>
-                        <div>
-                          <h4 className="font-semibold text-sm sm:text-base mb-1">Create Your First Habit</h4>
-                          <p className="text-xs sm:text-sm text-base-content/70">Click &ldquo;Create New Habit&rdquo; to add activities that will help you grow. Choose from Strength (physical), Agility (skills), or Intelligence (learning) categories.</p>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-start gap-3">
-                        <div className="flex-shrink-0 w-6 h-6 bg-primary text-primary-content rounded-full flex items-center justify-center text-xs sm:text-sm font-bold mt-0.5">2</div>
-                        <div>
-                          <h4 className="font-semibold text-sm sm:text-base mb-1">Mark Habits as &ldquo;Completed Today&rdquo;</h4>
-                          <p className="text-xs sm:text-sm text-base-content/70">Each day, click the &ldquo;Mark as Done&rdquo; button when you complete a habit. You&rsquo;ll earn 10 XP and increase your character stats!</p>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-start gap-3">
-                        <div className="flex-shrink-0 w-6 h-6 bg-primary text-primary-content rounded-full flex items-center justify-center text-xs sm:text-sm font-bold mt-0.5">3</div>
-                        <div>
-                          <h4 className="font-semibold text-sm sm:text-base mb-1">Build Streaks & Level Up</h4>
-                          <p className="text-xs sm:text-sm text-base-content/70">Complete habits consistently to build streaks: 🌱 → 🔥 → ⚡ → 💪 → 🏆. Earn XP to level up your character and unlock higher stats!</p>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-start gap-3">
-                        <div className="flex-shrink-0 w-6 h-6 bg-warning text-warning-content rounded-full flex items-center justify-center text-xs font-bold mt-0.5">⚠️</div>
-                        <div>
-                          <h4 className="font-semibold text-sm sm:text-base mb-1 text-warning">Don&rsquo;t Break Your Streak!</h4>
-                          <p className="text-xs sm:text-sm text-base-content/70">Missing a day will reset your streak to 0. Stay consistent to maintain your progress and keep those streak emojis growing!</p>
-                        </div>
-                      </div>
+
+              <div className="space-y-4">
+                <p className="text-[0.6rem] text-green-400 mb-3">Start building your habits — one quest at a time.</p>
+
+                {[
+                  { num: '1', title: 'Create Your First Habit', desc: 'Click "Create New Habit" to add quests. Choose Strength, Agility, or Intelligence.' },
+                  { num: '2', title: 'Mark Habits as "Completed Today"', desc: 'Complete quests daily to earn XP and boost your character stats!' },
+                  { num: '3', title: 'Build Streaks & Level Up', desc: 'Stay consistent: 🌱 → 🔥 → ⚡ → 💪 → 🏆. Earn XP to level up!' },
+                  { num: '⚠', title: "Don't Break Your Streak!", desc: 'Missing a day resets your streak to 0. Stay consistent!' },
+                ].map((step) => (
+                  <div key={step.num} className="flex items-start gap-3">
+                    <div className="pixel-btn pixel-btn-yellow text-[0.5rem] py-1 px-2 flex-shrink-0">
+                      {step.num}
+                    </div>
+                    <div>
+                      <h4 className="text-[0.55rem] text-yellow-300 mb-1">{step.title}</h4>
+                      <p className="text-[0.5rem] text-gray-400">{step.desc}</p>
                     </div>
                   </div>
-                  
-                  <div className="modal-action mt-6 sm:mt-8">
-                    <button 
-                      className="btn btn-primary btn-block touch-manipulation"
-                      onClick={() => setIsHelpModalOpen(false)}
-                    >
-                      <span className="text-sm sm:text-base">Got it! Let&rsquo;s start building habits 🚀</span>
-                    </button>
-                  </div>
-                </div>
+                ))}
+
+                <button
+                  className="pixel-btn pixel-btn-green w-full mt-4"
+                  onClick={() => setIsHelpModalOpen(false)}
+                >
+                  Got it! Let&rsquo;s go! 🚀
+                </button>
               </div>
-            </div>
-            <div className="modal-backdrop" onClick={() => setIsHelpModalOpen(false)}>
             </div>
           </div>
         )}
 
         <Footer />
-        </div>
-      </MainLayout>
+      </div>
+    </MainLayout>
   );
 }

@@ -17,94 +17,80 @@ const LoginPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/10 via-base-200 to-secondary/10">
-      
-      <div className="navbar bg-base-100/80 backdrop-blur-sm shadow-lg">
-        <div className="flex-1">
-          <div className="text-2xl font-bold text-primary flex items-center gap-2">
-            <span className="text-3xl">💪</span>
-            HabitPulse
-          </div>
+    <div className="space-bg min-h-screen flex flex-col">
+      <div className="relative z-10 flex flex-col min-h-screen">
+        {/* Navbar */}
+        <div className="pixel-panel p-4 flex items-center gap-3">
+          <span className="text-2xl">⚔️</span>
+          <span className="text-[0.8rem] text-yellow-400">HabitPulse</span>
         </div>
-      </div>
 
-      
-      <div className="hero min-h-[calc(100vh-4rem)]">
-        <div className="hero-content flex-col lg:flex-row-reverse max-w-6xl">
-          
-          <div className="text-center lg:text-left lg:w-1/2">
-            <div className="space-y-6">
-              <div className="text-6xl mb-4">🚀</div>
-              <h1 className="text-5xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+        {/* Hero */}
+        <div className="flex-1 flex items-center justify-center p-4">
+          <div className="flex flex-col lg:flex-row items-center gap-8 max-w-5xl w-full">
+            {/* Left - Features */}
+            <div className="flex-1 text-center lg:text-left space-y-6">
+              <div className="text-5xl">🚀</div>
+              <h1 className="text-[1rem] sm:text-[1.2rem] text-yellow-400 leading-relaxed">
                 Level Up Your Life
               </h1>
-              <p className="text-xl text-base-content/80 leading-relaxed">
+              <p className="text-[0.6rem] text-gray-300 leading-relaxed">
                 Transform your daily habits into an epic RPG adventure. Gain XP, level up, and build the life you&apos;ve always wanted.
               </p>
-              
-              
-              <div className="grid gap-4 mt-8">
-                <div className="flex items-center gap-4 p-4 bg-base-100/50 rounded-lg backdrop-blur-sm">
-                  <div className="text-2xl">⚡</div>
+
+              <div className="space-y-3">
+                <div className="quest-card p-3 flex items-center gap-3">
+                  <span className="text-xl">⚡</span>
                   <div>
-                    <h3 className="font-semibold text-primary">Build Streaks</h3>
-                    <p className="text-sm text-base-content/70">Maintain consistency and watch your streaks grow</p>
+                    <h3 className="text-[0.55rem] text-green-400">Build Streaks</h3>
+                    <p className="text-[0.45rem] text-gray-400">Maintain consistency and watch your streaks grow</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-4 p-4 bg-base-100/50 rounded-lg backdrop-blur-sm">
-                  <div className="text-2xl">🎯</div>
+                <div className="quest-card p-3 flex items-center gap-3">
+                  <span className="text-xl">🎯</span>
                   <div>
-                    <h3 className="font-semibold text-secondary">Gain Experience</h3>
-                    <p className="text-sm text-base-content/70">Every completed habit earns you XP and levels</p>
+                    <h3 className="text-[0.55rem] text-yellow-400">Gain Experience</h3>
+                    <p className="text-[0.45rem] text-gray-400">Every completed habit earns you XP and levels</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-4 p-4 bg-base-100/50 rounded-lg backdrop-blur-sm">
-                  <div className="text-2xl">📊</div>
+                <div className="quest-card p-3 flex items-center gap-3">
+                  <span className="text-xl">📊</span>
                   <div>
-                    <h3 className="font-semibold text-accent">Track Progress</h3>
-                    <p className="text-sm text-base-content/70">Visualize your growth with beautiful analytics</p>
+                    <h3 className="text-[0.55rem] text-blue-400">Track Progress</h3>
+                    <p className="text-[0.45rem] text-gray-400">Visualize your growth with analytics</p>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          
-          <div className="lg:w-1/2 w-full max-w-md">
-            <div className="card bg-base-100 shadow-2xl border border-base-300/50">
-              <div className="card-body p-8">
+            {/* Right - Login Card */}
+            <div className="w-full max-w-sm">
+              <div className="pixel-panel p-6">
                 <div className="text-center mb-6">
-                  <div className="text-4xl mb-2">✨</div>
-                  <h2 className="card-title text-2xl justify-center mb-2">Welcome Back!</h2>
-                  <p className="text-base-content/70">Ready to continue your journey?</p>
+                  <span className="text-4xl block mb-3">✨</span>
+                  <h2 className="text-[0.8rem] text-yellow-400 mb-2">Welcome Back!</h2>
+                  <p className="text-[0.5rem] text-gray-400">Ready to continue your journey?</p>
                 </div>
-                
-                <div className="space-y-4">
-                  <button 
-                    type="button" 
-                    id="btn-siwg" 
-                    className="btn btn-primary btn-lg w-full gap-3 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
-                    onClick={handleLogin}
-                  >
-                    <svg className="w-5 h-5" viewBox="0 0 24 24">
-                      <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                      <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                      <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                      <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                    </svg>
-                    Continue with Google
-                  </button>
-                  
-                  <div className="divider text-sm text-base-content/50">Quick & Secure</div>
+
+                <button
+                  type="button"
+                  id="btn-siwg"
+                  className="pixel-btn pixel-btn-yellow w-full py-3 text-[0.6rem]"
+                  onClick={handleLogin}
+                >
+                  Continue with Google
+                </button>
+
+                <div className="text-center mt-4">
+                  <span className="text-[0.45rem] text-gray-500">Quick &amp; Secure 🔒</span>
                 </div>
               </div>
             </div>
-
           </div>
         </div>
-      </div>
 
-      <Footer />
+        <Footer />
+      </div>
     </div>
   );
 };
