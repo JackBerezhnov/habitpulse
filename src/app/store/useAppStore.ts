@@ -30,6 +30,7 @@ export interface User {
   Strength: number;
   Agility: number;
   Inteligent: number;
+  Gold: number;
 }
 
 type UserStat = 'Strength' | 'Agility' | 'Inteligent';
@@ -43,6 +44,7 @@ interface ProfileRow {
   strength: number | null;
   agility: number | null;
   inteligent: number | null;
+  gold: number | null;
 }
 
 interface HabitRow {
@@ -99,6 +101,7 @@ interface AppState {
   updateUserExperience: (newXP: number) => Promise<void>;
   updateUserLevel: (newLevel: number) => Promise<void>;
   updateUserStats: (statType: UserStat, newValue: number) => Promise<void>;
+  updateUserGold: (newGold: number) => Promise<void>;
   calculateProgressToNextLevel: () => void;
 
   // Streak system
@@ -255,6 +258,7 @@ const createProfileForUser = async (userId: string, name: string): Promise<void>
     strength: 0,
     agility: 0,
     inteligent: 0,
+    gold: 0,
   };
 
   let lastError: unknown = null;
@@ -344,6 +348,7 @@ const createDefaultUser = (id: string, name: string): User => ({
   Strength: 0,
   Agility: 0,
   Inteligent: 0,
+  Gold: 0,
 });
 
 const mapProfileToUser = (profile: ProfileRow, fallbackName: string): User => ({
@@ -354,6 +359,7 @@ const mapProfileToUser = (profile: ProfileRow, fallbackName: string): User => ({
   Strength: profile.strength ?? 0,
   Agility: profile.agility ?? 0,
   Inteligent: profile.inteligent ?? 0,
+  Gold: profile.gold ?? 0,
 });
 
 const mapHabitRowToDocument = (
@@ -737,6 +743,21 @@ export const useAppStore = create<AppState>((set, get) => ({
     } catch (error) {
       console.error(toErrorLog('Stat update failed', error));
       set({ currentUser: { ...get().currentUser!, [statType]: oldValue } });
+    }
+  },
+
+  updateUserGold: async (newGold: number) => {
+    const { currentUserID, currentUser } = get();
+    if (!currentUserID || !currentUser) return;
+
+    const oldGold = currentUser.Gold;
+    set({ currentUser: { ...currentUser, Gold: newGold } });
+
+    try {
+      await updateProfileForUser(currentUserID, { gold: newGold }, currentUser.Name);
+    } catch (error) {
+      console.error(toErrorLog('Gold update failed', error));
+      set({ currentUser: { ...get().currentUser!, Gold: oldGold } });
     }
   },
 

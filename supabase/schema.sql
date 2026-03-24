@@ -11,6 +11,7 @@ create table if not exists public.profiles (
   strength integer not null default 0 check (strength >= 0),
   agility integer not null default 0 check (agility >= 0),
   inteligent integer not null default 0 check (inteligent >= 0),
+  gold numeric not null default 0 check (gold >= 0),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );

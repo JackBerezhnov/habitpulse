@@ -26,7 +26,7 @@ const Habit: React.FC<HabitProps> = ({ name, id, Type }) => {
       setIsMounted(true); // Ensures this code runs only in the browser
     }, []);
 
-    const { deleteHabit, calculateHabitStreak, getStreakEmoji, habits, updateHabitDates, updateUserExperience, updateUserLevel, updateUserStats, updateHabitStreak, currentUser } = useAppStore();
+    const { deleteHabit, calculateHabitStreak, getStreakEmoji, habits, updateHabitDates, updateUserExperience, updateUserLevel, updateUserStats, updateUserGold, updateHabitStreak, currentUser } = useAppStore();
     
     // Update streak and completion status whenever habits data changes
     useEffect(() => {
@@ -87,6 +87,9 @@ const Habit: React.FC<HabitProps> = ({ name, id, Type }) => {
             } else if (currentHabit?.Type === "Inteligent") {
                 updateUserStats('Inteligent', currentUser.Inteligent + 1); // Instant UI update
             }
+            
+            // Award gold
+            updateUserGold(currentUser.Gold + 10);
             
             // Show animation feedback
             setShowAnimation(true);
