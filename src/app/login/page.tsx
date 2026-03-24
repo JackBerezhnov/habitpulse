@@ -22,7 +22,7 @@ const LoginPage: React.FC = () => {
         {/* Navbar */}
         <div className="pixel-panel p-4 flex items-center gap-3">
           <span className="text-2xl">⚔️</span>
-          <span className="text-[0.8rem] text-yellow-400">HabitPulse</span>
+          <span className="text-[0.8rem] text-[#e6b636]">HabitPulse</span>
         </div>
 
         {/* Hero */}
@@ -31,10 +31,10 @@ const LoginPage: React.FC = () => {
             {/* Left - Features */}
             <div className="flex-1 text-center lg:text-left space-y-6">
               <div className="text-5xl">🚀</div>
-              <h1 className="text-[1rem] sm:text-[1.2rem] text-yellow-400 leading-relaxed">
+              <h1 className="text-[1rem] sm:text-[1.2rem] text-[#e6b636] leading-relaxed">
                 Level Up Your Life
               </h1>
-              <p className="text-[0.6rem] text-gray-300 leading-relaxed">
+              <p className="text-[0.6rem] text-[#c6a676] leading-relaxed">
                 Transform your daily habits into an epic RPG adventure. Gain XP, level up, and build the life you&apos;ve always wanted.
               </p>
 
@@ -42,22 +42,22 @@ const LoginPage: React.FC = () => {
                 <div className="quest-card p-3 flex items-center gap-3">
                   <span className="text-xl">⚡</span>
                   <div>
-                    <h3 className="text-[0.55rem] text-green-400">Build Streaks</h3>
-                    <p className="text-[0.45rem] text-gray-400">Maintain consistency and watch your streaks grow</p>
+                    <h3 className="text-[0.55rem] text-[#3fbf3f]">Build Streaks</h3>
+                    <p className="text-[0.45rem] text-[#524c7d]">Maintain consistency and watch your streaks grow</p>
                   </div>
                 </div>
                 <div className="quest-card p-3 flex items-center gap-3">
                   <span className="text-xl">🎯</span>
                   <div>
-                    <h3 className="text-[0.55rem] text-yellow-400">Gain Experience</h3>
-                    <p className="text-[0.45rem] text-gray-400">Every completed habit earns you XP and levels</p>
+                    <h3 className="text-[0.55rem] text-[#e6b636]">Gain Experience</h3>
+                    <p className="text-[0.45rem] text-[#524c7d]">Every completed habit earns you XP and levels</p>
                   </div>
                 </div>
                 <div className="quest-card p-3 flex items-center gap-3">
                   <span className="text-xl">📊</span>
                   <div>
-                    <h3 className="text-[0.55rem] text-blue-400">Track Progress</h3>
-                    <p className="text-[0.45rem] text-gray-400">Visualize your growth with analytics</p>
+                    <h3 className="text-[0.55rem] text-[#3f8fcf]">Track Progress</h3>
+                    <p className="text-[0.45rem] text-[#524c7d]">Visualize your growth with analytics</p>
                   </div>
                 </div>
               </div>
@@ -68,8 +68,8 @@ const LoginPage: React.FC = () => {
               <div className="pixel-panel p-6">
                 <div className="text-center mb-6">
                   <span className="text-4xl block mb-3">✨</span>
-                  <h2 className="text-[0.8rem] text-yellow-400 mb-2">Welcome Back!</h2>
-                  <p className="text-[0.5rem] text-gray-400">Ready to continue your journey?</p>
+                  <h2 className="text-[0.8rem] text-[#e6b636] mb-2">Welcome Back!</h2>
+                  <p className="text-[0.5rem] text-[#524c7d]">Ready to continue your journey?</p>
                 </div>
 
                 <button
@@ -82,7 +82,7 @@ const LoginPage: React.FC = () => {
                 </button>
 
                 <div className="text-center mt-4">
-                  <span className="text-[0.45rem] text-gray-500">Quick &amp; Secure 🔒</span>
+                  <span className="text-[0.45rem] text-[#524c7d]">Quick &amp; Secure 🔒</span>
                 </div>
               </div>
             </div>

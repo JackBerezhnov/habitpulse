@@ -106,12 +106,12 @@ const Habit: React.FC<HabitProps> = ({ name, id, Type }) => {
           <div className="flex items-center gap-3">
             <span className="text-2xl">📕</span>
             <div>
-              <h3 className="text-[0.7rem] text-yellow-400">{name}</h3>
-              <p className="text-[0.5rem] text-gray-400">Quest Log</p>
+              <h3 className="text-[0.7rem] text-[#e6b636]">{name}</h3>
+              <p className="text-[0.5rem] text-[#524c7d]">Quest Log</p>
             </div>
           </div>
           <div className="text-right">
-            <span className="text-[0.6rem] text-gray-300">
+            <span className="text-[0.6rem] text-[#c6a676]">
               Streak: {currentStreak} {streakEmoji}
             </span>
             {showAnimation && <span className="animate-bounce ml-1">✨</span>}

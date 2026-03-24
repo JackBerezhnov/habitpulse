@@ -5,9 +5,9 @@ const Footer: React.FC = () => {
     
     return (
         <footer className="mt-auto pixel-panel p-4 text-center">
-            <p className="text-[0.5rem] text-gray-400">
+            <p className="text-[0.5rem] text-[#524c7d]">
                 © {currentYear} HabitPulse. Made with ❤️ for habit builders by{' '}
-                <span className="text-yellow-400">Jack Sighton</span> 🔥
+                <span className="text-[#e6b636]">Jack Sighton</span> 🔥
             </p>
         </footer>
     );

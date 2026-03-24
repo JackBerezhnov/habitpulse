@@ -55,7 +55,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             >
               ☰
             </button>
-            <span className="text-[0.7rem] text-yellow-400">HabitPulse</span>
+            <span className="text-[0.7rem] text-[#e6b636]">HabitPulse</span>
             <button
               onClick={handleLogout}
               className="pixel-btn pixel-btn-outline text-[0.6rem] py-2 px-3"

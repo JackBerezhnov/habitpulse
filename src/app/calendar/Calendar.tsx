@@ -121,12 +121,12 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id, readOnly 
         <div className="grid grid-cols-7 items-center justify-center text-center">
             <Cell onClick={prevYear}>{"<<"}</Cell>
             <Cell onClick={prevMonth}>{"<"}</Cell>
-            <Cell className="col-span-3 text-[0.5rem] text-yellow-400">{format(value, 'LLLL yyyy')}</Cell>
+            <Cell className="col-span-3 text-[0.5rem] text-[#e6b636]">{format(value, 'LLLL yyyy')}</Cell>
             <Cell onClick={nextMonth}>{">"}</Cell>
             <Cell onClick={nextYear}>{">>"}</Cell>
 
             {daysOfWeek.map((day) => (
-                <Cell key={day} className="text-[0.45rem] font-bold text-gray-400">{day}</Cell>
+                <Cell key={day} className="text-[0.45rem] font-bold text-[#524c7d]">{day}</Cell>
             ))}
 
             {Array.from({length: prefixDays}).map((_, index) => {

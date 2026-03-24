@@ -25,10 +25,10 @@ const Sidenav: React.FC<SidenavProps> = ({ onLogout }) => {
           🧙
         </div>
         <div className="text-center">
-          <p className="text-[0.6rem] text-yellow-400 truncate max-w-[160px]">
+          <p className="text-[0.6rem] text-[#e6b636] truncate max-w-[160px]">
             {userName || 'Player'}
           </p>
-          <p className="text-[0.5rem] text-gray-400 mt-1">
+          <p className="text-[0.5rem] text-[#524c7d] mt-1">
             Level {currentUser?.Level || 1}
           </p>
         </div>

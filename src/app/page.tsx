@@ -144,7 +144,7 @@ export default function Home() {
 
           {/* Welcome Header */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pixel-panel p-4">
-            <h2 className="text-[0.7rem] sm:text-[0.85rem] text-yellow-400 text-center sm:text-left">
+            <h2 className="text-[0.7rem] sm:text-[0.85rem] text-[#e6b636] text-center sm:text-left">
               Welcome to HabitPulse, {userName}
             </h2>
             <button
@@ -158,18 +158,18 @@ export default function Home() {
           {/* Three-card row: Level, Motivation, Progress */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Level Card */}
-            <div className="pixel-panel p-4">
-              <h3 className="text-[0.7rem] text-yellow-400 mb-3">Level {currentUser.Level}</h3>
+            <div className="pixel-panel-light p-4 rounded-none">
+              <h3 className="text-[0.7rem] text-[#222034] mb-3">Level {currentUser.Level}</h3>
               <div className="flex items-center gap-4">
-                <div className="pixel-panel-light w-16 h-20 flex items-center justify-center text-3xl flex-shrink-0">
+                <div className="w-16 h-20 flex items-center justify-center text-3xl flex-shrink-0 border-2 border-[#8b6914]" style={{background:'#b08e5a'}}>
                   ⚔️
                 </div>
-                <div className="space-y-1 text-[0.5rem]">
-                  <p>Level: <span className="text-yellow-300">{currentUser.Experience}</span></p>
-                  <p>ATK: <span className="text-red-400">{currentUser.Strength}</span></p>
-                  <p>DEF: <span className="text-blue-400">{currentUser.Level + currentUser.Strength}</span></p>
-                  <p>Rax: <span className="text-green-400">{currentUser.Agility}</span></p>
-                  <p>Core: <span className="text-purple-400">{currentUser.Inteligent}</span></p>
+                <div className="space-y-1 text-[0.5rem] text-[#222034]">
+                  <p>Level: <span className="font-bold">{currentUser.Experience}</span></p>
+                  <p>ATK: <span className="text-[#c12f2f] font-bold">{currentUser.Strength}</span></p>
+                  <p>DEF: <span className="text-[#3f8fcf] font-bold">{currentUser.Level + currentUser.Strength}</span></p>
+                  <p>Rax: <span className="text-[#3fbf3f] font-bold">{currentUser.Agility}</span></p>
+                  <p>Core: <span className="text-[#524c7d] font-bold">{currentUser.Inteligent}</span></p>
                 </div>
               </div>
             </div>
@@ -188,16 +188,16 @@ export default function Home() {
 
             {/* Next Level Progress */}
             <div className="pixel-panel p-4 flex flex-col items-center justify-center">
-              <h3 className="text-[0.6rem] text-gray-300 mb-3">Next Level Progress</h3>
+              <h3 className="text-[0.6rem] text-[#c6a676] mb-3">Next Level Progress</h3>
               <div className="pixel-progress-container">
                 <svg width="100" height="100" viewBox="0 0 36 36">
                   <path
                     d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                    fill="none" stroke="#2d1b4e" strokeWidth="3"
+                    fill="none" stroke="#524c7d" strokeWidth="3"
                   />
                   <path
                     d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                    fill="none" stroke="#4aeadc" strokeWidth="3"
+                    fill="none" stroke="#3f8fcf" strokeWidth="3"
                     strokeDasharray={`${progressLevel}, 100`}
                     strokeLinecap="round"
                   />
@@ -220,7 +220,7 @@ export default function Home() {
             {/* Right: Create button + Habits */}
             <div className="flex flex-col gap-3">
               <button
-                className="pixel-btn pixel-btn-yellow w-full py-4 text-[0.75rem]"
+                className="pixel-btn pixel-btn-green w-full py-4 text-[0.75rem]"
                 onClick={() => setIsModalOpen(true)}
               >
                 + Create New Habit
@@ -237,16 +237,16 @@ export default function Home() {
         {isModalOpen && (
           <div className="pixel-modal-overlay" onClick={() => setIsModalOpen(false)}>
             <div className="pixel-modal" onClick={(e) => e.stopPropagation()}>
-              <h3 className="text-[0.75rem] text-yellow-400 mb-4">Create Your Habit</h3>
+              <h3 className="text-[0.75rem] text-[#e6b636] mb-4">Create Your Habit</h3>
               <button
-                className="absolute right-3 top-3 text-gray-400 hover:text-white text-[0.7rem] cursor-pointer"
+                className="absolute right-3 top-3 text-[#524c7d] hover:text-white text-[0.7rem] cursor-pointer"
                 onClick={() => setIsModalOpen(false)}
               >
                 ✕
               </button>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-[0.55rem] text-gray-300 mb-2">Habit name</label>
+                  <label className="block text-[0.55rem] text-[#c6a676] mb-2">Habit name</label>
                   <input
                     type="text"
                     placeholder="e.g., Daily workout, Read 30 minutes..."
@@ -256,7 +256,7 @@ export default function Home() {
                   />
                 </div>
                 <div>
-                  <label className="block text-[0.55rem] text-gray-300 mb-2">Habit type</label>
+                  <label className="block text-[0.55rem] text-[#c6a676] mb-2">Habit type</label>
                   <select
                     className="pixel-select"
                     value={habitType}
@@ -286,16 +286,16 @@ export default function Home() {
         {isHelpModalOpen && (
           <div className="pixel-modal-overlay" onClick={() => setIsHelpModalOpen(false)}>
             <div className="pixel-modal max-w-xl" onClick={(e) => e.stopPropagation()}>
-              <h3 className="text-[0.75rem] text-yellow-400 mb-4">Getting Started with HabitPulse</h3>
+              <h3 className="text-[0.75rem] text-[#e6b636] mb-4">Getting Started with HabitPulse</h3>
               <button
-                className="absolute right-3 top-3 text-gray-400 hover:text-white text-[0.7rem] cursor-pointer"
+                className="absolute right-3 top-3 text-[#524c7d] hover:text-white text-[0.7rem] cursor-pointer"
                 onClick={() => setIsHelpModalOpen(false)}
               >
                 ✕
               </button>
 
               <div className="space-y-4">
-                <p className="text-[0.6rem] text-green-400 mb-3">Start building your habits — one quest at a time.</p>
+                <p className="text-[0.6rem] text-[#3fbf3f] mb-3">Start building your habits — one quest at a time.</p>
 
                 {[
                   { num: '1', title: 'Create Your First Habit', desc: 'Click "Create New Habit" to add quests. Choose Strength, Agility, or Intelligence.' },

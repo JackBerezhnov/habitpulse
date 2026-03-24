@@ -3,12 +3,18 @@
 @tailwind utilities;
 
 :root {
-  --pixel-brown-dark: #5c3a11;
-  --pixel-brown: #8b5e28;
-  --pixel-brown-light: #c4873a;
-  --pixel-cream: #f5e6c8;
-  --pixel-gold: #ffd700;
-  --space-bg: #0f0e2e;
+  --pixel-brown-dark: #6b4c2a;
+  --pixel-brown: #8b6914;
+  --pixel-brown-light: #c6a676;
+  --pixel-cream: #c6a676;
+  --pixel-gold: #e6b636;
+  --pixel-dark: #222034;
+  --pixel-purple: #524c7d;
+  --pixel-red: #c12f2f;
+  --pixel-green: #3fbf3f;
+  --pixel-blue: #3f8fcf;
+  --pixel-tan: #c6a676;
+  --space-bg: #222034;
 }
 
 @keyframes twinkle {
@@ -34,14 +40,14 @@ html, body {
 
 body {
   background: var(--space-bg);
-  color: #e0e0e0;
+  color: #ffffff;
   font-family: var(--font-pixel), monospace;
 }
 
 /* ── Space Background ── */
 .space-bg {
   position: relative;
-  background: linear-gradient(180deg, #0a0a2e 0%, #1a103a 40%, #2d1b4e 70%, #1a103a 100%);
+  background: linear-gradient(180deg, #222034 0%, #2a2040 40%, #322850 70%, #222034 100%);
   min-height: 100vh;
 }
 
@@ -91,27 +97,28 @@ body {
   height: 180px;
   pointer-events: none;
   z-index: 0;
-  background: linear-gradient(transparent, rgba(45, 27, 78, 0.5));
+  background: linear-gradient(transparent, rgba(34, 32, 52, 0.6));
 }
 
-/* ── Pixel Panel Borders ── */
+/* ── Pixel Panel Borders (Container Cards) ── */
 .pixel-panel {
-  background: #1e1b3a;
+  background: var(--pixel-dark);
   border: 4px solid var(--pixel-brown);
   box-shadow:
     inset 2px 2px 0 var(--pixel-brown-light),
     inset -2px -2px 0 var(--pixel-brown-dark),
-    4px 4px 0 rgba(0,0,0,0.3);
+    4px 4px 0 rgba(0,0,0,0.4);
 }
 
+/* Level Stats / Parchment Card */
 .pixel-panel-light {
-  background: var(--pixel-cream);
-  color: #2a1810;
+  background: var(--pixel-tan);
+  color: #222034;
   border: 4px solid var(--pixel-brown);
   box-shadow:
-    inset 2px 2px 0 var(--pixel-brown-light),
+    inset 2px 2px 0 #d4b88c,
     inset -2px -2px 0 var(--pixel-brown-dark),
-    4px 4px 0 rgba(0,0,0,0.3);
+    4px 4px 0 rgba(0,0,0,0.4);
 }
 
 /* ── Pixel Buttons ── */
@@ -138,44 +145,60 @@ body {
 }
 
 .pixel-btn-yellow {
-  background: linear-gradient(180deg, #ffd700 0%, #f0a500 100%);
-  border-color: #b8860b;
-  color: #2a1810;
+  background: linear-gradient(180deg, #e6b636 0%, #c99a20 100%);
+  border-color: #8b6914;
+  color: #222034;
   box-shadow:
-    inset 2px 2px 0 #ffe44d,
-    inset -2px -2px 0 #cc8400,
+    inset 2px 2px 0 #f0ca55,
+    inset -2px -2px 0 #a07818,
     3px 3px 0 rgba(0,0,0,0.4);
 }
 
 .pixel-btn-green {
-  background: linear-gradient(180deg, #4ade80 0%, #22c55e 100%);
-  border-color: #15803d;
-  color: #052e16;
+  background: linear-gradient(180deg, #3fbf3f 0%, #2da02d 100%);
+  border-color: #1d7a1d;
+  color: #ffffff;
   box-shadow:
-    inset 2px 2px 0 #86efac,
-    inset -2px -2px 0 #16a34a,
+    inset 2px 2px 0 #6fd06f,
+    inset -2px -2px 0 #1d7a1d,
     3px 3px 0 rgba(0,0,0,0.4);
 }
 
+.pixel-btn-green:hover {
+  background: linear-gradient(180deg, #50d050 0%, #3fbf3f 100%);
+  border-color: #3fbf3f;
+}
+
 .pixel-btn-red {
-  background: linear-gradient(180deg, #f87171 0%, #dc2626 100%);
-  border-color: #991b1b;
+  background: linear-gradient(180deg, #d94444 0%, #c12f2f 100%);
+  border-color: #8a1f1f;
   color: #fff;
   box-shadow:
-    inset 2px 2px 0 #fca5a5,
-    inset -2px -2px 0 #b91c1c,
+    inset 2px 2px 0 #e56666,
+    inset -2px -2px 0 #8a1f1f,
+    3px 3px 0 rgba(0,0,0,0.4);
+}
+
+.pixel-btn-blue {
+  background: linear-gradient(180deg, #4f9fd9 0%, #3f8fcf 100%);
+  border-color: #2a6a9a;
+  color: #fff;
+  box-shadow:
+    inset 2px 2px 0 #6fb5e5,
+    inset -2px -2px 0 #2a6a9a,
     3px 3px 0 rgba(0,0,0,0.4);
 }
 
 .pixel-btn-outline {
   background: transparent;
-  border: 3px solid #8b5e28;
-  color: #e0e0e0;
+  border: 3px solid var(--pixel-brown);
+  color: #ffffff;
   box-shadow: 2px 2px 0 rgba(0,0,0,0.3);
 }
 
 .pixel-btn-outline:hover {
-  background: rgba(139, 94, 40, 0.2);
+  background: rgba(82, 76, 125, 0.3);
+  border-color: var(--pixel-brown-light);
 }
 
 .pixel-btn:disabled {
@@ -195,45 +218,45 @@ body {
 }
 
 .stat-bar-red {
-  background: linear-gradient(135deg, #dc2626, #991b1b);
-  border-color: #7f1d1d;
-  box-shadow: inset 2px 2px 0 #f87171, inset -2px -2px 0 #7f1d1d, 3px 3px 0 rgba(0,0,0,0.3);
+  background: linear-gradient(135deg, #c12f2f, #8a1f1f);
+  border-color: #6b1818;
+  box-shadow: inset 2px 2px 0 #d94444, inset -2px -2px 0 #6b1818, 3px 3px 0 rgba(0,0,0,0.4);
   color: white;
 }
 
 .stat-bar-green {
-  background: linear-gradient(135deg, #22c55e, #15803d);
-  border-color: #14532d;
-  box-shadow: inset 2px 2px 0 #4ade80, inset -2px -2px 0 #14532d, 3px 3px 0 rgba(0,0,0,0.3);
+  background: linear-gradient(135deg, #3fbf3f, #2da02d);
+  border-color: #1d7a1d;
+  box-shadow: inset 2px 2px 0 #6fd06f, inset -2px -2px 0 #1d7a1d, 3px 3px 0 rgba(0,0,0,0.4);
   color: white;
 }
 
 .stat-bar-blue {
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-  border-color: #1e3a8a;
-  box-shadow: inset 2px 2px 0 #60a5fa, inset -2px -2px 0 #1e3a8a, 3px 3px 0 rgba(0,0,0,0.3);
+  background: linear-gradient(135deg, #3f8fcf, #2a6a9a);
+  border-color: #1e5580;
+  box-shadow: inset 2px 2px 0 #6fb5e5, inset -2px -2px 0 #1e5580, 3px 3px 0 rgba(0,0,0,0.4);
   color: white;
 }
 
-/* ── Scroll/Parchment ── */
+/* ── Scroll/Parchment (RPG Card) ── */
 .pixel-scroll {
-  background: linear-gradient(180deg, #f5e6c8, #e8d5a8);
+  background: linear-gradient(180deg, #c6a676, #b08e5a);
   border: 4px solid var(--pixel-brown);
-  color: #2a1810;
+  color: #222034;
   box-shadow:
-    inset 2px 2px 0 var(--pixel-brown-light),
+    inset 2px 2px 0 #d4b88c,
     inset -2px -2px 0 var(--pixel-brown-dark),
-    4px 4px 0 rgba(0,0,0,0.3);
+    4px 4px 0 rgba(0,0,0,0.4);
 }
 
 /* ── Quest Card ── */
 .quest-card {
-  background: #1e1b3a;
+  background: var(--pixel-dark);
   border: 4px solid var(--pixel-brown);
   box-shadow:
     inset 2px 2px 0 var(--pixel-brown-light),
     inset -2px -2px 0 var(--pixel-brown-dark),
-    4px 4px 0 rgba(0,0,0,0.3);
+    4px 4px 0 rgba(0,0,0,0.4);
 }
 
 /* ── Pixel Modal ── */
@@ -249,7 +272,7 @@ body {
 }
 
 .pixel-modal {
-  background: #1e1b3a;
+  background: var(--pixel-dark);
   border: 4px solid var(--pixel-brown);
   box-shadow:
     inset 2px 2px 0 var(--pixel-brown-light),
@@ -267,9 +290,9 @@ body {
 .pixel-input {
   width: 100%;
   padding: 10px 14px;
-  background: #0f0e2e;
+  background: #1a1830;
   border: 3px solid var(--pixel-brown);
-  color: #e0e0e0;
+  color: #ffffff;
   font-family: var(--font-pixel), monospace;
   font-size: 0.65rem;
   outline: none;
@@ -277,15 +300,15 @@ body {
 
 .pixel-input:focus {
   border-color: var(--pixel-gold);
-  box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.3);
+  box-shadow: 0 0 0 2px rgba(230, 182, 54, 0.3);
 }
 
 .pixel-select {
   width: 100%;
   padding: 10px 14px;
-  background: #0f0e2e;
+  background: #1a1830;
   border: 3px solid var(--pixel-brown);
-  color: #e0e0e0;
+  color: #ffffff;
   font-family: var(--font-pixel), monospace;
   font-size: 0.65rem;
   outline: none;
@@ -308,7 +331,7 @@ body {
   position: absolute;
   font-family: var(--font-pixel), monospace;
   font-size: 0.65rem;
-  color: #4aeadc;
+  color: #3f8fcf;
 }
 
 /* ── Scrollbar ── */
@@ -317,7 +340,7 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #1a103a;
+  background: #222034;
 }
 
 ::-webkit-scrollbar-thumb {

@@ -17,12 +17,12 @@ const Cell: React.FC<Props> = ({onClick, className, isCurrentDay, isToday, isDis
         <div
             onClick={handleClick}
             className={clsx(
-                "h-10 flex items-center justify-center text-[0.5rem] border border-[#3d2a5c]/40",
+                "h-10 flex items-center justify-center text-[0.5rem] border border-[#524c7d]/40",
                 {
-                    "cursor-pointer hover:bg-[#4a3570] active:bg-[#5a4580]": !!onClick && !isDisabled,
-                    "bg-green-600 text-white": isCurrentDay,
-                    "bg-[#2d1b4e] text-yellow-300 font-bold": isToday && !isCurrentDay,
-                    "text-gray-600 cursor-not-allowed": isDisabled && !isCurrentDay,
+                    "cursor-pointer hover:bg-[#524c7d]/30 active:bg-[#524c7d]/50": !!onClick && !isDisabled,
+                    "bg-[#3fbf3f] text-white": isCurrentDay,
+                    "bg-[#524c7d]/30 text-[#e6b636] font-bold": isToday && !isCurrentDay,
+                    "text-[#524c7d] cursor-not-allowed": isDisabled && !isCurrentDay,
                     "cursor-default": !onClick || isDisabled
                 },
                 className

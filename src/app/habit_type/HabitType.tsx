@@ -4,7 +4,7 @@ export interface HabitTypeProps {
 
 const typeConfigs: Record<string, { label: string; btnClass: string }> = {
     Strength: { label: 'Strong', btnClass: 'pixel-btn-red' },
-    Inteligent: { label: 'Intelligent', btnClass: 'pixel-btn-outline' },
+    Inteligent: { label: 'Intelligent', btnClass: 'pixel-btn-blue' },
     Agility: { label: 'Agile', btnClass: 'pixel-btn-green' },
 };
 
