@@ -83,6 +83,7 @@ const Sidenav: React.FC<SidenavProps> = ({ onLogout }) => {
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium truncate">{userName || 'User'}</p>
               <p className="text-xs text-base-content/60">Level {currentUser?.Level || 1}</p>
+              <p className="text-xs text-warning">🪙 {currentUser?.Gold ?? 0} Gold</p>
             </div>
           </div>
         </div>

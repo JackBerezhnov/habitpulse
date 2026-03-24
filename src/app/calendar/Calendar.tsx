@@ -25,6 +25,7 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id, readOnly 
         updateUserExperience, 
         updateUserLevel, 
         updateUserStats,
+        updateUserGold,
         updateHabitStreak 
     } = useAppStore();
  
@@ -65,6 +66,11 @@ const Calendar: React.FC<Props> = ({ value = new Date(), onChange, id, readOnly 
             // Add experience and stats (no await for instant UI updates)
             addExperienceToTheUser();
             addStats();
+            
+            // Award gold
+            if (currentUser) {
+                updateUserGold(currentUser.Gold + 10);
+            }
         } catch (error) {
             // Silently handle habit date update errors
         }

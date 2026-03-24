@@ -165,6 +165,11 @@ export default function Home() {
                         <div className="stat-value text-2xl sm:text-3xl">{currentUser.Level}</div>
                         <div className="stat-desc text-xs">XP: {currentUser.Experience}</div>
                       </div>
+                      <div className="stat place-items-center">
+                        <div className="stat-title text-xs sm:text-sm">Gold</div>
+                        <div className="stat-value text-2xl sm:text-3xl text-warning">🪙 {currentUser.Gold}</div>
+                        <div className="stat-desc text-xs">+10 per completion</div>
+                      </div>
                     </div>
                     
                     {/* Daily Motivational Quote */}
