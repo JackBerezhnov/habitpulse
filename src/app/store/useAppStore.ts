@@ -33,6 +33,32 @@ export interface User {
   Gold: number;
 }
 
+export interface IdleUpgrade {
+  id: string;
+  name: string;
+  description: string | null;
+  base_cost: number;
+  cost_multiplier: number;
+  effect_type: 'damage' | 'speed' | 'critical';
+  effect_value: number;
+  max_level: number | null;
+  sort_order: number;
+}
+
+export interface UserUpgrade {
+  upgrade_id: string;
+  level: number;
+}
+
+export interface IdleState {
+  enemy_hp: number;
+  enemy_max_hp: number;
+  enemy_level: number;
+  enemies_defeated: number;
+  total_gold_earned: number;
+  last_tick_at: string;
+}
+
 type UserStat = 'Strength' | 'Agility' | 'Inteligent';
 
 interface ProfileRow {
@@ -79,6 +105,11 @@ interface AppState {
   // Habits state
   habits: HabitDocument[];
 
+  // Idle game state
+  idleState: IdleState | null;
+  idleUpgrades: IdleUpgrade[];
+  userUpgrades: UserUpgrade[];
+
   // Loading states
   isLoading: boolean;
 
@@ -103,6 +134,20 @@ interface AppState {
   updateUserStats: (statType: UserStat, newValue: number) => Promise<void>;
   updateUserGold: (newGold: number) => Promise<void>;
   calculateProgressToNextLevel: () => void;
+
+  // Idle game actions
+  fetchIdleState: () => Promise<void>;
+  fetchIdleUpgrades: () => Promise<void>;
+  fetchUserUpgrades: () => Promise<void>;
+  initIdleState: () => Promise<void>;
+  dealDamageToEnemy: (damage: number) => Promise<void>;
+  purchaseUpgrade: (upgradeId: string) => Promise<void>;
+  claimOfflineProgress: () => Promise<{ goldEarned: number; enemiesDefeated: number } | null>;
+  getUpgradeCost: (upgradeId: string) => number;
+  getUpgradeLevel: (upgradeId: string) => number;
+  getDamagePerHit: () => number;
+  getAttackSpeed: () => number;
+  getCriticalChance: () => number;
 
   // Streak system
   calculateHabitStreak: (dates: string[]) => number;
@@ -390,6 +435,9 @@ export const useAppStore = create<AppState>((set, get) => ({
   userName: '',
   progressLevel: '0',
   habits: [],
+  idleState: null,
+  idleUpgrades: [],
+  userUpgrades: [],
   isLoading: true,
 
   // Simple setters
@@ -775,6 +823,348 @@ export const useAppStore = create<AppState>((set, get) => ({
     const clampedProgress = Math.max(0, Math.min(100, progressInPercentage));
 
     set({ progressLevel: clampedProgress.toFixed(2) });
+  },
+
+  // ==============================
+  // Idle Game System
+  // ==============================
+
+  fetchIdleUpgrades: async () => {
+    try {
+      const { data, error } = await supabase
+        .from('idle_upgrades')
+        .select('*')
+        .order('sort_order');
+
+      if (error) throw error;
+      set({ idleUpgrades: (data ?? []) as IdleUpgrade[] });
+    } catch (error) {
+      console.error(toErrorLog('Idle upgrades fetch failed', error));
+    }
+  },
+
+  fetchIdleState: async () => {
+    const { currentUserID } = get();
+    if (!currentUserID) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('idle_state')
+        .select('*')
+        .eq('user_id', currentUserID)
+        .maybeSingle();
+
+      if (error) throw error;
+      if (data) {
+        set({ idleState: data as IdleState });
+      }
+    } catch (error) {
+      console.error(toErrorLog('Idle state fetch failed', error));
+    }
+  },
+
+  fetchUserUpgrades: async () => {
+    const { currentUserID } = get();
+    if (!currentUserID) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('user_upgrades')
+        .select('upgrade_id, level')
+        .eq('user_id', currentUserID);
+
+      if (error) throw error;
+      set({ userUpgrades: (data ?? []) as UserUpgrade[] });
+    } catch (error) {
+      console.error(toErrorLog('User upgrades fetch failed', error));
+    }
+  },
+
+  initIdleState: async () => {
+    const { currentUserID, idleState } = get();
+    if (!currentUserID || idleState) return;
+
+    try {
+      const { data: existing } = await supabase
+        .from('idle_state')
+        .select('user_id')
+        .eq('user_id', currentUserID)
+        .maybeSingle();
+
+      if (existing) {
+        await get().fetchIdleState();
+        return;
+      }
+
+      const newState: IdleState = {
+        enemy_hp: 100,
+        enemy_max_hp: 100,
+        enemy_level: 1,
+        enemies_defeated: 0,
+        total_gold_earned: 0,
+        last_tick_at: new Date().toISOString(),
+      };
+
+      const { error } = await supabase
+        .from('idle_state')
+        .insert({ user_id: currentUserID, ...newState });
+
+      if (error && !isUniqueViolationError(error)) throw error;
+      set({ idleState: newState });
+    } catch (error) {
+      console.error(toErrorLog('Idle state init failed', error));
+    }
+  },
+
+  dealDamageToEnemy: async (damage: number) => {
+    const { currentUserID, idleState, currentUser } = get();
+    if (!currentUserID || !idleState || !currentUser) return;
+
+    const newHp = Math.max(0, idleState.enemy_hp - damage);
+
+    if (newHp <= 0) {
+      // Enemy defeated
+      const goldReward = Math.floor(5 + idleState.enemy_level * 3);
+      const newEnemyLevel = idleState.enemy_level + 1;
+      const newMaxHp = Math.floor(100 * Math.pow(1.12, newEnemyLevel - 1));
+
+      const updatedState: IdleState = {
+        ...idleState,
+        enemy_hp: newMaxHp,
+        enemy_max_hp: newMaxHp,
+        enemy_level: newEnemyLevel,
+        enemies_defeated: idleState.enemies_defeated + 1,
+        total_gold_earned: idleState.total_gold_earned + goldReward,
+        last_tick_at: new Date().toISOString(),
+      };
+
+      set({ idleState: updatedState });
+
+      // Award gold to player
+      const newGold = currentUser.Gold + goldReward;
+      await get().updateUserGold(newGold);
+
+      try {
+        await supabase
+          .from('idle_state')
+          .update({
+            enemy_hp: updatedState.enemy_hp,
+            enemy_max_hp: updatedState.enemy_max_hp,
+            enemy_level: updatedState.enemy_level,
+            enemies_defeated: updatedState.enemies_defeated,
+            total_gold_earned: updatedState.total_gold_earned,
+            last_tick_at: updatedState.last_tick_at,
+          })
+          .eq('user_id', currentUserID);
+      } catch (error) {
+        console.error(toErrorLog('Idle state update failed', error));
+      }
+    } else {
+      set({ idleState: { ...idleState, enemy_hp: newHp } });
+
+      // Debounce DB writes — only save every 5th hit
+      if (Math.random() < 0.2) {
+        try {
+          await supabase
+            .from('idle_state')
+            .update({ enemy_hp: newHp, last_tick_at: new Date().toISOString() })
+            .eq('user_id', currentUserID);
+        } catch {
+          // Silently fail, local state is authoritative during session
+        }
+      }
+    }
+  },
+
+  purchaseUpgrade: async (upgradeId: string) => {
+    const { currentUserID, currentUser, userUpgrades, idleUpgrades } = get();
+    if (!currentUserID || !currentUser) return;
+
+    const upgrade = idleUpgrades.find((u) => u.id === upgradeId);
+    if (!upgrade) return;
+
+    const currentLevel = get().getUpgradeLevel(upgradeId);
+    if (upgrade.max_level && currentLevel >= upgrade.max_level) return;
+
+    const cost = get().getUpgradeCost(upgradeId);
+    if (currentUser.Gold < cost) return;
+
+    // Deduct gold
+    const newGold = currentUser.Gold - cost;
+    await get().updateUserGold(newGold);
+
+    // Update or insert upgrade
+    const existingUpgrade = userUpgrades.find((u) => u.upgrade_id === upgradeId);
+    const newLevel = currentLevel + 1;
+
+    if (existingUpgrade) {
+      const updatedUpgrades = userUpgrades.map((u) =>
+        u.upgrade_id === upgradeId ? { ...u, level: newLevel } : u,
+      );
+      set({ userUpgrades: updatedUpgrades });
+
+      try {
+        await supabase
+          .from('user_upgrades')
+          .update({ level: newLevel })
+          .eq('user_id', currentUserID)
+          .eq('upgrade_id', upgradeId);
+      } catch (error) {
+        console.error(toErrorLog('Upgrade update failed', error));
+      }
+    } else {
+      set({ userUpgrades: [...userUpgrades, { upgrade_id: upgradeId, level: 1 }] });
+
+      try {
+        await supabase
+          .from('user_upgrades')
+          .insert({ user_id: currentUserID, upgrade_id: upgradeId, level: 1 });
+      } catch (error) {
+        console.error(toErrorLog('Upgrade insert failed', error));
+      }
+    }
+  },
+
+  claimOfflineProgress: async () => {
+    const { idleState, currentUserID, currentUser } = get();
+    if (!idleState || !currentUserID || !currentUser) return null;
+
+    const lastTick = new Date(idleState.last_tick_at).getTime();
+    const now = Date.now();
+    const elapsedSeconds = Math.floor((now - lastTick) / 1000);
+
+    // Minimum 60 seconds of offline time to claim, max 8 hours
+    if (elapsedSeconds < 60) return null;
+
+    const cappedSeconds = Math.min(elapsedSeconds, 8 * 60 * 60);
+    const dps = get().getDamagePerHit() / get().getAttackSpeed();
+
+    const totalDamage = dps * cappedSeconds;
+    let remainingDamage = totalDamage;
+    let enemiesDefeated = 0;
+    let goldEarned = 0;
+    let currentEnemyLevel = idleState.enemy_level;
+    let currentEnemyHp = idleState.enemy_hp;
+    let currentEnemyMaxHp = idleState.enemy_max_hp;
+
+    while (remainingDamage > 0) {
+      if (remainingDamage >= currentEnemyHp) {
+        remainingDamage -= currentEnemyHp;
+        enemiesDefeated++;
+        goldEarned += Math.floor(5 + currentEnemyLevel * 3);
+        currentEnemyLevel++;
+        currentEnemyMaxHp = Math.floor(100 * Math.pow(1.12, currentEnemyLevel - 1));
+        currentEnemyHp = currentEnemyMaxHp;
+      } else {
+        currentEnemyHp = Math.max(0, currentEnemyHp - remainingDamage);
+        remainingDamage = 0;
+      }
+    }
+
+    const updatedState: IdleState = {
+      ...idleState,
+      enemy_hp: currentEnemyHp,
+      enemy_max_hp: currentEnemyMaxHp,
+      enemy_level: currentEnemyLevel,
+      enemies_defeated: idleState.enemies_defeated + enemiesDefeated,
+      total_gold_earned: idleState.total_gold_earned + goldEarned,
+      last_tick_at: new Date().toISOString(),
+    };
+
+    set({ idleState: updatedState });
+
+    if (goldEarned > 0) {
+      await get().updateUserGold(currentUser.Gold + goldEarned);
+    }
+
+    try {
+      await supabase
+        .from('idle_state')
+        .update({
+          enemy_hp: updatedState.enemy_hp,
+          enemy_max_hp: updatedState.enemy_max_hp,
+          enemy_level: updatedState.enemy_level,
+          enemies_defeated: updatedState.enemies_defeated,
+          total_gold_earned: updatedState.total_gold_earned,
+          last_tick_at: updatedState.last_tick_at,
+        })
+        .eq('user_id', currentUserID);
+    } catch (error) {
+      console.error(toErrorLog('Offline claim failed', error));
+    }
+
+    return { goldEarned, enemiesDefeated };
+  },
+
+  getUpgradeCost: (upgradeId: string) => {
+    const { idleUpgrades, userUpgrades } = get();
+    const upgrade = idleUpgrades.find((u) => u.id === upgradeId);
+    if (!upgrade) return Infinity;
+
+    const currentLevel = userUpgrades.find((u) => u.upgrade_id === upgradeId)?.level ?? 0;
+    return Math.floor(upgrade.base_cost * Math.pow(upgrade.cost_multiplier, currentLevel));
+  },
+
+  getUpgradeLevel: (upgradeId: string) => {
+    const { userUpgrades } = get();
+    return userUpgrades.find((u) => u.upgrade_id === upgradeId)?.level ?? 0;
+  },
+
+  getDamagePerHit: () => {
+    const { currentUser, userUpgrades, idleUpgrades } = get();
+    let baseDamage = 5;
+
+    // Strength stat bonus
+    if (currentUser) {
+      baseDamage += currentUser.Strength * 2;
+    }
+
+    // Attack power upgrade bonus
+    const attackUpgrade = idleUpgrades.find((u) => u.id === 'attack_power');
+    const attackLevel = userUpgrades.find((u) => u.upgrade_id === 'attack_power')?.level ?? 0;
+    if (attackUpgrade && attackLevel > 0) {
+      baseDamage += attackUpgrade.effect_value * attackLevel;
+    }
+
+    return baseDamage;
+  },
+
+  getAttackSpeed: () => {
+    const { currentUser, userUpgrades, idleUpgrades } = get();
+    let baseSpeed = 2.0; // seconds per attack
+
+    // Agility stat bonus
+    if (currentUser) {
+      baseSpeed = Math.max(0.3, baseSpeed - currentUser.Agility * 0.05);
+    }
+
+    // Attack speed upgrade bonus
+    const speedUpgrade = idleUpgrades.find((u) => u.id === 'attack_speed');
+    const speedLevel = userUpgrades.find((u) => u.upgrade_id === 'attack_speed')?.level ?? 0;
+    if (speedUpgrade && speedLevel > 0) {
+      baseSpeed = Math.max(0.3, baseSpeed - speedUpgrade.effect_value * speedLevel);
+    }
+
+    return baseSpeed;
+  },
+
+  getCriticalChance: () => {
+    const { currentUser, userUpgrades, idleUpgrades } = get();
+    let baseCrit = 0; // percent
+
+    // Intelligence stat bonus
+    if (currentUser) {
+      baseCrit += currentUser.Inteligent * 1;
+    }
+
+    // Critical upgrade bonus
+    const critUpgrade = idleUpgrades.find((u) => u.id === 'critical_chance');
+    const critLevel = userUpgrades.find((u) => u.upgrade_id === 'critical_chance')?.level ?? 0;
+    if (critUpgrade && critLevel > 0) {
+      baseCrit += critUpgrade.effect_value * critLevel;
+    }
+
+    return Math.min(baseCrit, 75); // Cap at 75%
   },
 
   // Streak system implementation
