@@ -37,3 +37,23 @@ body {
     text-wrap: balance;
   }
 }
+
+/* Idle game damage popup animation */
+@keyframes damage-popup {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-30px) scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-60px) scale(0.8);
+  }
+}
+
+.animate-damage-popup {
+  animation: damage-popup 1s ease-out forwards;
+}
